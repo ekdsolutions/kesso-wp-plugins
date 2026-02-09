@@ -445,9 +445,17 @@ class Kesso_Widget {
 		// Size (icon size only for widget toggle button, not options list)
 		$size = get_option( 'kesso_widget_size', 'md' );
 		$icon_sizes = [
+			'xs' => '16px',
 			'sm' => '20px',
 			'md' => '25px',
 			'lg' => '30px',
+		];
+		
+		$paddings = [
+			'xs' => '8px',
+			'sm' => '12px',
+			'md' => '12px',
+			'lg' => '12px',
 		];
 		
 		if ( isset( $icon_sizes[ $size ] ) ) {
@@ -458,6 +466,13 @@ class Kesso_Widget {
 			$css .= 'min-width: unset;';
 			$css .= 'min-height: unset;';
 			$css .= '}';
+			
+			// Apply padding to toggle button
+			if ( isset( $paddings[ $size ] ) ) {
+				$css .= '#kesso-toolbar .kesso-toolbar-toggle a {';
+				$css .= 'padding: ' . esc_attr( $paddings[ $size ] ) . ';';
+				$css .= '}';
+			}
 		}
 		
 		// Border radius

@@ -329,6 +329,7 @@ class Kesso_Cookies_Admin {
                                                 'title'   => __( 'Size', 'kesso-cookies' ),
                                                 'type'    => 'select',
                                                 'options' => array(
+                                                    'xs' => __( 'XS', 'kesso-cookies' ),
                                                     'sm' => __( 'SM', 'kesso-cookies' ),
                                                     'md' => __( 'MD', 'kesso-cookies' ),
                                                     'lg' => __( 'LG', 'kesso-cookies' ),
@@ -363,7 +364,7 @@ class Kesso_Cookies_Admin {
                                                 'id'    => 'kesso_cookies_settings_border_color',
                                                 'title' => __( 'Border Color', 'kesso-cookies' ),
                                                 'type'  => 'color',
-                                                'std'   => '#000000',
+                                                'std'   => 'rgba(0, 0, 0, 0.1)',
                                             ),
                                         );
 

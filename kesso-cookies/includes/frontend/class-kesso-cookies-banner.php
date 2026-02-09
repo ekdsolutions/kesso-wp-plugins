@@ -115,9 +115,17 @@ class Kesso_Cookies_Banner {
         // Size (icon size only, matching kesso-access)
         $size = get_option( 'kesso_cookies_settings_size', 'md' );
         $icon_sizes = array(
+            'xs' => '16px',
             'sm' => '20px',
             'md' => '25px',
             'lg' => '30px',
+        );
+        
+        $paddings = array(
+            'xs' => '8px',
+            'sm' => '12px',
+            'md' => '12px',
+            'lg' => '12px',
         );
         
         if ( isset( $icon_sizes[ $size ] ) ) {
@@ -126,6 +134,13 @@ class Kesso_Cookies_Banner {
             $css .= 'width: ' . esc_attr( $icon_sizes[ $size ] ) . ';';
             $css .= 'height: ' . esc_attr( $icon_sizes[ $size ] ) . ';';
             $css .= '}';
+            
+            // Apply padding to the link wrapper
+            if ( isset( $paddings[ $size ] ) ) {
+                $css .= '#kesso-cookies-settings-link {';
+                $css .= 'padding: ' . esc_attr( $paddings[ $size ] ) . ';';
+                $css .= '}';
+            }
         }
 
         // Border radius

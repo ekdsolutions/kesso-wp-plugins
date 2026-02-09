@@ -473,6 +473,7 @@ class Kesso_Admin {
 			'title'   => __( 'Size', 'kesso-widget' ),
 			'type'    => self::FIELD_SELECT,
 			'options' => [
+				'xs' => __( 'XS', 'kesso-widget' ),
 				'sm' => __( 'SM', 'kesso-widget' ),
 				'md' => __( 'MD', 'kesso-widget' ),
 				'lg' => __( 'LG', 'kesso-widget' ),
