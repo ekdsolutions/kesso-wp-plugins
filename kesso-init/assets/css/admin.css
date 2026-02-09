@@ -835,6 +835,20 @@
     display: inline-flex;
 }
 
+.kesso-child-theme-row.kesso-child-theme-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.kesso-child-theme-row.kesso-child-theme-disabled .kesso-child-input {
+    cursor: not-allowed;
+}
+
+.kesso-child-theme-row.kesso-child-theme-disabled .kesso-child-label {
+    cursor: not-allowed;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Plugins grid (pixel-close)                                                  */
 /* -------------------------------------------------------------------------- */

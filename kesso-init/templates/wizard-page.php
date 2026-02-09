@@ -159,10 +159,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                             </label>
 
                             <div class="kesso-child-theme-row">
-                                <input type="checkbox" id="install_child_theme" name="install_child_theme" value="1" class="kesso-child-input" />
+                                <input type="checkbox" id="install_child_theme" name="install_child_theme" value="1" class="kesso-child-input" disabled />
                                 <label class="kesso-child-label" for="install_child_theme">
                                     <span class="kesso-child-title"><?php esc_html_e( 'Install Child Theme', 'kesso-init' ); ?></span>
-                                    <span class="kesso-child-subtitle"><?php esc_html_e( 'Recommended for safe theme customizations and updates.', 'kesso-init' ); ?></span>
+                                    <span class="kesso-child-subtitle"><?php esc_html_e( 'Available when Bricks theme is selected. Recommended for safe customizations.', 'kesso-init' ); ?></span>
                                 </label>
                                 <span class="kesso-child-theme-badge" aria-hidden="true"></span>
                             </div>

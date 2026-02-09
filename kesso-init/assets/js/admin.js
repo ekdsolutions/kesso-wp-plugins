@@ -31,6 +31,7 @@
     // State
     let isProcessing = false;
     let bricksFileUploaded = false;
+    let bricksFileSelected = null; // Store the selected Bricks file
 
     /**
      * Initialize
@@ -683,6 +684,16 @@
             childThemeRow.classList.add('kesso-child-theme-installed');
             checkbox.disabled = true;
             badge.textContent = '(Already Installed)';
+        } else if (childThemeRow && checkbox) {
+            // If no child theme installed, check if Bricks is selected
+            const bricksSelected = document.querySelector('input[name="builder"][value="bricks"]:checked');
+            const bricksInstalled = status.bricks_installed || status.bricks_active || status.active_builder === 'bricks';
+            
+            // Only enable if Bricks is selected or already installed
+            if (!bricksSelected && !bricksInstalled) {
+                checkbox.disabled = true;
+                childThemeRow.classList.add('kesso-child-theme-disabled');
+            }
         }
     }
 
@@ -756,61 +767,97 @@
 
         bricksInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (!file) return;
+            if (!file) {
+                bricksFileSelected = null;
+                return;
+            }
 
-            // Upload file via REST API
-            uploadBricksFile(file);
+            // Store file for later upload (when "Apply Changes" is clicked)
+            bricksFileSelected = file;
+            
+            // Show "file selected" state in UI
+            setBricksFileSelected(file.name);
         });
     }
 
     /**
-     * Upload Bricks ZIP file
+     * Show "file selected" state
      */
-    function uploadBricksFile(file) {
-        const formData = new FormData();
-        formData.append('bricks_zip', file);
+    function setBricksFileSelected(filename) {
         const bricksUpload = document.getElementById('kesso-bricks-upload');
-        const bricksInput = document.getElementById('bricks_zip');
+        
+        if (!bricksUpload) return;
 
-        // Show uploading state
-        if (bricksUpload) {
-            bricksUpload.classList.add('is-uploading');
-            bricksUpload.classList.remove('is-success', 'is-error');
+        // Remove previous states
+        bricksUpload.classList.remove('is-uploading', 'is-error', 'is-success');
+
+        // Update icon to show file is selected
+        const icon = bricksUpload.querySelector('.kesso-favicon-icon');
+        if (icon) {
+            icon.innerHTML = '<span class="material-symbols-outlined kesso-upload-symbol">draft</span>';
         }
 
-        updateProgress(10, 'Uploading Bricks...');
+        // Update text to show file is selected
+        const title = bricksUpload.querySelector('.kesso-favicon-title');
+        if (title) {
+            title.textContent = 'Bricks ZIP file selected';
+        }
+        const subtitle = bricksUpload.querySelector('.kesso-favicon-subtitle');
+        if (subtitle) {
+            subtitle.textContent = filename + ' - Will be installed when you click "Apply Changes"';
+        }
+    }
 
-        fetch(kessoInit.restUrl + 'theme/upload-bricks', {
-            method: 'POST',
-            headers: {
-                'X-WP-Nonce': kessoInit.nonce
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                bricksFileUploaded = true;
-                updateProgress(20, 'Bricks uploaded successfully');
-                // Show success state in upload field
-                setBricksUploadSuccess();
-            } else {
+    /**
+     * Upload Bricks ZIP file (now used during apply process)
+     */
+    function uploadBricksFile(file) {
+        return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('bricks_zip', file);
+            const bricksUpload = document.getElementById('kesso-bricks-upload');
+
+            // Show uploading state
+            if (bricksUpload) {
+                bricksUpload.classList.add('is-uploading');
+                bricksUpload.classList.remove('is-success', 'is-error');
+            }
+
+            updateProgress(10, 'Uploading Bricks theme...');
+
+            fetch(kessoInit.restUrl + 'theme/upload-bricks', {
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce': kessoInit.nonce
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bricksFileUploaded = true;
+                    updateProgress(15, 'Bricks uploaded successfully');
+                    // Show success state in upload field
+                    setBricksUploadSuccess();
+                    resolve(data);
+                } else {
+                    // Show error state
+                    if (bricksUpload) {
+                        bricksUpload.classList.remove('is-uploading');
+                        bricksUpload.classList.add('is-error');
+                    }
+                    reject(new Error(data.message || 'Failed to upload Bricks file'));
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading Bricks:', error);
                 // Show error state
                 if (bricksUpload) {
                     bricksUpload.classList.remove('is-uploading');
                     bricksUpload.classList.add('is-error');
                 }
-                alert(data.message || 'Failed to upload Bricks file');
-            }
-        })
-        .catch(error => {
-            console.error('Error uploading Bricks:', error);
-            // Show error state
-            if (bricksUpload) {
-                bricksUpload.classList.remove('is-uploading');
-                bricksUpload.classList.add('is-error');
-            }
-            alert('Error uploading Bricks file');
+                reject(error);
+            });
         });
     }
 
@@ -892,6 +939,8 @@
         const bricksCard = document.querySelector('[data-builder="bricks"]');
         const bricksUpload = document.getElementById('kesso-bricks-upload');
         const bricksInput = document.getElementById('bricks_zip');
+        const childThemeCheckbox = document.getElementById('install_child_theme');
+        const childThemeRow = document.querySelector('.kesso-child-theme-row');
 
         // Check if builder is already installed
         if (bricksCard && bricksCard.classList.contains('kesso-builder-installed')) {
@@ -900,30 +949,47 @@
                 // Show success state if already installed
                 setBricksUploadSuccess();
             }
+            // Enable child theme checkbox if Bricks is already installed
+            if (childThemeCheckbox && !childThemeRow.classList.contains('kesso-child-theme-installed')) {
+                childThemeCheckbox.disabled = false;
+                childThemeRow.classList.remove('kesso-child-theme-disabled');
+            }
             return;
         }
 
         if (builder === 'bricks') {
             if (bricksUpload) {
                 bricksUpload.style.display = 'flex';
-                // Reset state when showing (in case it was in error/uploading state)
-                bricksUpload.classList.remove('is-success', 'is-error', 'is-uploading');
-                // Reset icon and text
-                const icon = bricksUpload.querySelector('.kesso-favicon-icon');
-                if (icon) {
-                    icon.innerHTML = '<span class="material-symbols-outlined kesso-upload-symbol">upload_file</span>';
-                }
-                const title = bricksUpload.querySelector('.kesso-favicon-title');
-                if (title) {
-                    title.textContent = 'Upload Bricks ZIP';
-                }
-                const subtitle = bricksUpload.querySelector('.kesso-favicon-subtitle');
-                if (subtitle) {
-                    subtitle.textContent = 'Choose the ZIP file you downloaded from your Bricks account.';
+                
+                // If a file is already selected, show that state
+                if (bricksFileSelected) {
+                    setBricksFileSelected(bricksFileSelected.name);
+                } else {
+                    // Reset state when showing (in case it was in error/uploading state)
+                    bricksUpload.classList.remove('is-success', 'is-error', 'is-uploading');
+                    // Reset icon and text
+                    const icon = bricksUpload.querySelector('.kesso-favicon-icon');
+                    if (icon) {
+                        icon.innerHTML = '<span class="material-symbols-outlined kesso-upload-symbol">upload_file</span>';
+                    }
+                    const title = bricksUpload.querySelector('.kesso-favicon-title');
+                    if (title) {
+                        title.textContent = 'Select Bricks ZIP';
+                    }
+                    const subtitle = bricksUpload.querySelector('.kesso-favicon-subtitle');
+                    if (subtitle) {
+                        subtitle.textContent = 'Choose the ZIP file you downloaded from your Bricks account.';
+                    }
                 }
                 if (bricksInput) {
                     bricksInput.disabled = false;
                 }
+            }
+            
+            // Enable child theme checkbox when Bricks is selected
+            if (childThemeCheckbox && !childThemeRow.classList.contains('kesso-child-theme-installed')) {
+                childThemeCheckbox.disabled = false;
+                childThemeRow.classList.remove('kesso-child-theme-disabled');
             }
         } else {
             if (bricksUpload) bricksUpload.style.display = 'none';
@@ -932,6 +998,14 @@
                 bricksInput.disabled = false;
             }
             bricksFileUploaded = false;
+            bricksFileSelected = null;
+            
+            // Disable child theme checkbox when Bricks is not selected
+            if (childThemeCheckbox && !childThemeRow.classList.contains('kesso-child-theme-installed')) {
+                childThemeCheckbox.disabled = true;
+                childThemeCheckbox.checked = false;
+                childThemeRow.classList.add('kesso-child-theme-disabled');
+            }
         }
     }
 
@@ -988,11 +1062,10 @@
             data.builder = builderInput.value;
         }
 
-        // Check if Bricks file was uploaded
+        // Check if Bricks file was selected (but not yet uploaded)
         if (data.builder === 'bricks' && !bricksFileUploaded) {
-            const bricksInput = document.getElementById('bricks_zip');
-            if (!bricksInput || !bricksInput.files[0]) {
-                alert(kessoInit.strings?.uploadBricks || 'Please upload the Bricks theme ZIP file.');
+            if (!bricksFileSelected) {
+                alert(kessoInit.strings?.uploadBricks || 'Please select the Bricks theme ZIP file.');
                 isProcessing = false;
                 submitButton.disabled = false;
                 return;
@@ -1057,6 +1130,18 @@
         };
 
         try {
+            // Step 0: Upload Bricks file if selected and not yet uploaded
+            if (data.builder === 'bricks' && bricksFileSelected && !bricksFileUploaded) {
+                try {
+                    updateProgress(5, 'Uploading Bricks theme...');
+                    setProgressCurrentStep('Uploading Bricks', false);
+                    await uploadBricksFile(bricksFileSelected);
+                } catch (error) {
+                    // If upload fails, add error and stop
+                    throw new Error('Failed to upload Bricks theme: ' + (error.message || 'Unknown error'));
+                }
+            }
+
             // Step 1: Process settings, theme, and child theme (non-plugin operations)
             const nonPluginData = {
                 builder: data.builder,

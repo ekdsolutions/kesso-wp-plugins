@@ -239,26 +239,24 @@ class Kesso_Init_Batch_Endpoint {
             }
 
             // Step 3: Create and install child theme
-            // Determine parent theme: use builder's parent theme, or current active theme if no builder selected
+            // Only create child theme for Bricks and only if Bricks installation succeeded
             if ( $install_child ) {
                 try {
-                    // If no parent theme set from builder, use current active theme
-                    if ( empty( $parent_theme ) ) {
-                        $current_theme = get_stylesheet();
-                        $current_parent = get_template();
-                        
-                        // If already a child theme, use the parent
-                        if ( $current_theme !== $current_parent ) {
-                            $parent_theme = $current_parent;
-                        } else {
-                            // Use current theme as parent
-                            $parent_theme = $current_theme;
-                        }
-                    }
-                    
-                    // Only proceed if we have a valid parent theme
-                    if ( ! empty( $parent_theme ) ) {
-                        // Check if child theme already exists for this parent
+                    // Only proceed if Bricks was selected and successfully installed
+                    if ( 'bricks' !== $builder ) {
+                        $results['errors'][] = array(
+                            'step'    => 'child_theme',
+                            'message' => __( 'Child theme installation is only available for Bricks theme.', 'kesso-init' ),
+                        );
+                    } elseif ( empty( $parent_theme ) || 'bricks' !== $parent_theme ) {
+                        // Bricks was selected but installation failed
+                        $results['errors'][] = array(
+                            'step'    => 'child_theme',
+                            'message' => __( 'Cannot create child theme: Bricks theme installation failed or was not completed.', 'kesso-init' ),
+                        );
+                    } else {
+                        // Bricks was successfully installed, proceed with child theme creation
+                        // Check if child theme already exists for Bricks
                         $child_slug = $parent_theme . '-child';
                         if ( kesso_init_is_theme_installed( $child_slug ) ) {
                             // Child theme already exists, just activate it
@@ -281,11 +279,6 @@ class Kesso_Init_Batch_Endpoint {
                                 $results['child_theme'] = $child_result;
                             }
                         }
-                    } else {
-                        $results['errors'][] = array(
-                            'step'    => 'child_theme',
-                            'message' => __( 'Cannot create child theme: no parent theme specified or found.', 'kesso-init' ),
-                        );
                     }
                 } catch ( Exception $e ) {
                     $results['errors'][] = array(
