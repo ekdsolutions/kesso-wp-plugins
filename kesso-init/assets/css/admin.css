@@ -1,0 +1,1391 @@
+/**
+ * Kesso Init Admin Styles (Ultra-high-fidelity SaaS UI, scoped)
+ *
+ * IMPORTANT:
+ * - No Tailwind, no frameworks.
+ * - All styles are scoped under `.kesso-init-app` to avoid affecting WP admin.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* -------------------------------------------------------------------------- */
+/* Scoped reset / isolation                                                    */
+/* -------------------------------------------------------------------------- */
+
+.kesso-init-app {
+    --kesso-primary: #137fec;
+    --kesso-bg: #f6f7f8;
+    --kesso-text: #0d141b;
+    --kesso-muted: #4c739a;
+    --kesso-card: #ffffff;
+    --kesso-border: #e5e7eb;
+    --kesso-border-2: #e2e8f0;
+    --kesso-slate-50: #f8fafc;
+    --kesso-slate-100: #f1f5f9;
+    --kesso-slate-200: #e2e8f0;
+    --kesso-shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --kesso-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --kesso-radius-xl: 0.75rem; /* 12px */
+    --kesso-radius-lg: 0.5rem;  /* 8px */
+    --kesso-radius-full: 9999px;
+}
+
+.kesso-init-app,
+.kesso-init-app * {
+    box-sizing: border-box;
+}
+
+.kesso-init-app :where(h1,h2,h3,p,ul,li) {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-init-app :where(button,input,select) {
+    font: inherit;
+}
+
+/* Disable WP-admin visual influence inside the app without breaking globals */
+.kesso-init-app {
+    color: var(--kesso-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: calc(100vh - 32px);
+    border-radius: 16px;
+    padding: 70px 0;
+    position: relative;
+    margin: -20px -20px 0 -2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kesso Banner (sticky top)                                                  */
+/* -------------------------------------------------------------------------- */
+
+.kesso-banner {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: calc(100% + 20px);
+    background: linear-gradient(135deg, rgba(19, 127, 236, 0.95) 0%, rgba(19, 127, 236, 0.98) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    padding: 10px 0;
+}
+
+.kesso-banner-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.kesso-banner-link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+}
+
+.kesso-banner-link:hover {
+    opacity: 0.85;
+    color: #ffffff;
+}
+
+/* Make the WP `.wrap` not fight our layout */
+.kesso-init-app .kesso-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    padding-top: 16px; /* Add space for sticky banner */
+}
+
+/* Material Symbols baseline */
+.kesso-init-app .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page heading (matches reference)                                            */
+/* -------------------------------------------------------------------------- */
+
+.kesso-page-heading {
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.kesso-heading-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-brand-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.kesso-brand-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--kesso-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kesso-brand-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.kesso-brand-badge {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--kesso-primary);
+}
+
+.kesso-title {
+    font-size: 32px !important; /* Tailwind 5xl */
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--kesso-text) !important;
+    padding: 0 !important;
+}
+
+.kesso-subtitle {
+    font-size: 14px !important;
+    color: var(--kesso-muted) !important;
+    max-width: 720px !important;
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cards / sections                                                            */
+/* -------------------------------------------------------------------------- */
+
+.kesso-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* matches reference gap-10 */
+}
+
+.kesso-card {
+    background: var(--kesso-card);
+    border: 1px solid var(--kesso-border);
+    border-radius: var(--kesso-radius-xl);
+    box-shadow: var(--kesso-shadow-sm);
+    overflow: hidden;
+}
+
+.kesso-card-header {
+    padding: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: rgba(248, 250, 252, 0.6); /* bg-slate-50/50-ish */
+}
+
+.kesso-card-header--row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.kesso-card-title {
+    font-size: 20px; /* text-xl */
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--kesso-text);
+}
+
+.kesso-icon {
+    color: var(--kesso-primary);
+    font-size: 20px;
+}
+
+.kesso-card-meta {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--kesso-muted);
+    white-space: nowrap;
+}
+
+.kesso-card-body {
+    padding: 24px;
+}
+
+.kesso-card-body--stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Field grids + controls (Tailwind look)                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-grid {
+    display: grid;
+    gap: 24px; /* gap-6 */
+}
+
+.kesso-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 782px) {
+    .kesso-grid-2 { grid-template-columns: 1fr; }
+}
+
+.kesso-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin: 0;
+    padding: 12px;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    background: #f8fafc;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    min-height: 54px;
+    box-sizing: border-box;
+}
+
+.kesso-checkbox-label:hover {
+    border-color: var(--kesso-slate-300);
+    background: #ffffff;
+}
+
+.kesso-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.kesso-checkbox-text {
+    font-size: 14px;
+    color: var(--kesso-text);
+    line-height: 1.4;
+}
+
+.kesso-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text);
+}
+
+.kesso-control {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    border-radius: var(--kesso-radius-lg) !important;
+    border: 1px solid var(--kesso-slate-200) !important;
+    background: #f8fafc !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    max-width: unset !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Checkbox styling (shared across the whole page)                              */
+/* -------------------------------------------------------------------------- */
+
+.kesso-init-app input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1px solid var(--kesso-slate-200);
+    background: #ffffff;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+}
+
+/* WordPress core uses `input[type=checkbox]:checked::before` for its checkmark.
+   We override it (scoped) to avoid double checkmarks and match our design. */
+.kesso-init-app input[type="checkbox"]::before {
+    content: "";
+    width: 3px;
+    height: 6px;
+    border-right: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    transform: rotate(45deg);
+    margin: -1px 0 0 0;
+    display: block;
+}
+
+.kesso-init-app input[type="checkbox"]:checked {
+    background: var(--kesso-primary);
+    border-color: var(--kesso-primary);
+}
+
+.kesso-init-app input[type="checkbox"]:checked::before {
+    border-right-color: #ffffff; /* requested */
+    border-bottom-color: #ffffff; /* requested */
+}
+
+.kesso-init-app input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+}
+
+.kesso-init-app input[type="checkbox"]:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.kesso-control:focus {
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+.kesso-select {
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 12px) calc(50% - 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Searchable Timezone Dropdown                                               */
+/* -------------------------------------------------------------------------- */
+
+.kesso-timezone-wrapper {
+    position: relative;
+}
+
+.kesso-timezone-input {
+    cursor: text;
+    padding-right: 40px !important;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 12px) calc(50% - 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.kesso-timezone-input:focus {
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+.kesso-timezone-input.is-invalid {
+    border-color: #ef4444;
+}
+
+.kesso-timezone-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-lg);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+}
+
+.kesso-timezone-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--kesso-text);
+    transition: background-color 0.15s ease, color 0.15s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.kesso-timezone-option:last-child {
+    border-bottom: none;
+}
+
+.kesso-timezone-option:hover,
+.kesso-timezone-option.is-highlighted {
+    background: rgba(19,127,236,0.08);
+    color: var(--kesso-primary);
+}
+
+.kesso-timezone-no-results {
+    color: var(--kesso-muted);
+    cursor: default;
+    font-style: italic;
+}
+
+.kesso-timezone-no-results:hover {
+    background: transparent;
+    color: var(--kesso-muted);
+}
+
+.kesso-timezone-more {
+    color: var(--kesso-muted);
+    font-size: 12px;
+    font-style: italic;
+    cursor: default;
+    background: #f8fafc;
+}
+
+.kesso-timezone-more:hover {
+    background: #f8fafc;
+    color: var(--kesso-muted);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Favicon uploader (pixel-close)                                              */
+/* -------------------------------------------------------------------------- */
+
+.kesso-favicon-uploader {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 2px dashed var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-xl);
+    background: #ffffff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.kesso-favicon-uploader:hover {
+    border-color: rgba(19,127,236,0.5);
+}
+
+.kesso-favicon-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--kesso-radius-lg);
+    background: var(--kesso-slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.kesso-favicon-uploader:hover .kesso-favicon-icon {
+    color: var(--kesso-primary);
+}
+
+.kesso-favicon-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.kesso-favicon-symbol {
+    font-size: 32px;
+}
+
+.kesso-favicon-copy {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.kesso-favicon-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text);
+}
+
+.kesso-favicon-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Builder cards (pixel-close)                                                 */
+/* -------------------------------------------------------------------------- */
+
+.kesso-builder-grid {
+    margin-bottom: 16px;
+}
+
+.kesso-builder-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: var(--kesso-radius-xl);
+    border: 2px solid #f1f5f9; /* border-slate-100 */
+    background: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kesso-builder-card:hover:not(.kesso-builder-installed):not(.kesso-builder-card--active) {
+    border-color: var(--kesso-slate-200);
+}
+
+.kesso-builder-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kesso-builder-iconbox {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--kesso-radius-lg);
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.kesso-builder-symbol {
+    font-size: 28px;
+    color: #94a3b8; /* default gray */
+    transition: color 0.15s ease;
+}
+
+.kesso-builder-symbol--muted {
+    color: #94a3b8;
+}
+
+.kesso-builder-card:hover .kesso-builder-symbol,
+.kesso-builder-card--active .kesso-builder-symbol {
+    color: var(--kesso-primary);
+}
+
+.kesso-builder-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--kesso-text);
+}
+
+.kesso-builder-desc {
+    font-size: 14px;
+    margin-top: 8px;
+    color: var(--kesso-muted);
+}
+
+.kesso-builder-check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: var(--kesso-primary);
+    font-size: 22px;
+    display: none !important; /* always hidden unless card is selected */
+}
+
+.kesso-builder-card--active {
+    border-color: var(--kesso-primary);
+    background: rgba(19,127,236,0.06); /* bg-primary/5 */
+}
+
+.kesso-builder-card--active .kesso-builder-check {
+    display: inline-flex !important; /* only selected card shows check */
+}
+
+.kesso-builder-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: none;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--kesso-radius-full);
+    background: rgba(19,127,236,0.12);
+    color: var(--kesso-primary);
+}
+
+.kesso-builder-installed {
+    opacity: 0.55;
+    pointer-events: none;
+    cursor: not-allowed;
+    background: #ffffff;
+}
+
+.kesso-builder-installed .kesso-builder-badge {
+    display: inline-flex;
+}
+
+/* Bricks ZIP uploader (match favicon uploader style) */
+.kesso-upload-uploader {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 2px dashed var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-xl);
+    background: #ffffff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.kesso-upload-uploader:hover {
+    border-color: rgba(19,127,236,0.5);
+}
+
+/* Bricks upload states */
+.kesso-favicon-uploader.is-uploading {
+    border-color: var(--kesso-primary);
+    background: rgba(19,127,236,0.04);
+    cursor: wait;
+}
+
+.kesso-favicon-uploader.is-uploading .kesso-favicon-icon {
+    background: rgba(19,127,236,0.12);
+    color: var(--kesso-primary);
+}
+
+.kesso-favicon-uploader.is-uploading .kesso-upload-symbol {
+    animation: kessoColorPulse 1.5s ease-in-out infinite;
+}
+
+.kesso-favicon-uploader.is-success {
+    border-color: rgba(16,185,129,0.5);
+    background: rgba(16,185,129,0.04);
+    cursor: default;
+}
+
+.kesso-favicon-uploader.is-success .kesso-favicon-icon {
+    background: rgba(16,185,129,0.12);
+    color: #10b981;
+}
+
+.kesso-favicon-uploader.is-success .kesso-favicon-title {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.kesso-favicon-uploader.is-success .kesso-btn {
+    display: none;
+}
+
+.kesso-favicon-uploader.is-error {
+    border-color: rgba(239,68,68,0.5);
+    background: rgba(239,68,68,0.04);
+}
+
+.kesso-favicon-uploader.is-error .kesso-favicon-icon {
+    background: rgba(239,68,68,0.12);
+    color: #ef4444;
+}
+
+.kesso-favicon-uploader.is-error .kesso-favicon-title {
+    color: #ef4444;
+}
+
+.kesso-upload-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--kesso-radius-lg);
+    background: var(--kesso-slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.kesso-upload-uploader:hover .kesso-upload-icon {
+    color: var(--kesso-primary);
+}
+
+.kesso-upload-symbol {
+    font-size: 32px;
+}
+
+.kesso-upload-copy {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.kesso-upload-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text);
+}
+
+.kesso-upload-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-upload-cta {
+    pointer-events: none; /* container click triggers file input via label */
+}
+
+.kesso-upload-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Ensure the hidden file input positioning is relative to the label */
+.kesso-upload-uploader {
+    position: relative;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Child theme row (pixel-close)                                               */
+/* -------------------------------------------------------------------------- */
+
+.kesso-child-theme-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: var(--kesso-radius-lg);
+    background: rgba(241,245,249,0.7);
+    margin-top: 16px;
+}
+
+.kesso-child-input {
+    width: 20px;
+    height: 20px;
+}
+
+.kesso-child-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.kesso-child-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--kesso-text);
+}
+
+.kesso-child-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-child-theme-badge {
+    display: none;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--kesso-radius-full);
+    background: rgba(19,127,236,0.12);
+    color: var(--kesso-primary);
+}
+
+.kesso-child-theme-row.kesso-child-theme-installed {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.kesso-child-theme-row.kesso-child-theme-installed .kesso-child-theme-badge {
+    display: inline-flex;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Plugins grid (pixel-close)                                                  */
+/* -------------------------------------------------------------------------- */
+
+.kesso-plugins-shell {
+    padding: 16px;
+}
+
+.kesso-plugins-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    border-radius: var(--kesso-radius-xl);
+    overflow: hidden;
+}
+
+@media (max-width: 782px) {
+    .kesso-plugins-grid { grid-template-columns: 1fr; }
+    .kesso-card-header--row { flex-wrap: wrap; }
+}
+
+.kesso-plugin-card {
+    background: #ffffff;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kesso-plugin-card:not(.kesso-plugin-installed):hover {
+    background: #f8fafc;
+}
+
+.kesso-plugin-card:not(.kesso-plugin-installed):focus,
+.kesso-plugin-card:not(.kesso-plugin-installed):focus-within {
+    outline: none;
+}
+
+.kesso-plugin-card input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    border-radius: 6px;
+}
+
+.kesso-plugin-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--kesso-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.kesso-plugin-name > .kesso-plugin-badge {
+    flex-shrink: 0;
+}
+
+.kesso-plugin-desc {
+    font-size: 12px;
+    margin-top: 4px;
+    color: var(--kesso-muted);
+}
+
+.kesso-plugin-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    min-width: 80px;
+    width: 80px;
+    text-align: center;
+}
+
+/* Category-specific badge colors - stronger colors */
+.kesso-plugin-badge[data-category="tracking"] {
+    background: rgba(14, 165, 233, 0.25);
+    color: #0284c7;
+}
+
+.kesso-plugin-badge[data-category="content"] {
+    background: rgba(59, 130, 246, 0.25);
+    color: #2563eb;
+}
+
+.kesso-plugin-badge[data-category="optimize"] {
+    background: rgba(236, 72, 153, 0.25);
+    color: #db2777;
+}
+
+.kesso-plugin-badge[data-category="develop"] {
+    background: rgba(139, 92, 246, 0.25);
+    color: #7c3aed;
+}
+
+.kesso-plugin-badge[data-category="ecommerce"] {
+    background: rgba(245, 158, 11, 0.25);
+    color: #d97706;
+}
+
+.kesso-plugin-badge[data-category="security"] {
+    background: rgba(239, 68, 68, 0.25);
+    color: #dc2626;
+}
+
+.kesso-plugin-card.kesso-plugin-installed {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header actions in plugins card                                              */
+/* -------------------------------------------------------------------------- */
+
+.kesso-plugins-actions {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin-left: auto;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Buttons (exact SaaS look)                                                   */
+/* -------------------------------------------------------------------------- */
+
+.kesso-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.kesso-btn:active { transform: translateY(1px); }
+
+.kesso-btn--secondary {
+    background: #ffffff;
+    border: 1px solid var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-lg);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: var(--kesso-shadow-sm);
+}
+
+.kesso-btn--secondary:hover {
+    border-color: rgba(19,127,236,0.35);
+}
+
+.kesso-btn--ghost {
+    background: rgba(241,245,249,0.85);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--kesso-radius-lg);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--kesso-muted);
+}
+
+.kesso-btn--ghost:hover {
+    background: rgba(226,232,240,0.85);
+}
+
+.kesso-btn--primary {
+    padding: 12px 24px;
+    border-radius: var(--kesso-radius-xl);
+    background: var(--kesso-primary);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(19,127,236,0.20);
+}
+
+.kesso-btn--primary:hover {
+    background: #0f6fcc;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Footer (glassy, fixed, pixel-close)                                         */
+/* -------------------------------------------------------------------------- */
+
+.kesso-footer {
+    position: sticky;
+    margin-top: 40px;
+    bottom: 0;
+    border-top: 1px solid var(--kesso-border);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+    padding: 16px 0;
+    border-radius: var(--kesso-radius-xl);
+}
+
+.kesso-footer-inner {
+    max-width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px;
+}
+
+.kesso-footer-left {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+}
+
+@media (min-width: 783px) {
+    .kesso-footer-left { display: flex; }
+}
+
+.kesso-footer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kesso-footer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kesso-radius-full);
+    background: var(--kesso-primary);
+    animation: kessoPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes kessoPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.65; transform: scale(1.1); }
+}
+
+.kesso-footer-label {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--kesso-text);
+}
+
+.kesso-footer-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-footer-right {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+@media (min-width: 783px) {
+    .kesso-footer-right {
+        width: auto;
+        justify-content: flex-end;
+    }
+}
+
+.kesso-footer-progress {
+    display: none;
+    width: 160px;
+    text-align: right;
+}
+
+@media (min-width: 641px) {
+    .kesso-footer-progress { display: block; }
+}
+
+.kesso-footer-step {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    margin-bottom: 6px;
+}
+
+.kesso-footer-bar {
+    width: 128px; /* w-32 */
+    height: 6px;  /* h-1.5 */
+    border-radius: var(--kesso-radius-full);
+    background: var(--kesso-slate-200);
+    overflow: hidden;
+    margin-left: auto;
+}
+
+.kesso-footer-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--kesso-primary);
+    transition: width 0.25s ease;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Results (keep functionality, match SaaS)                                    */
+/* -------------------------------------------------------------------------- */
+
+.kesso-results {
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: var(--kesso-radius-xl);
+    border: 1px solid var(--kesso-border);
+    background: #ffffff;
+    box-shadow: var(--kesso-shadow-sm);
+}
+
+.kesso-results.success {
+    border-color: rgba(16,185,129,0.35);
+    background: #f0fdf4;
+}
+
+.kesso-results.error {
+    border-color: rgba(239,68,68,0.35);
+    background: #fef2f2;
+}
+
+.kesso-results-loading {
+    text-align: center;
+}
+
+.kesso-loading-spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid #e5e7eb;
+    border-top-color: var(--kesso-primary);
+    border-radius: 50%;
+    animation: kessoSpin 0.9s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes kessoSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes kessoColorPulse {
+    0%, 100% {
+        color: var(--kesso-primary);
+        opacity: 1;
+    }
+    50% {
+        color: rgba(19,127,236,0.5);
+        opacity: 0.7;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Progress modal                                                             */
+/* -------------------------------------------------------------------------- */
+
+.kesso-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 100000;
+    padding: 24px;
+}
+
+.kesso-modal.is-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kesso-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 25, 34, 0.35);
+    backdrop-filter: blur(6px);
+}
+
+.kesso-modal-dialog {
+    position: relative;
+    width: min(640px, calc(100vw - 32px));
+    margin: 0;
+    background: #ffffff;
+    border: 1px solid var(--kesso-border);
+    border-radius: var(--kesso-radius-xl);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+    overflow: hidden;
+}
+
+.kesso-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: rgba(248, 250, 252, 0.6);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.kesso-modal-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    letter-spacing: -0.01em;
+}
+
+.kesso-modal-subtitle {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-modal-close {
+    all: unset;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #64748b;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    opacity: 1;
+}
+
+.kesso-modal-close:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.kesso-modal-close:not(:disabled):hover {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--kesso-text);
+}
+
+.kesso-modal-body {
+    padding: 20px 24px 24px;
+}
+
+/* Single progress card (animated step name) */
+.kesso-progress-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #eef2f7;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.kesso-progress-indicator {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.kesso-progress-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.kesso-progress-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--kesso-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.kesso-progress-step {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    letter-spacing: -0.01em;
+}
+
+/* Step name switching animation */
+@keyframes kessoStepSwap {
+    0% { opacity: 0; transform: translateY(6px); }
+    50% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.kesso-progress-step.is-switching {
+    animation: kessoStepSwap 420ms ease;
+}
+
+/* Indicator states */
+.kesso-progress-card.is-running .kesso-progress-indicator {
+    background: rgba(19,127,236,0.12);
+}
+.kesso-progress-card.is-running .kesso-progress-indicator::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    border: 2px solid rgba(19,127,236,0.25);
+    border-top-color: var(--kesso-primary);
+    animation: kessoSpin 0.9s linear infinite;
+}
+
+.kesso-progress-card.is-done .kesso-progress-indicator {
+    background: var(--kesso-primary);
+}
+.kesso-progress-card.is-done .kesso-progress-indicator::after {
+    content: "";
+    width: 3px;
+    height: 7px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(45deg);
+    margin: -1px 0 0 -1px;
+}
+
+.kesso-progress-card.is-failed .kesso-progress-indicator {
+    background: #ef4444;
+}
+.kesso-progress-card.is-failed .kesso-progress-indicator::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background:
+        linear-gradient(#fff,#fff) center/2px 12px no-repeat,
+        linear-gradient(#fff,#fff) center/12px 2px no-repeat;
+    transform: rotate(45deg);
+}
+
+.kesso-modal-actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.kesso-modal-action {
+    text-decoration: none;
+}

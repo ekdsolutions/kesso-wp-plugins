@@ -1,0 +1,1656 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* -------------------------------------------------------------------------- */
+/* Scoped reset / isolation                                                    */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app {
+    --kesso-primary: #137fec;
+    --kesso-bg: #f6f7f8;
+    --kesso-text: #0d141b;
+    --kesso-muted: #4c739a;
+    --kesso-card: #ffffff;
+    --kesso-border: rgba(0, 0, 0, 0.1);
+    --kesso-border-2: rgba(0, 0, 0, 0.1);
+    --kesso-slate-50: #f8fafc;
+    --kesso-slate-100: #f1f5f9;
+    --kesso-slate-200: #e2e8f0;
+    --kesso-slate-300: #cbd5e1;
+    --kesso-slate-600: #475569;
+    --kesso-slate-900: #0f172a;
+    --kesso-shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --kesso-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --kesso-radius-xl: 0.75rem; /* 12px */
+    --kesso-radius-lg: 0.5rem;  /* 8px */
+    --kesso-radius: 0.375rem;
+    --kesso-radius-full: 9999px;
+}
+
+.kesso-access-app,
+.kesso-access-app * {
+    box-sizing: border-box;
+}
+
+.kesso-access-app :where(h1,h2,h3,p,ul,li) {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-access-app :where(button,input,select) {
+    font: inherit;
+}
+
+/* Disable WP-admin visual influence inside the app without breaking globals */
+.kesso-access-app {
+    color: var(--kesso-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: calc(100vh - 32px);
+    border-radius: 16px;
+    padding: 70px 0;
+    position: relative;
+    margin: -20px -20px 0 -2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kesso Banner (sticky top)                                                  */
+/* -------------------------------------------------------------------------- */
+
+.kesso-banner {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: calc(100% + 20px);
+    background: linear-gradient(135deg, rgba(19, 127, 236, 0.95) 0%, rgba(19, 127, 236, 0.98) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    padding: 10px 0;
+}
+
+.kesso-banner-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.kesso-banner-link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+}
+
+.kesso-banner-link:hover {
+    opacity: 0.85;
+    color: #ffffff;
+}
+
+/* Make the WP `.wrap` not fight our layout */
+.kesso-access-app .wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+.kesso-access-app .kesso-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    padding-top: 16px; /* Add space for sticky banner */
+}
+
+/* Reset WordPress admin styles that might interfere */
+.kesso-access-app h1,
+.kesso-access-app h2,
+.kesso-access-app h3,
+.kesso-access-app p {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-access-app .wrap h1 {
+    display: none; /* Hide WordPress default page title */
+}
+
+/* Material Symbols baseline */
+.kesso-access-app .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page heading (matches reference)                                            */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-page-heading {
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.kesso-heading-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-access-app .kesso-brand-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.kesso-access-app .kesso-brand-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--kesso-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kesso-access-app .kesso-brand-icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.kesso-access-app .kesso-brand-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.kesso-access-app .kesso-brand-badge {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--kesso-primary);
+}
+
+.kesso-access-app .kesso-title {
+    font-size: 32px !important; /* Tailwind 5xl */
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--kesso-text) !important;
+    padding: 0 !important;
+}
+
+.kesso-access-app .kesso-subtitle {
+    font-size: 14px !important;
+    color: var(--kesso-muted) !important;
+    max-width: 720px !important;
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cards / sections                                                            */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* matches reference gap-10 */
+}
+
+.kesso-access-app .kesso-card {
+    background: var(--kesso-card);
+    border: 1px solid var(--kesso-border);
+    border-radius: var(--kesso-radius-xl);
+    box-shadow: var(--kesso-shadow-sm);
+    overflow: visible;
+}
+
+.kesso-access-app .kesso-card-header {
+    padding: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: rgba(248, 250, 252, 0.6); /* bg-slate-50/50-ish */
+    overflow: hidden;
+}
+
+.kesso-access-app .kesso-card-header--row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.kesso-access-app .kesso-card-title {
+    font-size: 20px; /* text-xl */
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-icon {
+    color: var(--kesso-primary);
+    font-size: 20px;
+}
+
+.kesso-access-app .kesso-card-meta {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--kesso-muted);
+    white-space: nowrap;
+}
+
+.kesso-access-app .kesso-card-body {
+    padding: 24px;
+    overflow: visible;
+}
+
+.kesso-access-app .kesso-card-body--stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Field grids + controls (Tailwind look)                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-grid {
+    display: grid;
+    gap: 24px; /* gap-6 */
+}
+
+.kesso-access-app .kesso-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kesso-access-app .kesso-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 782px) {
+    .kesso-access-app .kesso-grid-2,
+    .kesso-access-app .kesso-grid-3 { grid-template-columns: 1fr; }
+}
+
+.kesso-access-app .kesso-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-access-app .kesso-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-control {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    border-radius: var(--kesso-radius-lg) !important;
+    border: 1px solid var(--kesso-slate-200) !important;
+    background: #f8fafc !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    max-width: unset !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.kesso-access-app .kesso-control:focus {
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+.kesso-access-app .kesso-select {
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 12px) calc(50% - 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Checkbox styling (shared across the whole page)                              */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1px solid var(--kesso-slate-200);
+    background: #ffffff;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+}
+
+/* WordPress core uses `input[type=checkbox]:checked::before` for its checkmark.
+   We override it (scoped) to avoid double checkmarks and match our design. */
+.kesso-access-app input[type="checkbox"]::before {
+    content: "";
+    width: 3px;
+    height: 6px;
+    border-right: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    transform: rotate(45deg);
+    margin: -1px 0 0 0;
+    display: block;
+}
+
+.kesso-access-app input[type="checkbox"]:checked {
+    background: var(--kesso-primary);
+    border-color: var(--kesso-primary);
+}
+
+.kesso-access-app input[type="checkbox"]:checked::before {
+    border-right-color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.kesso-access-app input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+}
+
+.kesso-access-app input[type="checkbox"]:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Inputs (Tailwind-like)                                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app input[type="text"],
+.kesso-access-app select {
+    width: 100%;
+    max-width: none;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    background: #f8fafc;
+    padding: 10px 12px;
+    font-size: 13px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.kesso-access-app input[type="text"]:focus,
+.kesso-access-app select:focus {
+    outline: none;
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Favicon uploader (pixel-close)                                              */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-favicon-uploader {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 2px dashed var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-xl);
+    background: #ffffff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.kesso-access-app .kesso-favicon-uploader:hover {
+    border-color: rgba(19,127,236,0.5);
+}
+
+.kesso-access-app .kesso-favicon-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--kesso-radius-lg);
+    background: var(--kesso-slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.kesso-access-app .kesso-favicon-uploader:hover .kesso-favicon-icon {
+    color: var(--kesso-primary);
+}
+
+.kesso-access-app .kesso-favicon-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.kesso-access-app .kesso-favicon-symbol {
+    font-size: 32px;
+}
+
+.kesso-access-app .kesso-favicon-copy {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.kesso-access-app .kesso-favicon-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-favicon-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Builder cards (pixel-close)                                                 */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-builder-grid {
+    margin-bottom: 16px;
+}
+
+.kesso-access-app .kesso-builder-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: var(--kesso-radius-xl);
+    border: 2px solid #f1f5f9; /* border-slate-100 */
+    background: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kesso-access-app .kesso-builder-card:hover:not(.kesso-builder-installed):not(.kesso-builder-card--active) {
+    border-color: var(--kesso-slate-200);
+}
+
+.kesso-access-app .kesso-builder-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kesso-access-app .kesso-builder-iconbox {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--kesso-radius-lg);
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.kesso-access-app .kesso-builder-symbol {
+    font-size: 28px;
+    color: #94a3b8; /* default gray */
+    transition: color 0.15s ease;
+}
+
+.kesso-access-app .kesso-builder-symbol--muted {
+    color: #94a3b8;
+}
+
+.kesso-access-app .kesso-builder-card:hover .kesso-builder-symbol,
+.kesso-access-app .kesso-builder-card--active .kesso-builder-symbol {
+    color: var(--kesso-primary);
+}
+
+.kesso-access-app .kesso-builder-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-builder-desc {
+    font-size: 14px;
+    margin-top: 8px;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-builder-check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: var(--kesso-primary);
+    font-size: 22px;
+    display: none !important; /* always hidden unless card is selected */
+}
+
+.kesso-access-app .kesso-builder-card--active {
+    border-color: var(--kesso-primary);
+    background: rgba(19,127,236,0.06); /* bg-primary/5 */
+}
+
+.kesso-access-app .kesso-builder-card--active .kesso-builder-check {
+    display: inline-flex !important; /* only selected card shows check */
+}
+
+.kesso-access-app .kesso-builder-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: none;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--kesso-radius-full);
+    background: rgba(19,127,236,0.12);
+    color: var(--kesso-primary);
+}
+
+.kesso-access-app .kesso-builder-installed {
+    opacity: 0.55;
+    pointer-events: none;
+    cursor: not-allowed;
+    background: #ffffff;
+}
+
+.kesso-access-app .kesso-builder-installed .kesso-builder-badge {
+    display: inline-flex;
+}
+
+/* Bricks ZIP uploader (match favicon uploader style) */
+.kesso-access-app .kesso-upload-uploader {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 2px dashed var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-xl);
+    background: #ffffff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.kesso-access-app .kesso-upload-uploader:hover {
+    border-color: rgba(19,127,236,0.5);
+}
+
+.kesso-access-app .kesso-upload-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--kesso-radius-lg);
+    background: var(--kesso-slate-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.kesso-access-app .kesso-upload-uploader:hover .kesso-upload-icon {
+    color: var(--kesso-primary);
+}
+
+.kesso-access-app .kesso-upload-symbol {
+    font-size: 32px;
+}
+
+.kesso-access-app .kesso-upload-copy {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.kesso-access-app .kesso-upload-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-upload-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-upload-cta {
+    pointer-events: none; /* container click triggers file input via label */
+}
+
+.kesso-access-app .kesso-upload-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Ensure the hidden file input positioning is relative to the label */
+.kesso-access-app .kesso-upload-uploader {
+    position: relative;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Child theme row (pixel-close)                                               */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-child-theme-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: var(--kesso-radius-lg);
+    background: rgba(241,245,249,0.7);
+    margin-top: 16px;
+}
+
+.kesso-access-app .kesso-child-input {
+    width: 20px;
+    height: 20px;
+}
+
+.kesso-access-app .kesso-child-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.kesso-access-app .kesso-child-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-child-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-child-theme-badge {
+    display: none;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--kesso-radius-full);
+    background: rgba(19,127,236,0.12);
+    color: var(--kesso-primary);
+}
+
+.kesso-access-app .kesso-child-theme-row.kesso-child-theme-installed {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.kesso-access-app .kesso-child-theme-row.kesso-child-theme-installed .kesso-child-theme-badge {
+    display: inline-flex;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Plugins grid (pixel-close)                                                  */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-plugins-shell {
+    padding: 16px;
+}
+
+.kesso-access-app .kesso-plugins-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    border-radius: var(--kesso-radius-xl);
+    overflow: hidden;
+}
+
+@media (max-width: 782px) {
+    .kesso-access-app .kesso-plugins-grid { grid-template-columns: 1fr; }
+    .kesso-access-app .kesso-card-header--row { flex-wrap: wrap; }
+}
+
+.kesso-access-app .kesso-plugin-card {
+    background: #ffffff;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kesso-access-app .kesso-plugin-card:not(.kesso-plugin-installed):hover {
+    background: #f8fafc;
+}
+
+.kesso-access-app .kesso-plugin-card:not(.kesso-plugin-installed):focus,
+.kesso-access-app .kesso-plugin-card:not(.kesso-plugin-installed):focus-within {
+    outline: none;
+}
+
+.kesso-access-app .kesso-plugin-card input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    border-radius: 6px;
+}
+
+.kesso-access-app .kesso-plugin-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-plugin-desc {
+    font-size: 12px;
+    margin-top: 4px;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-plugin-card.kesso-plugin-installed {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header actions in plugins card                                              */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-plugins-actions {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin-left: auto;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Buttons (exact SaaS look)                                                   */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    user-select: none;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.kesso-access-app .kesso-btn:active { transform: translateY(1px); }
+
+.kesso-access-app .kesso-btn--secondary {
+    background: #ffffff;
+    border: 1px solid var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-lg);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: var(--kesso-shadow-sm);
+}
+
+.kesso-access-app .kesso-btn--secondary:hover {
+    border-color: rgba(19,127,236,0.35);
+}
+
+.kesso-access-app .kesso-btn--ghost {
+    background: rgba(241,245,249,0.85);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--kesso-radius-lg);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-btn--ghost:hover {
+    background: rgba(226,232,240,0.85);
+}
+
+.kesso-access-app .kesso-btn--primary {
+    padding: 12px 24px;
+    border-radius: var(--kesso-radius-xl);
+    background: var(--kesso-primary);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(19,127,236,0.20);
+}
+
+.kesso-access-app .kesso-btn--primary:hover {
+    background: #0f6fcc;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Footer (glassy, fixed, pixel-close)                                         */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-footer {
+    position: sticky;
+    margin-top: 40px;
+    bottom: 0;
+    border-top: 1px solid var(--kesso-border);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+    padding: 16px 0;
+    border-radius: var(--kesso-radius-xl);
+}
+
+.kesso-access-app .kesso-footer-inner {
+    max-width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px;
+}
+
+.kesso-access-app .kesso-footer-left {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+}
+
+@media (min-width: 783px) {
+    .kesso-access-app .kesso-footer-left { display: flex; }
+}
+
+.kesso-access-app .kesso-footer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kesso-access-app .kesso-footer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kesso-radius-full);
+    background: var(--kesso-primary);
+    animation: kessoPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes kessoPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.65; transform: scale(1.1); }
+}
+
+.kesso-access-app .kesso-footer-label {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-footer-subtitle {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-footer-right {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+@media (min-width: 783px) {
+    .kesso-access-app .kesso-footer-right {
+        width: auto;
+        justify-content: flex-end;
+    }
+}
+
+.kesso-access-app .kesso-footer-progress {
+    display: none;
+    width: 160px;
+    text-align: right;
+}
+
+@media (min-width: 641px) {
+    .kesso-access-app .kesso-footer-progress { display: block; }
+}
+
+.kesso-access-app .kesso-footer-step {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    margin-bottom: 6px;
+}
+
+.kesso-access-app .kesso-footer-bar {
+    width: 128px; /* w-32 */
+    height: 6px;  /* h-1.5 */
+    border-radius: var(--kesso-radius-full);
+    background: var(--kesso-slate-200);
+    overflow: hidden;
+    margin-left: auto;
+}
+
+.kesso-access-app .kesso-footer-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--kesso-primary);
+    transition: width 0.25s ease;
+}
+
+.kesso-access-app .kesso-footer-progress {
+    display: none;
+    width: 160px;
+    text-align: right;
+}
+
+@media (min-width: 641px) {
+    .kesso-access-app .kesso-footer-progress { display: block; }
+}
+
+.kesso-access-app .kesso-footer-step {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    margin-bottom: 6px;
+}
+
+.kesso-access-app .kesso-footer-bar {
+    width: 128px; /* w-32 */
+    height: 6px;  /* h-1.5 */
+    border-radius: var(--kesso-radius-full);
+    background: var(--kesso-slate-200);
+    overflow: hidden;
+    margin-left: auto;
+}
+
+.kesso-access-app .kesso-footer-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--kesso-primary);
+    transition: width 0.25s ease;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Results (keep functionality, match SaaS)                                    */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-results {
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: var(--kesso-radius-xl);
+    border: 1px solid var(--kesso-border);
+    background: #ffffff;
+    box-shadow: var(--kesso-shadow-sm);
+}
+
+.kesso-access-app .kesso-results.success {
+    border-color: rgba(16,185,129,0.35);
+    background: #f0fdf4;
+}
+
+.kesso-access-app .kesso-results.error {
+    border-color: rgba(239,68,68,0.35);
+    background: #fef2f2;
+}
+
+.kesso-access-app .kesso-results-loading {
+    text-align: center;
+}
+
+.kesso-access-app .kesso-loading-spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid #e5e7eb;
+    border-top-color: var(--kesso-primary);
+    border-radius: 50%;
+    animation: kessoSpin 0.9s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes kessoSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Progress modal                                                             */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 100000;
+    padding: 24px;
+}
+
+.kesso-access-app .kesso-modal.is-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kesso-access-app .kesso-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 25, 34, 0.35);
+    backdrop-filter: blur(6px);
+}
+
+.kesso-access-app .kesso-modal-dialog {
+    position: relative;
+    width: min(640px, calc(100vw - 32px));
+    margin: 0;
+    background: #ffffff;
+    border: 1px solid var(--kesso-border);
+    border-radius: var(--kesso-radius-xl);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+    overflow: hidden;
+}
+
+.kesso-access-app .kesso-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: rgba(248, 250, 252, 0.6);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.kesso-access-app .kesso-modal-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    letter-spacing: -0.01em;
+}
+
+.kesso-access-app .kesso-modal-subtitle {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+.kesso-access-app .kesso-modal-close {
+    all: unset;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #64748b;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    opacity: 1;
+}
+
+.kesso-access-app .kesso-modal-close:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.kesso-access-app .kesso-modal-close:not(:disabled):hover {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-modal-body {
+    padding: 20px 24px 24px;
+}
+
+/* Single progress card (animated step name) */
+.kesso-access-app .kesso-progress-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #eef2f7;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.kesso-access-app .kesso-progress-indicator {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.kesso-access-app .kesso-progress-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.kesso-access-app .kesso-progress-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--kesso-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.kesso-access-app .kesso-progress-step {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--kesso-text);
+    letter-spacing: -0.01em;
+}
+
+/* Step name switching animation */
+@keyframes kessoStepSwap {
+    0% { opacity: 0; transform: translateY(6px); }
+    50% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.kesso-access-app .kesso-progress-step.is-switching {
+    animation: kessoStepSwap 420ms ease;
+}
+
+/* Indicator states */
+.kesso-access-app .kesso-progress-card.is-running .kesso-progress-indicator {
+    background: rgba(19,127,236,0.12);
+}
+.kesso-access-app .kesso-progress-card.is-running .kesso-progress-indicator::after {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    border: 2px solid rgba(19,127,236,0.25);
+    border-top-color: var(--kesso-primary);
+    animation: kessoSpin 0.9s linear infinite;
+}
+
+.kesso-access-app .kesso-progress-card.is-done .kesso-progress-indicator {
+    background: var(--kesso-primary);
+}
+.kesso-access-app .kesso-progress-card.is-done .kesso-progress-indicator::after {
+    content: "";
+    width: 3px;
+    height: 7px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(45deg);
+    margin: -1px 0 0 -1px;
+}
+
+.kesso-access-app .kesso-progress-card.is-failed .kesso-progress-indicator {
+    background: #ef4444;
+}
+.kesso-access-app .kesso-progress-card.is-failed .kesso-progress-indicator::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background:
+        linear-gradient(#fff,#fff) center/2px 12px no-repeat,
+        linear-gradient(#fff,#fff) center/12px 2px no-repeat;
+    transform: rotate(45deg);
+}
+
+.kesso-access-app .kesso-modal-actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.kesso-access-app .kesso-modal-action {
+    text-decoration: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Toolbar feature checkbox grid (Kesso Init plugins-grid style)               */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-access-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-xl);
+    overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+    .kesso-access-app .kesso-access-feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.kesso-access-app .kesso-access-feature-card {
+    background: #fff;
+}
+
+.kesso-access-app .kesso-access-feature-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+}
+
+.kesso-access-app .kesso-access-feature-label:hover {
+    background: #f8fafc;
+}
+
+.kesso-access-app .kesso-access-feature-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.kesso-access-app .kesso-access-feature-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--kesso-text);
+}
+
+.kesso-access-app .kesso-access-feature-desc {
+    font-size: 12px;
+    color: var(--kesso-muted);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Collapsible container                                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-collapsible-container {
+    margin-top: 24px;
+}
+
+.kesso-access-app .kesso-collapsible-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--kesso-slate-50, #f8fafc);
+    border: 1px solid var(--kesso-border-2, #e2e8f0);
+    border-radius: var(--kesso-radius-lg, 8px);
+    cursor: pointer;
+    list-style: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-text, #0d141b);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    user-select: none;
+}
+
+.kesso-access-app .kesso-collapsible-summary::-webkit-details-marker {
+    display: none;
+}
+
+.kesso-access-app .kesso-collapsible-summary:hover {
+    background: var(--kesso-slate-100, #f1f5f9);
+    border-color: var(--kesso-border, #e5e7eb);
+}
+
+.kesso-access-app .kesso-collapsible-summary .kesso-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--kesso-muted, #4c739a);
+}
+
+.kesso-access-app .kesso-collapsible-icon {
+    margin-left: auto;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+    color: var(--kesso-muted, #4c739a);
+}
+
+.kesso-access-app .kesso-collapsible-container[open] .kesso-collapsible-icon {
+    transform: rotate(180deg);
+}
+
+.kesso-access-app .kesso-collapsible-content {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--kesso-border-2, #e2e8f0);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Toolbar copy subsection                                                     */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-access-subsection {
+    margin-top: 18px;
+}
+
+.kesso-access-app .kesso-access-subtitle {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kesso-muted);
+    margin-bottom: 10px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Form fields (accessibility plugin specific)                                 */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-access-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 16px;
+}
+
+.kesso-access-app .kesso-access-fields--wide {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+    .kesso-access-app .kesso-access-fields,
+    .kesso-access-app .kesso-access-fields--wide {
+        grid-template-columns: 1fr;
+    }
+}
+
+.kesso-access-app .kesso-access-fullwidth { 
+    grid-column: 1 / -1; 
+}
+
+.kesso-access-app .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kesso-access-app .form-field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--kesso-text);
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.kesso-access-app .kesso-field-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kesso-access-app .kesso-field-wrapper input,
+.kesso-access-app .kesso-field-wrapper select {
+    flex: 1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Info tooltip                                                                */
+/* -------------------------------------------------------------------------- */
+
+.kesso-access-app .kesso-info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: var(--kesso-primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: help;
+    position: relative;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.kesso-access-app .kesso-info-icon:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.20);
+    z-index: 9999;
+}
+
+.kesso-access-app .kesso-info-icon:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 4px;
+    border: 6px solid transparent;
+    border-top-color: #0f172a;
+    z-index: 9999;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Color Picker Component                                                     */
+/* -------------------------------------------------------------------------- */
+
+.kesso-color-picker-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.kesso-color-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.kesso-color-picker-preview {
+    width: 44px;
+    height: 38px;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+                    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #ccc 75%),
+                    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.kesso-color-picker-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: inherit;
+    border-radius: var(--kesso-radius-lg);
+}
+
+.kesso-color-picker-toggle {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    background: #f8fafc;
+    color: var(--kesso-slate-900);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.kesso-color-picker-toggle:hover {
+    border-color: var(--kesso-slate-300);
+    background: #ffffff;
+}
+
+.kesso-color-picker-toggle:focus {
+    outline: none;
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+.kesso-color-picker-dropdown {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    z-index: 9999;
+    background: #ffffff;
+    border: 1px solid var(--kesso-slate-200);
+    border-radius: var(--kesso-radius-xl);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 16px;
+    min-width: 240px;
+    width: 240px;
+}
+
+.kesso-color-picker-spectrum {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    overflow: hidden;
+    cursor: crosshair;
+    margin-bottom: 16px;
+}
+
+.kesso-color-picker-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.kesso-color-picker-pointer {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.kesso-color-picker-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.kesso-color-picker-slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kesso-color-picker-slider-wrapper label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--kesso-slate-600);
+}
+
+.kesso-color-picker-slider {
+    position: relative;
+    width: 200px;
+    height: 20px;
+    border-radius: var(--kesso-radius);
+    border: 1px solid var(--kesso-slate-200);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.kesso-color-picker-slider-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.kesso-color-picker-slider-thumb {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10;
+    background: transparent;
+}
+
+.kesso-color-picker-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.kesso-color-picker-hex,
+.kesso-color-picker-rgba {
+    padding: 8px 10px;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    background: #f8fafc;
+    font-size: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    transition: all 0.15s;
+    width: 200px !important;
+}
+
+.kesso-color-picker-hex:focus,
+.kesso-color-picker-rgba:focus {
+    outline: none;
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+.kesso-color-picker-hex {
+    grid-column: 1 / -1;
+}

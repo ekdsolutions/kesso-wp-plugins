@@ -1,0 +1,507 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* -------------------------------------------------------------------------- */
+/* Scoped reset / isolation                                                    */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app {
+    --kesso-woo-primary: #137fec;
+    --kesso-woo-bg: #f6f7f8;
+    --kesso-woo-text: #0d141b;
+    --kesso-woo-muted: #4c739a;
+    --kesso-woo-card: #ffffff;
+    --kesso-woo-border: rgba(0, 0, 0, 0.1);
+    --kesso-woo-border-2: rgba(0, 0, 0, 0.1);
+    --kesso-woo-slate-50: #f8fafc;
+    --kesso-woo-slate-100: #f1f5f9;
+    --kesso-woo-slate-200: #e2e8f0;
+    --kesso-woo-slate-300: #cbd5e1;
+    --kesso-woo-slate-600: #475569;
+    --kesso-woo-slate-900: #0f172a;
+    --kesso-woo-shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --kesso-woo-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --kesso-woo-radius-xl: 0.75rem; /* 12px */
+    --kesso-woo-radius-lg: 0.5rem;  /* 8px */
+    --kesso-woo-radius: 0.375rem;
+    --kesso-woo-radius-full: 9999px;
+}
+
+.kesso-woo-app,
+.kesso-woo-app * {
+    box-sizing: border-box;
+}
+
+.kesso-woo-app :where(h1,h2,h3,p,ul,li) {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-woo-app :where(button,input,select,textarea) {
+    font: inherit;
+}
+
+/* Disable WP-admin visual influence inside the app */
+.kesso-woo-app {
+    color: var(--kesso-woo-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: calc(100vh - 32px);
+    border-radius: 16px;
+    padding: 70px 0;
+    position: relative;
+    margin: -20px -20px 0 -2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kesso Banner (sticky top)                                                  */
+/* -------------------------------------------------------------------------- */
+
+.kesso-banner {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: calc(100% + 20px);
+    background: linear-gradient(135deg, rgba(19, 127, 236, 0.95) 0%, rgba(19, 127, 236, 0.98) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    padding: 10px 0;
+}
+
+.kesso-banner-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.kesso-banner-link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+}
+
+.kesso-banner-link:hover {
+    opacity: 0.85;
+    color: #ffffff;
+}
+
+.kesso-woo-app .wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+.kesso-woo-app .kesso-woo-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    padding-top: 16px; /* Add space for sticky banner */
+}
+
+.kesso-woo-app h1,
+.kesso-woo-app h2,
+.kesso-woo-app h3,
+.kesso-woo-app p {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-woo-app .wrap h1 {
+    display: none;
+}
+
+/* Material Symbols baseline */
+.kesso-woo-app .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page heading                                                                */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app .kesso-woo-page-heading {
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.kesso-woo-app .kesso-woo-heading-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-woo-app .kesso-woo-title {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--kesso-woo-text) !important;
+}
+
+.kesso-woo-app .kesso-woo-subtitle {
+    font-size: 14px !important;
+    color: var(--kesso-woo-muted) !important;
+    max-width: 720px !important;
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cards / sections                                                            */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app .kesso-woo-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.kesso-woo-app .kesso-woo-card {
+    background: var(--kesso-woo-card);
+    border: 1px solid var(--kesso-woo-border);
+    border-radius: var(--kesso-woo-radius-xl);
+    box-shadow: var(--kesso-woo-shadow-sm);
+    overflow: visible;
+}
+
+.kesso-woo-app .kesso-woo-card-header {
+    padding: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: rgba(248, 250, 252, 0.6);
+    overflow: hidden;
+}
+
+.kesso-woo-app .kesso-woo-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--kesso-woo-text);
+}
+
+.kesso-woo-app .kesso-woo-icon {
+    color: var(--kesso-woo-primary);
+    font-size: 20px;
+}
+
+.kesso-woo-app .kesso-woo-card-body {
+    padding: 24px;
+    overflow: visible;
+}
+
+.kesso-woo-app .kesso-woo-card-body--stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Field grids + controls                                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app .kesso-woo-grid {
+    display: grid;
+    gap: 24px;
+}
+
+.kesso-woo-app .kesso-woo-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kesso-woo-app .kesso-woo-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 782px) {
+    .kesso-woo-app .kesso-woo-grid-2,
+    .kesso-woo-app .kesso-woo-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.kesso-woo-app .kesso-woo-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-woo-app .kesso-woo-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-woo-text);
+}
+
+.kesso-woo-app .kesso-woo-control {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    border-radius: var(--kesso-woo-radius-lg) !important;
+    border: 1px solid var(--kesso-woo-slate-200) !important;
+    background: #f8fafc !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    max-width: unset !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    font-family: inherit;
+}
+
+.kesso-woo-app .kesso-woo-control:focus {
+    border-color: var(--kesso-woo-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+    outline: none;
+}
+
+.kesso-woo-app textarea.kesso-woo-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Toggle Switch                                                               */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app .kesso-woo-toggle-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    cursor: pointer;
+    padding: 16px;
+    border-radius: var(--kesso-woo-radius-lg);
+    border: 1px solid var(--kesso-woo-slate-200);
+    background: #ffffff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.kesso-woo-app .kesso-woo-toggle-label:hover {
+    border-color: var(--kesso-woo-slate-300);
+    background: var(--kesso-woo-slate-50);
+}
+
+.kesso-woo-app .kesso-woo-toggle-checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 48px;
+    height: 28px;
+    border-radius: 9999px;
+    background: var(--kesso-woo-slate-200);
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+    margin: auto 0;
+}
+
+.kesso-woo-app .kesso-woo-toggle-checkbox::before {
+    content: '';
+    position: absolute;
+    height: 21px;
+    width: 21px;
+    border-radius: 50%;
+    background: #ffffff;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.kesso-woo-app .kesso-woo-toggle-checkbox:checked {
+    background: var(--kesso-woo-primary);
+}
+
+.kesso-woo-app .kesso-woo-toggle-checkbox:checked::before {
+    transform: translateX(20px);
+    margin: 0;
+    height: 21px;
+    width: 21px;
+}
+
+.kesso-woo-app .kesso-woo-toggle-checkbox:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(19,127,236,0.20);
+}
+
+.kesso-woo-app .kesso-woo-toggle-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.kesso-woo-app .kesso-woo-toggle-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--kesso-woo-text);
+}
+
+.kesso-woo-app .kesso-woo-toggle-desc {
+    font-size: 13px;
+    color: var(--kesso-woo-muted);
+    line-height: 1.5;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Buttons                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app .kesso-woo-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    user-select: none;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.kesso-woo-app .kesso-woo-btn:active {
+    transform: translateY(1px);
+}
+
+.kesso-woo-app .kesso-woo-btn--primary {
+    padding: 12px 24px;
+    border-radius: var(--kesso-woo-radius-xl);
+    background: var(--kesso-woo-primary);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(19,127,236,0.20);
+}
+
+.kesso-woo-app .kesso-woo-btn--primary:hover {
+    background: #0f6fcc;
+}
+
+.kesso-woo-app .kesso-woo-btn--secondary {
+    background: #ffffff;
+    border: 1px solid var(--kesso-woo-slate-200);
+    border-radius: var(--kesso-woo-radius-lg);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: var(--kesso-woo-shadow-sm);
+    color: var(--kesso-woo-text);
+}
+
+.kesso-woo-app .kesso-woo-btn--secondary:hover {
+    border-color: rgba(19,127,236,0.35);
+}
+
+.kesso-woo-app .kesso-woo-btn--ghost {
+    background: rgba(241,245,249,0.85);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--kesso-woo-radius-lg);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--kesso-woo-muted);
+}
+
+.kesso-woo-app .kesso-woo-btn--ghost:hover {
+    background: rgba(226,232,240,0.85);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Footer                                                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-woo-app .kesso-woo-footer {
+    position: sticky;
+    margin-top: 40px;
+    bottom: 0;
+    border-top: 1px solid var(--kesso-woo-border);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+    padding: 16px 0;
+    border-radius: var(--kesso-woo-radius-xl);
+}
+
+.kesso-woo-app .kesso-woo-glass-footer {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+}
+
+.kesso-woo-app .kesso-woo-footer-inner {
+    max-width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px;
+}
+
+.kesso-woo-app .kesso-woo-footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: max-content;
+}
+
+.kesso-woo-app .kesso-woo-footer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kesso-woo-app .kesso-woo-footer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kesso-woo-radius-full);
+    background: var(--kesso-woo-primary);
+    animation: kessoWooPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes kessoWooPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.65; transform: scale(1.1); }
+}
+
+.kesso-woo-app .kesso-woo-footer-label {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--kesso-woo-text);
+}
+
+.kesso-woo-app .kesso-woo-footer-subtitle {
+    font-size: 12px;
+    color: var(--kesso-woo-muted);
+}
+
+.kesso-woo-app .kesso-woo-footer-right {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: flex-end;
+}
+
+@media (max-width: 782px) {
+    .kesso-woo-app .kesso-woo-footer-left {
+        display: none;
+    }
+}
+

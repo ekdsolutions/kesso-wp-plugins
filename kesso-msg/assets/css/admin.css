@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* -------------------------------------------------------------------------- */
+/* Scoped reset / isolation                                                    */
+/* -------------------------------------------------------------------------- */
+
+.kesso-msg-app {
+    --kesso-msg-primary: #137fec;
+    --kesso-msg-bg: #f6f7f8;
+    --kesso-msg-text: #0d141b;
+    --kesso-msg-muted: #4c739a;
+    --kesso-msg-card: #ffffff;
+    --kesso-msg-border: #e5e7eb;
+    --kesso-msg-border-2: #e2e8f0;
+    --kesso-msg-slate-50: #f8fafc;
+    --kesso-msg-slate-100: #f1f5f9;
+    --kesso-msg-slate-200: #e2e8f0;
+    --kesso-msg-slate-300: #cbd5e1;
+    --kesso-msg-shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --kesso-msg-shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+    --kesso-msg-radius-xl: 0.75rem; /* 12px */
+    --kesso-msg-radius-lg: 0.5rem;  /* 8px */
+    --kesso-msg-radius: 0.375rem;
+    --kesso-msg-radius-full: 9999px;
+}
+
+.kesso-msg-app,
+.kesso-msg-app * {
+    box-sizing: border-box;
+}
+
+.kesso-msg-app :where(h1,h2,h3,p,ul,li) {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-msg-app :where(button,input,select,textarea) {
+    font: inherit;
+}
+
+/* Disable WP-admin visual influence inside the app */
+.kesso-msg-app {
+    color: var(--kesso-msg-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: calc(100vh - 32px);
+    border-radius: 16px;
+    padding: 70px 0;
+    position: relative;
+    margin: -20px -20px 0 -2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kesso Banner (sticky top)                                                  */
+/* -------------------------------------------------------------------------- */
+
+.kesso-banner {
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: calc(100% + 20px);
+    background: linear-gradient(135deg, rgba(19, 127, 236, 0.95) 0%, rgba(19, 127, 236, 0.98) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    padding: 10px 0;
+}
+
+.kesso-banner-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.kesso-banner-link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+}
+
+.kesso-banner-link:hover {
+    opacity: 0.85;
+    color: #ffffff;
+}
+
+.kesso-msg-app .wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+.kesso-msg-app .kesso-msg-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    padding-top: 16px; /* Add space for sticky banner */
+}
+
+.kesso-msg-app h1,
+.kesso-msg-app h2,
+.kesso-msg-app h3,
+.kesso-msg-app p {
+    margin: 0;
+    padding: 0;
+}
+
+.kesso-msg-app .wrap h1 {
+    display: none;
+}
+
+/* Material Symbols baseline */
+.kesso-msg-app .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page heading                                                                */
+/* -------------------------------------------------------------------------- */
+
+.kesso-msg-app .kesso-msg-page-heading {
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.kesso-msg-app .kesso-msg-heading-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kesso-msg-app .kesso-msg-title {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.04em !important;
+    color: var(--kesso-msg-text) !important;
+    padding: 0 !important;
+}
+
+.kesso-msg-app .kesso-msg-subtitle {
+    font-size: 14px !important;
+    color: var(--kesso-msg-muted) !important;
+    max-width: 720px !important;
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cards / sections                                                            */
+/* -------------------------------------------------------------------------- */
+
+.kesso-msg-app .kesso-msg-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.kesso-msg-app .kesso-msg-card {
+    background: var(--kesso-msg-card);
+    border: 1px solid var(--kesso-msg-border);
+    border-radius: var(--kesso-msg-radius-xl);
+    box-shadow: var(--kesso-msg-shadow-sm);
+    overflow: visible;
+}
+
+.kesso-msg-app .kesso-msg-card-header {
+    padding: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: rgba(248, 250, 252, 0.6);
+    overflow: hidden;
+}
+
+.kesso-msg-app .kesso-msg-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--kesso-msg-text);
+}
+
+.kesso-msg-app .kesso-msg-icon {
+    color: var(--kesso-msg-primary);
+    font-size: 20px;
+}
+
+.kesso-msg-app .kesso-msg-card-body {
+    padding: 24px;
+    overflow: visible;
+}
+
+.kesso-msg-app .kesso-msg-card-body--stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Feature Grid (Checkbox Grid)                                               */
+/* -------------------------------------------------------------------------- */
+
+.kesso-msg-app .kesso-msg-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 782px) {
+    .kesso-msg-app .kesso-msg-feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.kesso-msg-app .kesso-msg-feature-card {
+    background: #f8fafc;
+    border: 1px solid var(--kesso-msg-slate-200);
+    border-radius: var(--kesso-msg-radius-lg);
+    padding: 16px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.kesso-msg-app .kesso-msg-feature-card:hover {
+    border-color: rgba(19, 127, 236, 0.25);
+    background: #ffffff;
+}
+
+.kesso-msg-app .kesso-msg-feature-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.kesso-msg-app .kesso-msg-feature-checkbox {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: var(--kesso-msg-primary);
+}
+
+.kesso-msg-app .kesso-msg-feature-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.kesso-msg-app .kesso-msg-feature-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--kesso-msg-text);
+}
+
+.kesso-msg-app .kesso-msg-feature-desc {
+    font-size: 12px;
+    color: var(--kesso-msg-muted);
+    line-height: 1.4;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Buttons                                                                     */
+/* -------------------------------------------------------------------------- */
+
+.kesso-msg-app .kesso-msg-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    user-select: none;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.kesso-msg-app .kesso-msg-btn:active {
+    transform: translateY(1px);
+}
+
+.kesso-msg-app .kesso-msg-btn--primary {
+    padding: 12px 24px;
+    border-radius: var(--kesso-msg-radius-xl);
+    background: var(--kesso-msg-primary);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(19,127,236,0.20);
+}
+
+.kesso-msg-app .kesso-msg-btn--primary:hover {
+    background: #0f6fcc;
+}
+
+.kesso-msg-app .kesso-msg-btn--ghost {
+    background: rgba(241,245,249,0.85);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--kesso-msg-radius-lg);
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--kesso-msg-muted);
+}
+
+.kesso-msg-app .kesso-msg-btn--ghost:hover {
+    background: rgba(226,232,240,0.85);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Footer                                                                      */
+/* -------------------------------------------------------------------------- */
+
+.kesso-msg-app .kesso-msg-footer {
+    position: sticky;
+    margin-top: 40px;
+    bottom: 0;
+    border-top: 1px solid var(--kesso-msg-border);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+    padding: 16px 0;
+    border-radius: var(--kesso-msg-radius-xl);
+}
+
+.kesso-msg-app .kesso-msg-glass-footer {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+}
+
+.kesso-msg-app .kesso-msg-footer-inner {
+    max-width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 24px;
+}
+
+.kesso-msg-app .kesso-msg-footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kesso-msg-app .kesso-msg-footer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kesso-msg-app .kesso-msg-footer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--kesso-msg-radius-full);
+    background: var(--kesso-msg-primary);
+    animation: kessoMsgPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes kessoMsgPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.65; transform: scale(1.1); }
+}
+
+.kesso-msg-app .kesso-msg-footer-label {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--kesso-msg-text);
+}
+
+.kesso-msg-app .kesso-msg-footer-subtitle {
+    font-size: 12px;
+    color: var(--kesso-msg-muted);
+}
+
+.kesso-msg-app .kesso-msg-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
