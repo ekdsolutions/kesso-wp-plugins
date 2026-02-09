@@ -428,7 +428,7 @@ class Kesso_Init {
         return array(
             array(
                 'slug'        => 'kesso-access',
-                'name'        => 'Kesso Accessibility',
+                'name'        => '🧀 Kesso Accessibility',
                 'description' => 'Accessibility widget and tools for WordPress.',
                 'source'      => 'github',
                 'file'        => 'kesso-access/kesso-access.php',
@@ -437,7 +437,7 @@ class Kesso_Init {
             ),
             array(
                 'slug'        => 'kesso-cookies',
-                'name'        => 'Kesso Cookies',
+                'name'        => '🧀 Kesso Cookies',
                 'description' => 'Cookie consent banner and management.',
                 'source'      => 'github',
                 'file'        => 'kesso-cookies/kesso-cookies.php',
@@ -446,7 +446,7 @@ class Kesso_Init {
             ),
             array(
                 'slug'        => 'kesso-woo',
-                'name'        => 'Kesso WooCommerce',
+                'name'        => '🧀 Kesso WooCommerce',
                 'description' => 'WooCommerce utilities and enhancements.',
                 'source'      => 'github',
                 'file'        => 'kesso-woo/kesso-woo.php',
@@ -455,7 +455,7 @@ class Kesso_Init {
             ),
             array(
                 'slug'        => 'kesso-msg',
-                'name'        => 'Kesso Messages',
+                'name'        => '🧀 Kesso Messages',
                 'description' => 'Admin notice collector and manager.',
                 'source'      => 'github',
                 'file'        => 'kesso-msg/kesso-msg.php',

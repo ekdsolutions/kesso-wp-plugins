@@ -898,7 +898,6 @@
 }
 
 .kesso-plugin-github-link {
-    margin-left: auto;
     color: var(--kesso-muted);
     text-decoration: none;
     opacity: 0.6;
