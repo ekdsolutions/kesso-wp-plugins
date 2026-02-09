@@ -382,4 +382,246 @@ class Kesso_Init_Plugin_Service {
 
         return true;
     }
+
+    /**
+     * Install a plugin from GitHub
+     *
+     * @param string $plugin_slug Plugin slug (directory name in GitHub).
+     * @param string $github_repo GitHub repository (e.g., 'username/kesso-wp-plugins').
+     * @param string $branch Branch name (default: 'master').
+     * @return array|WP_Error Result with status: 'installed', 'activated', 'skipped', or 'failed'.
+     */
+    public function install_github_plugin( $plugin_slug, $github_repo = 'ekdsolutions/kesso-wp-plugins', $branch = 'master' ) {
+        // Ensure required files are loaded
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        require_once KESSO_INIT_PATH . 'includes/services/class-kesso-init-silent-upgrader-skin.php';
+
+        // Initialize filesystem
+        global $wp_filesystem;
+        if ( empty( $wp_filesystem ) ) {
+            require_once ABSPATH . '/wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+
+        // Check if already installed - try to find the plugin file
+        $plugin_file = $this->find_plugin_file( $plugin_slug, $plugin_slug . '/' . $plugin_slug . '.php' );
+        
+        if ( ! is_wp_error( $plugin_file ) && kesso_init_is_plugin_installed( $plugin_file ) ) {
+            // Try to activate if not active
+            if ( ! kesso_init_is_plugin_active( $plugin_file ) ) {
+                $activate_result = activate_plugin( $plugin_file );
+                if ( ! is_wp_error( $activate_result ) ) {
+                    $this->enable_plugin_auto_update( $plugin_slug, $plugin_file );
+                    return array(
+                        'status' => 'activated',
+                        'slug'   => $plugin_slug,
+                        'name'   => $plugin_slug,
+                    );
+                }
+            } else {
+                $this->enable_plugin_auto_update( $plugin_slug, $plugin_file );
+                return array(
+                    'status' => 'skipped',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                );
+            }
+        }
+
+        // Download from GitHub
+        $download_url = sprintf(
+            'https://github.com/%s/archive/refs/heads/%s.zip',
+            $github_repo,
+            $branch
+        );
+
+        // Set timeout
+        add_filter( 'http_request_timeout', array( $this, 'get_plugin_download_timeout' ), 999 );
+        add_filter( 'http_request_args', array( $this, 'set_plugin_download_args' ), 999 );
+
+        try {
+            // Download the repository ZIP
+            $temp_file = download_url( $download_url );
+            
+            if ( is_wp_error( $temp_file ) ) {
+                return array(
+                    'status' => 'failed',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                    'error'  => sprintf( __( 'Failed to download from GitHub: %s', 'kesso-init' ), $temp_file->get_error_message() ),
+                );
+            }
+
+            // Extract the ZIP using WP_Filesystem
+            $unzip_path = $wp_filesystem->wp_content_dir() . 'plugins/';
+            $result = unzip_file( $temp_file, $unzip_path );
+
+            if ( is_wp_error( $result ) ) {
+                @unlink( $temp_file );
+                return array(
+                    'status' => 'failed',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                    'error'  => sprintf( __( 'Failed to extract ZIP: %s', 'kesso-init' ), $result->get_error_message() ),
+                );
+            }
+
+            // Clean up temp file
+            @unlink( $temp_file );
+
+            // The extracted folder will be named like 'kesso-wp-plugins-master'
+            // We need to move the specific plugin folder to the correct location
+            $repo_name = basename( $github_repo );
+            $extracted_folder = $unzip_path . $repo_name . '-' . $branch;
+            $plugin_source = $extracted_folder . '/' . $plugin_slug;
+            $plugin_dest = $unzip_path . $plugin_slug;
+
+            // Check if plugin folder exists in extracted ZIP
+            if ( ! $wp_filesystem->exists( $plugin_source ) ) {
+                // Clean up extracted folder
+                if ( $wp_filesystem->exists( $extracted_folder ) ) {
+                    $wp_filesystem->rmdir( $extracted_folder, true );
+                }
+                return array(
+                    'status' => 'failed',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                    'error'  => sprintf( __( 'Plugin folder "%s" not found in repository.', 'kesso-init' ), $plugin_slug ),
+                );
+            }
+
+            // Move plugin folder to correct location using WP_Filesystem
+            if ( $wp_filesystem->exists( $plugin_dest ) ) {
+                $wp_filesystem->rmdir( $plugin_dest, true );
+            }
+
+            // Use WP_Filesystem to move the directory
+            if ( ! $wp_filesystem->move( $plugin_source, $plugin_dest, true ) ) {
+                // Clean up
+                if ( $wp_filesystem->exists( $extracted_folder ) ) {
+                    $wp_filesystem->rmdir( $extracted_folder, true );
+                }
+                return array(
+                    'status' => 'failed',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                    'error'  => __( 'Failed to move plugin folder to plugins directory.', 'kesso-init' ),
+                );
+            }
+
+            // Clean up extracted folder
+            if ( $wp_filesystem->exists( $extracted_folder ) ) {
+                $wp_filesystem->rmdir( $extracted_folder, true );
+            }
+
+            // Verify plugin directory exists
+            $plugin_dir = $wp_filesystem->wp_content_dir() . 'plugins/' . $plugin_slug . '/';
+            if ( ! $wp_filesystem->exists( $plugin_dir ) ) {
+                return array(
+                    'status' => 'failed',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                    'error'  => sprintf( __( 'Plugin directory not found after installation: %s', 'kesso-init' ), $plugin_dir ),
+                );
+            }
+
+            // Clear plugin cache so WordPress recognizes the new plugin
+            wp_cache_delete( 'plugins', 'plugins' );
+            delete_site_transient( 'update_plugins' );
+            
+            // Use the expected plugin file path
+            // WordPress will recognize it even if not in cache yet
+            $plugin_file = $plugin_slug . '/' . $plugin_slug . '.php';
+            
+            // Verify the main plugin file exists on filesystem
+            $plugin_path = $wp_filesystem->wp_content_dir() . 'plugins/' . $plugin_file;
+            if ( ! $wp_filesystem->exists( $plugin_path ) ) {
+                // Try to find the actual plugin file using get_plugins()
+                $found_file = $this->find_plugin_file( $plugin_slug, $plugin_file );
+                if ( is_wp_error( $found_file ) ) {
+                    return array(
+                        'status' => 'failed',
+                        'slug'   => $plugin_slug,
+                        'name'   => $plugin_slug,
+                        'error'  => sprintf( __( 'Plugin installed but main file "%s" not found in plugin directory.', 'kesso-init' ), $plugin_file ),
+                    );
+                }
+                $plugin_file = $found_file;
+            }
+
+            // Activate plugin
+            $activate_result = activate_plugin( $plugin_file );
+            if ( is_wp_error( $activate_result ) ) {
+                return array(
+                    'status' => 'installed',
+                    'slug'   => $plugin_slug,
+                    'name'   => $plugin_slug,
+                    'error'  => sprintf( __( 'Installed but activation failed: %s', 'kesso-init' ), $activate_result->get_error_message() ),
+                );
+            }
+
+            // Enable auto-updates
+            $this->enable_plugin_auto_update( $plugin_slug, $plugin_file );
+
+            return array(
+                'status' => 'activated',
+                'slug'   => $plugin_slug,
+                'name'   => $plugin_slug,
+            );
+
+        } catch ( Exception $e ) {
+            return array(
+                'status' => 'failed',
+                'slug'   => $plugin_slug,
+                'name'   => $plugin_slug,
+                'error'  => sprintf( __( 'Unexpected error: %s', 'kesso-init' ), $e->getMessage() ),
+            );
+        } finally {
+            // Remove timeout filters
+            remove_filter( 'http_request_timeout', array( $this, 'get_plugin_download_timeout' ), 999 );
+            remove_filter( 'http_request_args', array( $this, 'set_plugin_download_args' ), 999 );
+        }
+    }
+
+    /**
+     * Delete directory recursively
+     *
+     * @param string $dir Directory path.
+     * @return bool
+     */
+    private function delete_directory( $dir ) {
+        global $wp_filesystem;
+        
+        if ( empty( $wp_filesystem ) ) {
+            require_once ABSPATH . '/wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+        
+        if ( $wp_filesystem && method_exists( $wp_filesystem, 'rmdir' ) ) {
+            return $wp_filesystem->rmdir( $dir, true );
+        }
+        
+        // Fallback to direct filesystem operations if WP_Filesystem not available
+        if ( ! file_exists( $dir ) ) {
+            return true;
+        }
+        
+        if ( ! is_dir( $dir ) ) {
+            return unlink( $dir );
+        }
+        
+        $files = array_diff( scandir( $dir ), array( '.', '..' ) );
+        foreach ( $files as $file ) {
+            $file_path = $dir . '/' . $file;
+            if ( is_dir( $file_path ) ) {
+                $this->delete_directory( $file_path );
+            } else {
+                unlink( $file_path );
+            }
+        }
+        
+        return rmdir( $dir );
+    }
 }

@@ -121,6 +121,27 @@ class Kesso_Init_Admin_Page {
             $plugins_with_status[] = $plugin;
         }
 
+        // Get Kesso plugins with status
+        $kesso_plugins = $kesso->get_kesso_plugin_list();
+        $kesso_plugins_with_status = array();
+        foreach ( $kesso_plugins as $plugin ) {
+            // Check by file path first
+            $plugin['installed'] = kesso_init_is_plugin_installed( $plugin['file'] );
+            $plugin['active']    = kesso_init_is_plugin_active( $plugin['file'] );
+            
+            // If not found by file, try to find by slug
+            if ( ! $plugin['installed'] && ! empty( $plugin['slug'] ) ) {
+                $found_file = $this->find_plugin_by_slug( $plugin['slug'] );
+                if ( $found_file ) {
+                    $plugin['installed'] = kesso_init_is_plugin_installed( $found_file );
+                    $plugin['active']    = kesso_init_is_plugin_active( $found_file );
+                    $plugin['file']      = $found_file; // Update to actual file path
+                }
+            }
+            
+            $kesso_plugins_with_status[] = $plugin;
+        }
+
         // Localize script with data
         wp_localize_script(
             'kesso-init-admin',
@@ -130,6 +151,7 @@ class Kesso_Init_Admin_Page {
                 'nonce'        => wp_create_nonce( 'wp_rest' ),
                 'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
                 'plugins'      => $plugins_with_status,
+                'kessoPlugins' => $kesso_plugins_with_status,
                 'languages'    => kesso_init_get_available_languages(),
                 'timezones'    => $kesso->get_timezone_list(),
                 'dateFormats'  => $kesso->get_date_formats(),

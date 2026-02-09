@@ -171,7 +171,7 @@ class Kesso_Cookies_Admin {
         register_setting( 'kesso_cookies_settings', 'kesso_cookies_settings_border_color', array(
             'type'              => 'string',
             'sanitize_callback' => array( $this, 'sanitize_color' ),
-            'default'           => '#000000',
+            'default'           => 'rgba(0, 0, 0, 0.1)',
         ) );
     }
 

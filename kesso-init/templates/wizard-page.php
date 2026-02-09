@@ -191,6 +191,29 @@ if ( ! defined( 'ABSPATH' ) ) {
                             </div>
                         </div>
                     </section>
+
+                    <!-- Kesso Plugins -->
+                    <section class="kesso-card">
+                        <div class="kesso-card-header kesso-card-header--row">
+                            <h2 class="kesso-card-title">
+                                <span class="material-symbols-outlined kesso-icon" aria-hidden="true">code</span>
+                                <?php esc_html_e( 'Kesso Plugins', 'kesso-init' ); ?>
+                            </h2>
+
+                            <div class="kesso-plugins-actions">
+                                <button type="button" class="kesso-btn kesso-btn--ghost" id="kesso-select-all-kesso"><?php esc_html_e( 'Select all', 'kesso-init' ); ?></button>
+                                <button type="button" class="kesso-btn kesso-btn--ghost" id="kesso-clear-selection-kesso"><?php esc_html_e( 'Clear', 'kesso-init' ); ?></button>
+                            </div>
+
+                            <span class="kesso-card-meta" id="kesso-kesso-plugin-count">0 <?php esc_html_e( 'selected', 'kesso-init' ); ?></span>
+                        </div>
+
+                        <div class="kesso-card-body kesso-plugins-shell">
+                            <div class="kesso-plugins-grid" id="kesso-kesso-plugins-grid">
+                                <!-- Kesso Plugins injected by admin.js -->
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
                 <div id="kesso-results" class="kesso-results" style="display:none;"></div>

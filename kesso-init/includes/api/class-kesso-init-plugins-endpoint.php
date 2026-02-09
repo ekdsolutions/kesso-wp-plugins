@@ -82,6 +82,38 @@ class Kesso_Init_Plugins_Endpoint {
                 'permission_callback' => array( $this, 'check_permission' ),
             )
         );
+
+        register_rest_route(
+            Kesso_Init_Rest_Controller::NAMESPACE,
+            '/plugins/install-github',
+            array(
+                'methods'             => WP_REST_Server::CREATABLE,
+                'callback'            => array( $this, 'install_github_plugin' ),
+                'permission_callback' => array( $this, 'check_permission' ),
+                'args'                => array(
+                    'slug' => array(
+                        'required'          => true,
+                        'type'              => 'string',
+                        'description'       => __( 'Plugin slug to install from GitHub.', 'kesso-init' ),
+                        'sanitize_callback' => 'sanitize_text_field',
+                    ),
+                    'github_repo' => array(
+                        'required'          => false,
+                        'type'              => 'string',
+                        'description'       => __( 'GitHub repository (e.g., username/repo).', 'kesso-init' ),
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'default'           => 'ekdsolutions/kesso-wp-plugins',
+                    ),
+                    'branch' => array(
+                        'required'          => false,
+                        'type'              => 'string',
+                        'description'       => __( 'Branch name.', 'kesso-init' ),
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'default'           => 'master',
+                    ),
+                ),
+            )
+        );
     }
 
     /**
@@ -267,6 +299,63 @@ class Kesso_Init_Plugins_Endpoint {
         }
 
         return false;
+    }
+
+    /**
+     * Install a plugin from GitHub
+     *
+     * @param WP_REST_Request $request Request object.
+     * @return WP_REST_Response
+     */
+    public function install_github_plugin( $request ) {
+        $slug = $request->get_param( 'slug' );
+        $github_repo = $request->get_param( 'github_repo' ) ?: 'ekdsolutions/kesso-wp-plugins';
+        $branch = $request->get_param( 'branch' ) ?: 'master';
+
+        if ( empty( $slug ) ) {
+            return rest_ensure_response(
+                kesso_init_api_response(
+                    false,
+                    __( 'No plugin slug specified.', 'kesso-init' )
+                )
+            );
+        }
+
+        $result = $this->kesso->get_plugin_service()->install_github_plugin( $slug, $github_repo, $branch );
+
+        if ( is_wp_error( $result ) ) {
+            return rest_ensure_response(
+                kesso_init_api_response(
+                    false,
+                    $result->get_error_message(),
+                    array( 'error_code' => $result->get_error_code() )
+                )
+            );
+        }
+
+        $message = '';
+        switch ( $result['status'] ) {
+            case 'activated':
+                $message = sprintf( __( '%s installed and activated successfully.', 'kesso-init' ), $result['name'] );
+                break;
+            case 'installed':
+                $message = sprintf( __( '%s installed successfully.', 'kesso-init' ), $result['name'] );
+                break;
+            case 'skipped':
+                $message = sprintf( __( '%s was already installed.', 'kesso-init' ), $result['name'] );
+                break;
+            case 'failed':
+                $message = sprintf( __( '%s installation failed: %s', 'kesso-init' ), $result['name'], $result['error'] ?? __( 'Unknown error', 'kesso-init' ) );
+                break;
+        }
+
+        return rest_ensure_response(
+            kesso_init_api_response(
+                $result['status'] !== 'failed',
+                $message,
+                $result
+            )
+        );
     }
 }
 

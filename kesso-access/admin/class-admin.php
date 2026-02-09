@@ -519,7 +519,7 @@ class Kesso_Admin {
 			'id'    => 'kesso_widget_border_color',
 			'title' => __( 'Border Color', 'kesso-widget' ),
 			'type'  => 'color',
-			'std'   => '#000000',
+			'std'   => 'rgba(0, 0, 0, 0.1)',
 			'sanitize_callback' => [ $this, 'sanitize_color' ],
 		];
 

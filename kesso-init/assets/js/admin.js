@@ -15,6 +15,8 @@
     const resultsDiv = document.getElementById('kesso-results');
     const pluginsGrid = document.getElementById('kesso-plugins-grid');
     const pluginCount = document.getElementById('kesso-plugin-count');
+    const kessoPluginsGrid = document.getElementById('kesso-kesso-plugins-grid');
+    const kessoPluginCount = document.getElementById('kesso-kesso-plugin-count');
     const progressModal = document.getElementById('kesso-progress-modal');
     const progressModalClose = document.getElementById('kesso-progress-close');
     const progressSubtitle = document.getElementById('kesso-progress-subtitle');
@@ -42,6 +44,7 @@
         populateTimeFormats();
         populateWeekDays();
         populatePlugins();
+        populateKessoPlugins();
         populateCurrentSettings();
         checkBuilderStatus();
         checkChildThemeStatus();
@@ -50,8 +53,10 @@
         setupFormSubmit();
         setupBuilderSelect();
         setupSelectAllButtons();
+        setupKessoSelectAllButtons();
         setupApplyButton();
         updatePluginCount();
+        updateKessoPluginCount();
     }
 
     /**
@@ -415,6 +420,30 @@
     }
 
     /**
+     * Setup select all / clear selection buttons for Kesso plugins
+     */
+    function setupKessoSelectAllButtons() {
+        const selectAllBtn = document.getElementById('kesso-select-all-kesso');
+        const clearBtn = document.getElementById('kesso-clear-selection-kesso');
+        
+        if (selectAllBtn && kessoPluginsGrid) {
+            selectAllBtn.addEventListener('click', function() {
+                const checkboxes = kessoPluginsGrid.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+                checkboxes.forEach(cb => cb.checked = true);
+                updateKessoPluginCount();
+            });
+        }
+        
+        if (clearBtn && kessoPluginsGrid) {
+            clearBtn.addEventListener('click', function() {
+                const checkboxes = kessoPluginsGrid.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+                checkboxes.forEach(cb => cb.checked = false);
+                updateKessoPluginCount();
+            });
+        }
+    }
+
+    /**
      * Update plugin count
      */
     function updatePluginCount() {
@@ -422,6 +451,113 @@
         
         const checked = pluginsGrid.querySelectorAll('input[type="checkbox"]:checked:not(:disabled)').length;
         pluginCount.textContent = `${checked} selected`;
+    }
+
+    /**
+     * Update Kesso plugin count
+     */
+    function updateKessoPluginCount() {
+        if (!kessoPluginCount || !kessoPluginsGrid) return;
+        
+        const checked = kessoPluginsGrid.querySelectorAll('input[type="checkbox"]:checked:not(:disabled)').length;
+        kessoPluginCount.textContent = `${checked} selected`;
+    }
+
+    /**
+     * Populate Kesso plugins grid
+     */
+    function populateKessoPlugins() {
+        if (!kessoPluginsGrid || !kessoInit.kessoPlugins) return;
+
+        kessoPluginsGrid.innerHTML = '';
+
+        kessoInit.kessoPlugins.forEach(plugin => {
+            const item = document.createElement('div');
+            item.className = 'kesso-plugin-card';
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            
+            // Check if plugin is installed/active
+            const isInstalled = plugin.installed || false;
+            const isActive = plugin.active || false;
+            
+            if (isInstalled || isActive) {
+                item.classList.add('kesso-plugin-installed');
+            }
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `kesso-plugin-${plugin.slug}`;
+            checkbox.name = 'kesso_plugins[]';
+            checkbox.value = plugin.slug;
+            checkbox.dataset.githubRepo = plugin.github_repo || 'ekdsolutions/kesso-wp-plugins';
+            checkbox.dataset.githubUrl = plugin.github_url || '';
+            checkbox.disabled = isInstalled || isActive;
+
+            const text = document.createElement('div');
+            text.className = 'kesso-plugin-text';
+            
+            const name = document.createElement('div');
+            name.className = 'kesso-plugin-name';
+            
+            // Create text node for plugin name
+            let nameText = plugin.name;
+            if (isActive) {
+                nameText += ' (Active)';
+            } else if (isInstalled) {
+                nameText += ' (Installed)';
+            }
+            name.appendChild(document.createTextNode(nameText));
+            
+            const desc = document.createElement('div');
+            desc.className = 'kesso-plugin-desc';
+            desc.textContent = plugin.description;
+
+            // Add GitHub link if available
+            if (plugin.github_url) {
+                const githubLink = document.createElement('a');
+                githubLink.href = plugin.github_url;
+                githubLink.target = '_blank';
+                githubLink.rel = 'noopener noreferrer';
+                githubLink.className = 'kesso-plugin-github-link';
+                githubLink.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">open_in_new</span>';
+                githubLink.title = 'View on GitHub';
+                githubLink.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+                name.appendChild(githubLink);
+            }
+
+            text.appendChild(name);
+            text.appendChild(desc);
+
+            item.appendChild(checkbox);
+            item.appendChild(text);
+            kessoPluginsGrid.appendChild(item);
+
+            // Update count when checkbox changes
+            checkbox.addEventListener('change', updateKessoPluginCount);
+
+            // Make the whole card clickable to toggle the checkbox (unless disabled)
+            const toggle = () => {
+                if (checkbox.disabled) return;
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            };
+
+            item.addEventListener('click', (e) => {
+                // If user clicked the checkbox itself or the GitHub link, let the browser handle it.
+                if (e.target && (e.target.tagName === 'INPUT' || e.target.closest('a'))) return;
+                toggle();
+            });
+
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggle();
+                }
+            });
+        });
     }
 
     /**
@@ -824,6 +960,7 @@
         const formData = new FormData(form);
         const data = {
             plugins: [],
+            kessoPlugins: [],
             builder: '',
             install_child_theme: false,
             settings: {}
@@ -833,6 +970,16 @@
         const pluginCheckboxes = form.querySelectorAll('input[name="plugins[]"]:checked:not(:disabled)');
         pluginCheckboxes.forEach(cb => {
             data.plugins.push(cb.value);
+        });
+
+        // Collect Kesso plugins
+        const kessoPluginCheckboxes = form.querySelectorAll('input[name="kesso_plugins[]"]:checked:not(:disabled)');
+        kessoPluginCheckboxes.forEach(cb => {
+            data.kessoPlugins.push({
+                slug: cb.value,
+                github_repo: cb.dataset.githubRepo || 'ekdsolutions/kesso-wp-plugins',
+                github_url: cb.dataset.githubUrl || ''
+            });
         });
 
         // Get builder
@@ -879,7 +1026,7 @@
         showProgressModal({
             hasSettings: true,
             hasBuilder: !!data.builder || !!data.install_child_theme,
-            hasPlugins: Array.isArray(data.plugins) && data.plugins.length > 0,
+            hasPlugins: (Array.isArray(data.plugins) && data.plugins.length > 0) || (Array.isArray(data.kessoPlugins) && data.kessoPlugins.length > 0),
         });
 
         // Process operations sequentially: settings/theme first, then plugins one by one
@@ -892,6 +1039,12 @@
     async function processOperationsSequentially(data) {
         const results = {
             plugins: {
+                installed: [],
+                activated: [],
+                skipped: [],
+                failed: []
+            },
+            kessoPlugins: {
                 installed: [],
                 activated: [],
                 skipped: [],
@@ -958,20 +1111,24 @@
             }
 
             // Step 2: Install plugins one by one (queue-based)
+            const totalPlugins = (data.plugins ? data.plugins.length : 0) + (data.kessoPlugins ? data.kessoPlugins.length : 0);
+            let pluginIndex = 0;
+
             if (data.plugins && data.plugins.length > 0) {
-                updateProgress(30, `Installing plugins (0/${data.plugins.length})...`);
+                updateProgress(30, `Installing plugins (0/${totalPlugins})...`);
                 setProgressCurrentStep('Plugins', false);
                 
                 for (let i = 0; i < data.plugins.length; i++) {
                     const slug = data.plugins[i];
+                    pluginIndex++;
                     
                     // Find plugin name for display
                     const plugin = kessoInit.plugins.find(p => p.slug === slug);
                     const pluginName = plugin ? plugin.name : slug;
                     
                     // Update progress
-                    const progressPercent = 30 + Math.floor((i / data.plugins.length) * 60);
-                    updateProgress(progressPercent, `Installing: ${pluginName} (${i + 1}/${data.plugins.length})...`);
+                    const progressPercent = 30 + Math.floor((pluginIndex / totalPlugins) * 60);
+                    updateProgress(progressPercent, `Installing: ${pluginName} (${pluginIndex}/${totalPlugins})...`);
                     setProgressCurrentStep(`Installing: ${pluginName}`, true);
                     
                     try {
@@ -1023,8 +1180,81 @@
                 }
             }
 
+            // Step 3: Install Kesso plugins from GitHub
+            if (data.kessoPlugins && data.kessoPlugins.length > 0) {
+                if (pluginIndex === 0) {
+                    updateProgress(30, `Installing Kesso plugins (0/${totalPlugins})...`);
+                    setProgressCurrentStep('Kesso Plugins', false);
+                }
+                
+                for (let i = 0; i < data.kessoPlugins.length; i++) {
+                    const kessoPlugin = data.kessoPlugins[i];
+                    pluginIndex++;
+                    
+                    // Find plugin name for display
+                    const plugin = kessoInit.kessoPlugins.find(p => p.slug === kessoPlugin.slug);
+                    const pluginName = plugin ? plugin.name : kessoPlugin.slug;
+                    
+                    // Update progress
+                    const progressPercent = 30 + Math.floor((pluginIndex / totalPlugins) * 60);
+                    updateProgress(progressPercent, `Installing: ${pluginName} (${pluginIndex}/${totalPlugins})...`);
+                    setProgressCurrentStep(`Installing: ${pluginName}`, true);
+                    
+                    try {
+                        // Small delay to allow browser to process events
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        const pluginResponse = await fetch(kessoInit.restUrl + 'plugins/install-github', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-WP-Nonce': kessoInit.nonce
+                            },
+                            body: JSON.stringify({
+                                slug: kessoPlugin.slug,
+                                github_repo: kessoPlugin.github_repo,
+                                branch: 'master'
+                            })
+                        });
+
+                        if (!pluginResponse.ok) {
+                            throw new Error(`HTTP error! status: ${pluginResponse.status}`);
+                        }
+
+                        const pluginResult = await pluginResponse.json();
+                        
+                        if (pluginResult.success && pluginResult.data) {
+                            const status = pluginResult.data.status;
+                            if (status === 'activated') {
+                                results.kessoPlugins.activated.push(kessoPlugin.slug);
+                            } else if (status === 'installed') {
+                                results.kessoPlugins.installed.push(kessoPlugin.slug);
+                            } else if (status === 'skipped') {
+                                results.kessoPlugins.skipped.push(kessoPlugin.slug);
+                            } else if (status === 'failed') {
+                                results.kessoPlugins.failed.push({
+                                    slug: kessoPlugin.slug,
+                                    error: pluginResult.data.error || 'Unknown error'
+                                });
+                            }
+                        } else {
+                            results.kessoPlugins.failed.push({
+                                slug: kessoPlugin.slug,
+                                error: pluginResult.message || 'Installation failed'
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`Error installing ${pluginName}:`, error);
+                        results.kessoPlugins.failed.push({
+                            slug: kessoPlugin.slug,
+                            error: error.message || 'Unknown error'
+                        });
+                    }
+                }
+            }
+
             // Mark wizard as completed if no critical errors
-            if (results.errors.length === 0 && results.plugins.failed.length === 0) {
+            if (results.errors.length === 0 && results.plugins.failed.length === 0 && results.kessoPlugins.failed.length === 0) {
                 try {
                     await fetch(kessoInit.restUrl + 'complete', {
                         method: 'POST',
@@ -1040,16 +1270,17 @@
 
             // Display results
             hideLoadingState();
+            const hasErrors = results.errors.length > 0 || results.plugins.failed.length > 0 || results.kessoPlugins.failed.length > 0;
             displayResults({
-                success: results.errors.length === 0 && results.plugins.failed.length === 0,
-                message: results.errors.length > 0 || results.plugins.failed.length > 0 
+                success: !hasErrors,
+                message: hasErrors 
                     ? 'Setup completed with some errors.' 
                     : 'Setup completed successfully!',
                 data: results
             });
             updateProgress(100, kessoInit.strings?.complete || 'Setup complete!');
             finalizeProgressModal({
-                success: results.errors.length === 0 && results.plugins.failed.length === 0,
+                success: !hasErrors,
                 data: results
             });
 

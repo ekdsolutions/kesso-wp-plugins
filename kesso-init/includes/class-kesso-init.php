@@ -418,5 +418,51 @@ class Kesso_Init {
 
         return $days;
     }
+
+    /**
+     * Get list of Kesso plugins from GitHub
+     *
+     * @return array
+     */
+    public function get_kesso_plugin_list() {
+        return array(
+            array(
+                'slug'        => 'kesso-access',
+                'name'        => 'Kesso Accessibility',
+                'description' => 'Accessibility widget and tools for WordPress.',
+                'source'      => 'github',
+                'file'        => 'kesso-access/kesso-access.php',
+                'github_repo' => 'ekdsolutions/kesso-wp-plugins',
+                'github_url'  => 'https://github.com/ekdsolutions/kesso-wp-plugins/tree/master/kesso-access',
+            ),
+            array(
+                'slug'        => 'kesso-cookies',
+                'name'        => 'Kesso Cookies',
+                'description' => 'Cookie consent banner and management.',
+                'source'      => 'github',
+                'file'        => 'kesso-cookies/kesso-cookies.php',
+                'github_repo' => 'ekdsolutions/kesso-wp-plugins',
+                'github_url'  => 'https://github.com/ekdsolutions/kesso-wp-plugins/tree/master/kesso-cookies',
+            ),
+            array(
+                'slug'        => 'kesso-woo',
+                'name'        => 'Kesso WooCommerce',
+                'description' => 'WooCommerce utilities and enhancements.',
+                'source'      => 'github',
+                'file'        => 'kesso-woo/kesso-woo.php',
+                'github_repo' => 'ekdsolutions/kesso-wp-plugins',
+                'github_url'  => 'https://github.com/ekdsolutions/kesso-wp-plugins/tree/master/kesso-woo',
+            ),
+            array(
+                'slug'        => 'kesso-msg',
+                'name'        => 'Kesso Messages',
+                'description' => 'Admin notice collector and manager.',
+                'source'      => 'github',
+                'file'        => 'kesso-msg/kesso-msg.php',
+                'github_repo' => 'ekdsolutions/kesso-wp-plugins',
+                'github_url'  => 'https://github.com/ekdsolutions/kesso-wp-plugins/tree/master/kesso-msg',
+            ),
+        );
+    }
 }
 

@@ -897,6 +897,21 @@
     flex-shrink: 0;
 }
 
+.kesso-plugin-github-link {
+    margin-left: auto;
+    color: var(--kesso-muted);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.kesso-plugin-github-link:hover {
+    opacity: 1;
+    color: var(--kesso-primary);
+}
+
 .kesso-plugin-desc {
     font-size: 12px;
     margin-top: 4px;
