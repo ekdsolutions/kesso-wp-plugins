@@ -1,0 +1,50 @@
+/**
+ * Ratio Pricing Frontend Styles
+ */
+
+.ratio-pricing-size-selector,
+.ratio-pricing-texture-selector {
+    margin-bottom: 20px;
+}
+
+.ratio-pricing-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.ratio-pricing-label .required {
+    color: #d63638;
+    margin-left: 2px;
+}
+
+.ratio-pricing-select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.ratio-pricing-select:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.ratio-pricing-select option {
+    padding: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ratio-pricing-select {
+        max-width: 100%;
+    }
+}
+

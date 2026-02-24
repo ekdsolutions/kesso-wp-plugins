@@ -5,11 +5,8 @@
 (function(window, document) {
     'use strict';
 
-    console.log('Kesso Cookies: Script loading...');
-
     // Check if kessoCookies is already defined
     if (typeof window.kessoCookies !== 'undefined') {
-        console.log('Kesso Cookies: Already initialized');
         return;
     }
 
@@ -26,14 +23,10 @@
          * Initialize the cookie consent system
          */
         init: function() {
-            console.log('Kesso Cookies: Initializing...');
-            
             // Get configuration from localized script
             if (typeof kessoCookiesConfig !== 'undefined') {
                 this.config = kessoCookiesConfig;
-                console.log('Kesso Cookies: Config loaded', this.config);
             } else {
-                console.warn('Kesso Cookies: Configuration not found, using defaults');
                 // Use defaults if config not found
                 this.config = {
                     cookieName: 'kesso_cookies_consent',
@@ -44,15 +37,12 @@
 
             // Load saved consent
             this.loadConsent();
-            console.log('Kesso Cookies: Consent loaded', this.consent);
 
             // Initialize UI
             this.initUI();
 
             // Process queued scripts
             this.processScriptQueue();
-            
-            console.log('Kesso Cookies: Initialization complete');
         },
 
         /**
@@ -68,7 +58,7 @@
                     this.consent = JSON.parse(decodeURIComponent(cookie));
                     return;
                 } catch (e) {
-                    console.warn('Kesso Cookies: Failed to parse consent cookie', e);
+                    // Failed to parse consent cookie
                 }
             }
 
@@ -119,7 +109,6 @@
                 localStorage.setItem(cookieName, consentString);
             } catch (e) {
                 // localStorage may not be available
-                console.warn('Kesso Cookies: Could not save to localStorage', e);
             }
 
             // Dispatch consent change event for developers to handle cleanup
@@ -154,18 +143,11 @@
          * Initialize UI elements
          */
         initUI: function() {
-            console.log('Kesso Cookies: Initializing UI...');
-            
             const banner = document.getElementById('kesso-cookies-banner');
             const panel = document.getElementById('kesso-cookies-panel');
             const settingsLink = document.getElementById('kesso-cookies-settings-link');
 
-            console.log('Kesso Cookies: Banner found:', !!banner);
-            console.log('Kesso Cookies: Panel found:', !!panel);
-            console.log('Kesso Cookies: Settings link found:', !!settingsLink);
-
             if (!banner || !panel) {
-                console.warn('Kesso Cookies: Banner or panel elements not found');
                 return;
             }
 
@@ -195,33 +177,24 @@
                 acceptAllBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Kesso Cookies: Accept All clicked');
                     this.acceptAll();
                 });
-            } else {
-                console.warn('Kesso Cookies: Accept All button not found');
             }
 
             if (rejectAllBtn) {
                 rejectAllBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Kesso Cookies: Reject All clicked');
                     this.rejectAll();
                 });
-            } else {
-                console.warn('Kesso Cookies: Reject All button not found');
             }
 
             if (customizeBtn) {
                 customizeBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Kesso Cookies: Customize clicked');
                     this.showPanel();
                 });
-            } else {
-                console.warn('Kesso Cookies: Customize button not found');
             }
 
             // Panel controls
@@ -231,41 +204,28 @@
             const analyticsToggle = document.getElementById('kesso-cookies-analytics');
             const marketingToggle = document.getElementById('kesso-cookies-marketing');
 
-            console.log('Kesso Cookies: Panel Close button found:', !!panelClose);
-            console.log('Kesso Cookies: Panel Save button found:', !!panelSave);
-            console.log('Kesso Cookies: Panel Reject All button found:', !!panelRejectAll);
-
             if (panelClose) {
                 panelClose.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Kesso Cookies: Panel Close clicked');
                     this.hidePanel();
                 });
-            } else {
-                console.warn('Kesso Cookies: Panel Close button not found');
             }
 
             if (panelSave) {
                 panelSave.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Kesso Cookies: Panel Save clicked');
                     this.saveFromPanel();
                 });
-            } else {
-                console.warn('Kesso Cookies: Panel Save button not found');
             }
 
             if (panelRejectAll) {
                 panelRejectAll.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Kesso Cookies: Panel Reject All clicked');
                     this.rejectAll();
                 });
-            } else {
-                console.warn('Kesso Cookies: Panel Reject All button not found');
             }
 
             // Update toggles based on current consent
@@ -383,13 +343,11 @@
         acceptAll: function() {
             // Prevent double-firing
             if (this._saving) {
-                console.log('Kesso Cookies: Save already in progress, ignoring');
                 return;
             }
             
             try {
                 this._saving = true;
-                console.log('Kesso Cookies: acceptAll called');
                 this.saveConsent({
                     analytics: true,
                     marketing: true
@@ -397,7 +355,6 @@
                 this.hideBanner();
                 this.hidePanel();
                 this.showSettingsLink();
-                console.log('Kesso Cookies: Consent saved, banner hidden');
                 
                 // Reset flag after a short delay
                 setTimeout(() => {
@@ -415,13 +372,11 @@
         rejectAll: function() {
             // Prevent double-firing
             if (this._saving) {
-                console.log('Kesso Cookies: Save already in progress, ignoring');
                 return;
             }
             
             try {
                 this._saving = true;
-                console.log('Kesso Cookies: rejectAll called');
                 this.saveConsent({
                     analytics: false,
                     marketing: false
@@ -429,7 +384,6 @@
                 this.hideBanner();
                 this.hidePanel();
                 this.showSettingsLink();
-                console.log('Kesso Cookies: Consent rejected, banner hidden');
                 
                 // Reset flag after a short delay
                 setTimeout(() => {
@@ -447,18 +401,13 @@
         saveFromPanel: function() {
             // Prevent double-firing
             if (this._saving) {
-                console.log('Kesso Cookies: Save already in progress, ignoring');
                 return;
             }
             
             try {
                 this._saving = true;
-                console.log('Kesso Cookies: saveFromPanel called');
                 const analytics = document.getElementById('kesso-cookies-analytics');
                 const marketing = document.getElementById('kesso-cookies-marketing');
-
-                console.log('Kesso Cookies: Analytics checked:', analytics ? analytics.checked : 'element not found');
-                console.log('Kesso Cookies: Marketing checked:', marketing ? marketing.checked : 'element not found');
 
                 this.saveConsent({
                     analytics: analytics ? analytics.checked : false,
@@ -467,7 +416,6 @@
 
                 this.hidePanel();
                 this.showSettingsLink();
-                console.log('Kesso Cookies: Preferences saved, panel hidden');
                 
                 // Reset flag after a short delay
                 setTimeout(() => {
@@ -494,7 +442,6 @@
          */
         registerScript: function(config) {
             if (!config || !config.category || !config.src) {
-                console.warn('Kesso Cookies: Invalid script configuration', config);
                 return;
             }
 
@@ -600,19 +547,12 @@
     };
 
     // Initialize when DOM is ready
-    console.log('Kesso Cookies: Document ready state:', document.readyState);
-    
     if (document.readyState === 'loading') {
-        console.log('Kesso Cookies: Waiting for DOMContentLoaded...');
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Kesso Cookies: DOMContentLoaded fired');
             KessoCookies.init();
-            console.log('Kesso Cookies: After init, window.kessoCookies:', window.kessoCookies);
         });
     } else {
-        console.log('Kesso Cookies: DOM already ready, initializing immediately');
         KessoCookies.init();
-        console.log('Kesso Cookies: After init, window.kessoCookies:', window.kessoCookies);
     }
 
 })(window, document);

@@ -295,7 +295,6 @@ class Kesso_Cookies_Banner {
                     this.queue.push(config);
                 }
             };
-            console.log('Kesso Cookies: Script blocking initialized');
         })();
         </script>
         <?php
@@ -464,23 +463,6 @@ class Kesso_Cookies_Banner {
                 </div>
             </div>
         </div>
-        <script>
-        // Debug: Check if banner elements exist
-        (function() {
-            setTimeout(function() {
-                console.log('Kesso Cookies Debug: Banner element:', document.getElementById('kesso-cookies-banner'));
-                console.log('Kesso Cookies Debug: Panel element:', document.getElementById('kesso-cookies-panel'));
-                console.log('Kesso Cookies Debug: Accept button:', document.getElementById('kesso-cookies-accept-all'));
-                console.log('Kesso Cookies Debug: Reject button:', document.getElementById('kesso-cookies-reject-all'));
-                console.log('Kesso Cookies Debug: Customize button:', document.getElementById('kesso-cookies-customize'));
-                console.log('Kesso Cookies Debug: kessoCookies object:', typeof window.kessoCookies !== 'undefined' ? window.kessoCookies : 'NOT FOUND');
-                console.log('Kesso Cookies Debug: kessoCookiesConfig:', typeof kessoCookiesConfig !== 'undefined' ? kessoCookiesConfig : 'NOT FOUND');
-                console.log('Kesso Cookies Debug: Has acceptAll method?', window.kessoCookies && typeof window.kessoCookies.acceptAll === 'function' ? 'YES' : 'NO');
-                console.log('Kesso Cookies Debug: Has rejectAll method?', window.kessoCookies && typeof window.kessoCookies.rejectAll === 'function' ? 'YES' : 'NO');
-                console.log('Kesso Cookies Debug: Has showPanel method?', window.kessoCookies && typeof window.kessoCookies.showPanel === 'function' ? 'YES' : 'NO');
-            }, 1000);
-        })();
-        </script>
         <?php
     }
 }

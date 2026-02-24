@@ -296,6 +296,22 @@ class Kesso_Init {
                 'file'        => 'code-snippets/code-snippets.php',
                 'category'    => 'Develop',
             ),
+            array(
+                'slug'        => 'bing-webmaster-tools',
+                'name'        => 'Bing URL Submissions',
+                'description' => 'Automated URL submission to Bing for faster indexing.',
+                'source'      => 'wordpress.org',
+                'file'        => 'bing-webmaster-tools/bing-webmaster-tools.php',
+                'category'    => 'Tracking',
+            ),
+            array(
+                'slug'        => 'updraftplus',
+                'name'        => 'UpdraftPlus',
+                'description' => 'Backup, restore and migrate your WordPress website.',
+                'source'      => 'wordpress.org',
+                'file'        => 'updraftplus/updraftplus.php',
+                'category'    => 'Security',
+            ),
         );
     }
 
