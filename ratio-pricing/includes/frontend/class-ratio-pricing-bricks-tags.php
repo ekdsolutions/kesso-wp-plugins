@@ -151,9 +151,16 @@ class Ratio_Pricing_Bricks_Tags {
 	}
 
 	/**
-	 * Locate the WooCommerce cart item whose product matches the Bricks loop post.
+	 * Locate the exact WooCommerce cart item for the current Bricks loop iteration.
 	 *
-	 * Returns null when the cart is unavailable or no matching item is found.
+	 * When the same product is added multiple times with different sizes, every
+	 * row shares the same product_id — so matching by product_id alone always
+	 * returns the first row. Instead we ask Bricks for the current loop object:
+	 * for a WooCommerce cart loop Bricks sets that object to the full cart item
+	 * array (including ratio_pricing_size), giving us a precise match.
+	 *
+	 * Falls back to product-id matching only when Bricks' loop object is not
+	 * available (e.g. the tag is used outside a cart loop element).
 	 *
 	 * @param WP_Post|null $post Post from the Bricks loop context.
 	 * @return array|null Cart item array or null.
@@ -163,6 +170,19 @@ class Ratio_Pricing_Bricks_Tags {
 			return null;
 		}
 
+		// Primary path: Bricks exposes the current loop object via a static
+		// method. For a WooCommerce cart loop each iteration's object IS the
+		// cart item array — this is the only reliable way to distinguish two
+		// rows of the same product that have different sizes.
+		if ( class_exists( '\Bricks\Query' ) && method_exists( '\Bricks\Query', 'get_loop_object' ) ) {
+			$loop_obj = \Bricks\Query::get_loop_object();
+			if ( is_array( $loop_obj ) && isset( $loop_obj['product_id'], $loop_obj['data'] ) ) {
+				return $loop_obj;
+			}
+		}
+
+		// Fallback: match by product ID. Only correct when each product
+		// appears once in the cart (e.g. tag used outside a cart loop).
 		$product_id = 0;
 		if ( $post instanceof WP_Post ) {
 			$product_id = (int) $post->ID;
