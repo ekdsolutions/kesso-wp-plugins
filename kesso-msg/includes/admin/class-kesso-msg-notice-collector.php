@@ -16,6 +16,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Kesso_Msg_Notice_Collector {
 
     /**
+     * Get the transient key scoped to the current user.
+     * Each admin has their own notice pool so that one user's notices don't bleed into another's.
+     *
+     * @return string
+     */
+    private function get_transient_key() {
+        return 'kesso_msg_notices_' . get_current_user_id();
+    }
+
+    /**
+     * Generate a stable notice ID from its type and message content.
+     * Algorithm: DJB2-XOR (hash * 33 ^ charcode), masked to 32-bit unsigned.
+     * The JavaScript counterpart uses the identical algorithm so IDs match
+     * between client-sent notices and server-stored ones.
+     *
+     * @param string $message Notice message.
+     * @param string $type    Notice type.
+     * @return string
+     */
+    private function generate_notice_id( $message, $type ) {
+        $str  = $type . '|' . substr( $message, 0, 100 );
+        $hash = 5381;
+        $len  = strlen( $str );
+        for ( $i = 0; $i < $len; $i++ ) {
+            $hash = ( ( $hash * 33 ) ^ ord( $str[ $i ] ) ) & 0xFFFFFFFF;
+        }
+        return 'kesso-msg-' . dechex( $hash );
+    }
+
+    /**
      * Constructor
      */
     public function __construct() {
@@ -76,13 +106,27 @@ class Kesso_Msg_Notice_Collector {
         }
 
         $notices = isset( $_POST['notices'] ) ? json_decode( stripslashes( $_POST['notices'] ), true ) : array();
-        
+
         if ( ! is_array( $notices ) ) {
             $notices = array();
         }
 
-        // Get existing notices
-        $existing = get_transient( 'kesso_msg_notices' );
+        // Sanitize each notice before storage to prevent stored XSS
+        foreach ( $notices as &$notice ) {
+            if ( isset( $notice['html'] ) ) {
+                $notice['html'] = wp_kses_post( $notice['html'] );
+            }
+            if ( isset( $notice['message'] ) ) {
+                $notice['message'] = sanitize_text_field( $notice['message'] );
+            }
+            if ( isset( $notice['type'] ) ) {
+                $notice['type'] = sanitize_key( $notice['type'] );
+            }
+        }
+        unset( $notice );
+
+        // Get existing notices (per-user)
+        $existing = get_transient( $this->get_transient_key() );
         if ( ! is_array( $existing ) ) {
             $existing = array();
         }
@@ -128,8 +172,8 @@ class Kesso_Msg_Notice_Collector {
         // Keep only last 50 notices
         $all_notices = array_slice( array_values( $all_notices ), -50 );
 
-        // Store for 24 hours
-        set_transient( 'kesso_msg_notices', $all_notices, DAY_IN_SECONDS );
+        // Store for 24 hours (per-user)
+        set_transient( $this->get_transient_key(), $all_notices, DAY_IN_SECONDS );
 
         // Calculate filtered count (same logic as ajax_get_notices)
         $dismissed = get_user_meta( get_current_user_id(), 'kesso_msg_dismissed', true );
@@ -144,16 +188,13 @@ class Kesso_Msg_Notice_Collector {
 
         $filtered_count = 0;
         foreach ( $all_notices as $notice ) {
-            // Generate ID if missing
+            // Generate ID if missing (backward compat for old stored notices)
             if ( ! isset( $notice['id'] ) || empty( $notice['id'] ) ) {
                 $message = isset( $notice['message'] ) ? $notice['message'] : '';
-                $type = isset( $notice['type'] ) ? $notice['type'] : 'info';
-                if ( ! empty( $message ) ) {
-                    $str = $type . '|' . substr( $message, 0, 100 );
-                    $notice['id'] = 'kesso-msg-' . abs( crc32( $str ) );
-                } else {
-                    $notice['id'] = 'kesso-msg-' . uniqid();
-                }
+                $type    = isset( $notice['type'] ) ? $notice['type'] : 'info';
+                $notice['id'] = ! empty( $message )
+                    ? $this->generate_notice_id( $message, $type )
+                    : 'kesso-msg-' . uniqid();
             }
             
             // Skip if dismissed
@@ -188,7 +229,7 @@ class Kesso_Msg_Notice_Collector {
             wp_send_json_error( array( 'message' => __( 'Permission denied', 'kesso-msg' ) ) );
         }
 
-        $notices = get_transient( 'kesso_msg_notices' );
+        $notices = get_transient( $this->get_transient_key() );
         if ( ! is_array( $notices ) ) {
             $notices = array();
         }
@@ -198,7 +239,7 @@ class Kesso_Msg_Notice_Collector {
         if ( ! is_array( $dismissed ) ) {
             $dismissed = array();
         }
-        
+
         $hidden = get_user_meta( get_current_user_id(), 'kesso_msg_hidden', true );
         if ( ! is_array( $hidden ) ) {
             $hidden = array();
@@ -207,16 +248,13 @@ class Kesso_Msg_Notice_Collector {
         // Filter notices based on settings, dismissed, and hidden status
         $filtered_notices = array();
         foreach ( $notices as $notice ) {
-            // Generate ID if missing (for backward compatibility)
+            // Generate ID if missing (backward compat for old stored notices)
             if ( ! isset( $notice['id'] ) || empty( $notice['id'] ) ) {
                 $message = isset( $notice['message'] ) ? $notice['message'] : '';
-                $type = isset( $notice['type'] ) ? $notice['type'] : 'info';
-                if ( ! empty( $message ) ) {
-                    $str = $type . '|' . substr( $message, 0, 100 );
-                    $notice['id'] = 'kesso-msg-' . abs( crc32( $str ) );
-                } else {
-                    $notice['id'] = 'kesso-msg-' . uniqid();
-                }
+                $type    = isset( $notice['type'] ) ? $notice['type'] : 'info';
+                $notice['id'] = ! empty( $message )
+                    ? $this->generate_notice_id( $message, $type )
+                    : 'kesso-msg-' . uniqid();
             }
             
             // Skip if dismissed
@@ -427,7 +465,7 @@ class Kesso_Msg_Notice_Collector {
      * @return int
      */
     private function get_filtered_count() {
-        $notices = get_transient( 'kesso_msg_notices' );
+        $notices = get_transient( $this->get_transient_key() );
         if ( ! is_array( $notices ) ) {
             $notices = array();
         }
@@ -436,7 +474,7 @@ class Kesso_Msg_Notice_Collector {
         if ( ! is_array( $dismissed ) ) {
             $dismissed = array();
         }
-        
+
         $hidden = get_user_meta( get_current_user_id(), 'kesso_msg_hidden', true );
         if ( ! is_array( $hidden ) ) {
             $hidden = array();
@@ -444,16 +482,13 @@ class Kesso_Msg_Notice_Collector {
 
         $count = 0;
         foreach ( $notices as $notice ) {
-            // Generate ID if missing
+            // Generate ID if missing (backward compat for old stored notices)
             if ( ! isset( $notice['id'] ) || empty( $notice['id'] ) ) {
                 $message = isset( $notice['message'] ) ? $notice['message'] : '';
-                $type = isset( $notice['type'] ) ? $notice['type'] : 'info';
-                if ( ! empty( $message ) ) {
-                    $str = $type . '|' . substr( $message, 0, 100 );
-                    $notice['id'] = 'kesso-msg-' . abs( crc32( $str ) );
-                } else {
-                    $notice['id'] = 'kesso-msg-' . uniqid();
-                }
+                $type    = isset( $notice['type'] ) ? $notice['type'] : 'info';
+                $notice['id'] = ! empty( $message )
+                    ? $this->generate_notice_id( $message, $type )
+                    : 'kesso-msg-' . uniqid();
             }
             
             // Skip if dismissed

@@ -364,16 +364,22 @@ class Kesso_Init_Plugin_Service {
      * @return bool
      */
     public function enable_plugin_auto_update( $slug, $expected_file ) {
+        // Auto-updates are opt-in. Return early unless explicitly enabled.
+        // Use the 'kesso_init_auto_updates' filter to opt in from a mu-plugin or theme.
+        if ( ! apply_filters( 'kesso_init_auto_updates', false ) ) {
+            return false;
+        }
+
         // Find the actual plugin file
         $plugin_file = $this->find_plugin_file( $slug, $expected_file );
-        
+
         if ( is_wp_error( $plugin_file ) ) {
             return false;
         }
 
         // Get current auto-update settings
         $auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
-        
+
         // Add plugin to auto-update list if not already there
         if ( ! in_array( $plugin_file, $auto_updates, true ) ) {
             $auto_updates[] = $plugin_file;
@@ -454,12 +460,17 @@ class Kesso_Init_Plugin_Service {
                 );
             }
 
-            // Extract the ZIP using WP_Filesystem
-            $unzip_path = $wp_filesystem->wp_content_dir() . 'plugins/';
-            $result = unzip_file( $temp_file, $unzip_path );
+            // Extract to a dedicated temp directory so the plugins folder is never
+            // cluttered with the full repo contents during extraction.
+            $repo_name    = basename( $github_repo );
+            $temp_extract = $wp_filesystem->wp_content_dir() . 'uploads/kesso-tmp-' . $repo_name . '-' . uniqid() . '/';
+            $wp_filesystem->mkdir( $temp_extract, 0755, true );
+
+            $result = unzip_file( $temp_file, $temp_extract );
 
             if ( is_wp_error( $result ) ) {
                 @unlink( $temp_file );
+                $wp_filesystem->rmdir( $temp_extract, true );
                 return array(
                     'status' => 'failed',
                     'slug'   => $plugin_slug,
@@ -472,18 +483,14 @@ class Kesso_Init_Plugin_Service {
             @unlink( $temp_file );
 
             // The extracted folder will be named like 'kesso-wp-plugins-master'
-            // We need to move the specific plugin folder to the correct location
-            $repo_name = basename( $github_repo );
-            $extracted_folder = $unzip_path . $repo_name . '-' . $branch;
-            $plugin_source = $extracted_folder . '/' . $plugin_slug;
+            // We need to move only the specific plugin subfolder to the plugins directory.
+            $extracted_folder = $temp_extract . $repo_name . '-' . $branch;
+            $plugin_source    = $extracted_folder . '/' . $plugin_slug;
             $plugin_dest = $unzip_path . $plugin_slug;
 
             // Check if plugin folder exists in extracted ZIP
             if ( ! $wp_filesystem->exists( $plugin_source ) ) {
-                // Clean up extracted folder
-                if ( $wp_filesystem->exists( $extracted_folder ) ) {
-                    $wp_filesystem->rmdir( $extracted_folder, true );
-                }
+                $wp_filesystem->rmdir( $temp_extract, true );
                 return array(
                     'status' => 'failed',
                     'slug'   => $plugin_slug,
@@ -499,10 +506,7 @@ class Kesso_Init_Plugin_Service {
 
             // Use WP_Filesystem to move the directory
             if ( ! $wp_filesystem->move( $plugin_source, $plugin_dest, true ) ) {
-                // Clean up
-                if ( $wp_filesystem->exists( $extracted_folder ) ) {
-                    $wp_filesystem->rmdir( $extracted_folder, true );
-                }
+                $wp_filesystem->rmdir( $temp_extract, true );
                 return array(
                     'status' => 'failed',
                     'slug'   => $plugin_slug,
@@ -511,10 +515,8 @@ class Kesso_Init_Plugin_Service {
                 );
             }
 
-            // Clean up extracted folder
-            if ( $wp_filesystem->exists( $extracted_folder ) ) {
-                $wp_filesystem->rmdir( $extracted_folder, true );
-            }
+            // Clean up the full temp extraction directory
+            $wp_filesystem->rmdir( $temp_extract, true );
 
             // Verify plugin directory exists
             $plugin_dir = $wp_filesystem->wp_content_dir() . 'plugins/' . $plugin_slug . '/';

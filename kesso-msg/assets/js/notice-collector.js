@@ -13,18 +13,13 @@
         init: function() {
             // Wait for page to fully load
             $(document).ready(function() {
-                // Initial collection with multiple retries
+                // Collect immediately, then once more after a short delay
+                // to catch notices injected by plugins after DOM-ready.
                 KessoMsgCollector.collectNotices();
                 setTimeout(function() {
                     KessoMsgCollector.collectNotices();
-                }, 500);
-                setTimeout(function() {
-                    KessoMsgCollector.collectNotices();
                 }, 1500);
-                setTimeout(function() {
-                    KessoMsgCollector.collectNotices();
-                }, 3000);
-                
+
                 // Watch for dynamically added notices
                 KessoMsgCollector.startObserver();
             });
@@ -34,10 +29,11 @@
             // Use MutationObserver to watch for new notices
             if (typeof MutationObserver !== 'undefined') {
                 const targetNode = document.body || document.getElementById('wpbody-content') || document;
-                
+                let debounceTimer = null;
+
                 this.observer = new MutationObserver(function(mutations) {
                     let shouldCollect = false;
-                    
+
                     mutations.forEach(function(mutation) {
                         if (mutation.addedNodes.length > 0) {
                             // Check if any added node is a notice
@@ -54,15 +50,16 @@
                             }
                         }
                     });
-                    
+
                     if (shouldCollect) {
-                        // Debounce: wait a bit for the notice to be fully rendered
-                        setTimeout(function() {
+                        // Debounce: collapse rapid-fire mutations into a single collection
+                        clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(function() {
                             KessoMsgCollector.collectNotices();
-                        }, 300);
+                        }, 400);
                     }
                 });
-                
+
                 this.observer.observe(targetNode, {
                     childList: true,
                     subtree: true
@@ -199,15 +196,14 @@
         },
 
         createNoticeHash: function(message, type) {
-            // Create a simple hash from message and type to identify duplicates
+            // DJB2-XOR: identical algorithm to the PHP generate_notice_id() method
+            // so IDs match between client-sent notices and server-side lookups.
             const str = type + '|' + message.substring(0, 100);
-            let hash = 0;
+            let hash = 5381;
             for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32bit integer
+                hash = (Math.imul(hash, 33) ^ str.charCodeAt(i)) >>> 0;
             }
-            return 'kesso-msg-' + Math.abs(hash).toString(36);
+            return 'kesso-msg-' + hash.toString(16);
         },
 
         saveNotices: function(notices) {

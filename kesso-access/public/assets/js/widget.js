@@ -215,7 +215,14 @@
 				return;
 			}
 
-			var localData = JSON.parse( localStorage.getItem( this.settings.storageKey ) );
+			var localData;
+			try {
+				localData = JSON.parse( localStorage.getItem( this.settings.storageKey ) );
+			} catch ( e ) {
+				localStorage.removeItem( this.settings.storageKey );
+				return;
+			}
+
 			if ( ! localData ) {
 				return;
 			}
@@ -223,7 +230,7 @@
 			var currentDate = new Date(),
 				expires = localData.variables.expires;
 
-			if ( currentDate > expires ) {
+			if ( currentDate.getTime() > expires ) {
 				localStorage.removeItem( this.settings.storageKey );
 				return;
 			}
@@ -253,7 +260,7 @@
 			}
 
 			if ( '1' === KessoOptions.add_role_links ) {
-				$( 'a' ).attr( 'role', 'link' );
+				$( 'a:not([role])' ).attr( 'role', 'link' );
 			}
 		},
 

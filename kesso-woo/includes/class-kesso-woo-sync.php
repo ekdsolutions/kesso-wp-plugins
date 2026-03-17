@@ -52,7 +52,6 @@ class Kesso_Woo_Sync {
 		'_featured',             // Featured product
 		'_tax_status',           // Tax status
 		'_tax_class',            // Tax class
-		'total_sales',           // Total sales count
 		'_wc_average_rating',    // Average rating
 		'_wc_review_count',      // Review count
 		// Product identifiers (GTIN, UPC, EAN, ISBN, MPN)

@@ -50,13 +50,18 @@
          */
         loadConsent: function() {
             const cookieName = this.config ? this.config.cookieName : 'kesso_cookies_consent';
-            
+            const cookieVersion = this.config ? this.config.cookieVersion : '1.0';
+
             // Try cookie first
             const cookie = this.getCookie(cookieName);
             if (cookie) {
                 try {
-                    this.consent = JSON.parse(decodeURIComponent(cookie));
-                    return;
+                    const parsed = JSON.parse(decodeURIComponent(cookie));
+                    // Invalidate stored consent if the version has changed
+                    if (parsed && parsed.version === cookieVersion) {
+                        this.consent = parsed;
+                        return;
+                    }
                 } catch (e) {
                     // Failed to parse consent cookie
                 }
@@ -66,14 +71,17 @@
             try {
                 const stored = localStorage.getItem(cookieName);
                 if (stored) {
-                    this.consent = JSON.parse(stored);
-                    return;
+                    const parsed = JSON.parse(stored);
+                    if (parsed && parsed.version === cookieVersion) {
+                        this.consent = parsed;
+                        return;
+                    }
                 }
             } catch (e) {
                 // localStorage may not be available
             }
 
-            // No consent found
+            // No valid consent found
             this.consent = null;
         },
 
@@ -320,7 +328,8 @@
                 if (closeButton) {
                     setTimeout(() => closeButton.focus(), 100);
                 }
-                // Prevent body scroll
+                // Prevent body scroll, preserving whatever was set before
+                this._prevBodyOverflow = document.body.style.overflow;
                 document.body.style.overflow = 'hidden';
             }
         },
@@ -333,7 +342,7 @@
             if (panel) {
                 panel.classList.remove('is-visible');
                 panel.style.display = 'none';
-                document.body.style.overflow = '';
+                document.body.style.overflow = typeof this._prevBodyOverflow === 'string' ? this._prevBodyOverflow : '';
             }
         },
 
@@ -508,6 +517,9 @@
             queue.forEach((script) => {
                 if (this.consent[script.category]) {
                     this.loadScript(script);
+                } else if (!(script.category in this.consent) && script.category !== 'essential') {
+                    // Unknown category — re-queue so it isn't silently dropped
+                    this.scripts.queue.push(script);
                 }
             });
         },

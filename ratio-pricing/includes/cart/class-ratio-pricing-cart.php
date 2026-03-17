@@ -137,13 +137,6 @@ class Ratio_Pricing_Cart {
 			// Sanitize size again for security hardening
 			$size = sanitize_text_field( $cart_item['ratio_pricing_size'] );
 
-			// Check if price already calculated (cache optimization)
-			if ( isset( $cart_item['ratio_pricing_final_price'] ) ) {
-				$final_price = floatval( $cart_item['ratio_pricing_final_price'] );
-				$cart_item['data']->set_price( $final_price );
-				continue;
-			}
-
 			// Get ratio
 			$ratio = $ratio_pricing->get_product_ratio( $product_id );
 			if ( ! $ratio ) {
@@ -159,15 +152,12 @@ class Ratio_Pricing_Cart {
 			// Check if texture is selected
 			$has_texture = ! empty( $cart_item['ratio_pricing_texture'] );
 
-			// Calculate final price
+			// Calculate final price fresh each time so admin price changes take effect immediately.
+			// Never cache this in the session — stale cached prices would survive admin updates.
 			$final_price = $ratio_pricing->calculate_price( $base_price, $has_texture );
-
-			// Cache the calculated price in cart item data
-			$cart->cart_contents[ $cart_item_key ]['ratio_pricing_final_price'] = $final_price;
 
 			// Set the cart item price
 			$cart_item['data']->set_price( $final_price );
 		}
 	}
 }
-

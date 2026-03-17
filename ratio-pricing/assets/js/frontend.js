@@ -33,17 +33,10 @@
             console.warn('Ratio Pricing: Bricks texture field not found (expected ' + BRICKS_TEXTURE_RADIOS + ').');
         }
 
-        var $priceEl = $('.ratio-pricing-price .price').first();
-        if ($priceEl.length === 0) {
-            $priceEl = $('.single-product .summary .price').first();
-        }
-        if ($priceEl.length === 0) {
-            $priceEl = $('.summary .price').first();
-        }
-        if ($priceEl.length === 0) {
-            return;
-        }
-        var originalPriceHtml = $priceEl.html();
+        // $priceEl and originalPriceHtml are re-captured on every boot (including Bricks re-renders)
+        // so we never hold a stale reference to a detached DOM node.
+        var $priceEl = $();
+        var originalPriceHtml = '';
 
         var $cartForm = $('form.cart').first();
         if ($cartForm.length === 0) {
@@ -127,6 +120,12 @@
                 return;
             }
             $select.find('option').remove();
+            if (!sizes || Object.keys(sizes).length === 0) {
+                $select.append($('<option value="">').text(ratioPricingConfig.noSizesText || 'No sizes available'));
+                $select.prop('disabled', true);
+                return;
+            }
+            $select.prop('disabled', false);
             $select.append($('<option value="">').text(placeholderText));
             $.each(sizes, function(sizeKey, price) {
                 var label = formatOptionLabel(sizeKey, price);
@@ -152,27 +151,42 @@
         }
 
         function updateDisplayedPrice() {
+            // Re-query each time — $priceEl may be stale after a Bricks re-render
+            var $el = $('.ratio-pricing-price .price').first();
+            if ($el.length === 0) $el = $('.single-product .summary .price').first();
+            if ($el.length === 0) $el = $('.summary .price').first();
+            if ($el.length === 0) return;
+
             var $select = $(BRICKS_SELECT_SIZE).first();
             var sizeVal = $select.length ? $select.val() : '';
             if (!sizeVal) {
-                $priceEl.html(originalPriceHtml);
+                $el.html(originalPriceHtml);
                 return;
             }
             var price = sizes[sizeVal];
             if (price === undefined || isNaN(parseFloat(price))) {
-                $priceEl.html(originalPriceHtml);
+                $el.html(originalPriceHtml);
                 return;
             }
             var basePrice = parseFloat(price);
             var texturePct = ratioPricingConfig.texturePercentage || 30;
             var hasTexture = getTextureValue() === 'with';
             var finalPrice = hasTexture ? basePrice * (1 + texturePct / 100) : basePrice;
-            $priceEl.html('<span class="price">' + formatPrice(finalPrice) + '</span>');
+            $el.html('<span class="price">' + formatPrice(finalPrice) + '</span>');
         }
 
         function onSizeOrTextureChange() {
             syncHiddenInputs();
             updateDisplayedPrice();
+        }
+
+        function showCartError(message) {
+            var $existing = $cartForm.find('.ratio-pricing-cart-error');
+            if ($existing.length === 0) {
+                $existing = $('<ul class="woocommerce-error ratio-pricing-cart-error" role="alert"></ul>');
+                $cartForm.prepend($existing);
+            }
+            $existing.html('<li>' + message + '</li>').show();
         }
 
         function bindEvents() {
@@ -182,14 +196,25 @@
                 var sizeVal = $hiddenSize.val();
                 if (!sizeVal || sizeVal.trim() === '') {
                     e.preventDefault();
-                    alert('Please select a size before adding to cart.');
+                    showCartError(ratioPricingConfig.selectSizeText || 'Please select a size before adding to cart.');
                     $(BRICKS_SELECT_SIZE).first().focus();
                     return false;
                 }
+                $cartForm.find('.ratio-pricing-cart-error').hide();
             });
         }
 
         function bootRatioPricing() {
+            // Re-capture price element reference and its original HTML on every boot
+            // so Bricks re-renders don't leave us holding a stale detached node.
+            var $newPriceEl = $('.ratio-pricing-price .price').first();
+            if ($newPriceEl.length === 0) $newPriceEl = $('.single-product .summary .price').first();
+            if ($newPriceEl.length === 0) $newPriceEl = $('.summary .price').first();
+            if ($newPriceEl.length > 0) {
+                $priceEl = $newPriceEl;
+                originalPriceHtml = $priceEl.html();
+            }
+
             renderSizeOptions();
             bindEvents();
             syncHiddenInputs();

@@ -53,7 +53,16 @@ final class Kesso_Woo_Plugin {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->check_dependencies();
+		// Always init admin so the settings page is reachable even without deps
+		if ( is_admin() ) {
+			require_once KESSO_WOO_PATH . 'includes/admin/class-kesso-woo-admin.php';
+			new Kesso_Woo_Admin();
+		}
+
+		if ( ! $this->check_dependencies() ) {
+			return;
+		}
+
 		$this->includes();
 		$this->init();
 	}
@@ -65,14 +74,16 @@ final class Kesso_Woo_Plugin {
 		// Check if Polylang is active
 		if ( ! function_exists( 'pll_get_post_translations' ) ) {
 			add_action( 'admin_notices', array( $this, 'missing_polylang_notice' ) );
-			return;
+			return false;
 		}
-		
+
 		// Check if WooCommerce is active
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			add_action( 'admin_notices', array( $this, 'missing_woocommerce_notice' ) );
-			return;
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
@@ -108,26 +119,15 @@ final class Kesso_Woo_Plugin {
 	 */
 	private function includes() {
 		require_once KESSO_WOO_PATH . 'includes/class-kesso-woo-sync.php';
-		require_once KESSO_WOO_PATH . 'includes/admin/class-kesso-woo-admin.php';
 	}
 
 	/**
 	 * Initialize plugin
 	 */
 	private function init() {
-		// Initialize admin first (so menu appears even if dependencies aren't met)
-		if ( is_admin() ) {
-			new Kesso_Woo_Admin();
-		}
-
-		// Only initialize sync if dependencies are met
-		if ( ! function_exists( 'pll_get_post_translations' ) || ! class_exists( 'WooCommerce' ) ) {
-			return;
-		}
-
 		// Enable WooCommerce products for Polylang translation
 		$this->enable_translation();
-		
+
 		// Initialize sync functionality (only if enabled in settings)
 		if ( get_option( 'kesso_woo_enabled', 'yes' ) === 'yes' ) {
 			new Kesso_Woo_Sync();
