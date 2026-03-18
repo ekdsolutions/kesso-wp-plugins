@@ -14,9 +14,9 @@
 
 		cacheElements: function() {
 			this.cache.$toolbar = $( '#kesso-toolbar' );
-			this.cache.$toolbarLinks = this.cache.$toolbar.find( 'a.kesso-toolbar-link' );
-			this.cache.$toolbarToolsLinks = this.cache.$toolbar.find( '.kesso-tools a.kesso-toolbar-link' );
-			this.cache.$btnToolbarToggle = this.cache.$toolbar.find( 'div.kesso-toolbar-toggle > a' );
+			this.cache.$toolbarLinks = this.cache.$toolbar.find( '.kesso-toolbar-link' );
+			this.cache.$toolbarToolsLinks = this.cache.$toolbar.find( '.kesso-tools .kesso-toolbar-link' );
+			this.cache.$btnToolbarToggle = this.cache.$toolbar.find( 'div.kesso-toolbar-toggle > button' );
 			this.cache.$skipToContent = $( '#kesso-skip-content' );
 			this.cache.$body = $( 'body' );
 		},

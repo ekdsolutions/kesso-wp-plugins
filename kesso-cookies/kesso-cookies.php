@@ -126,8 +126,10 @@ class Kesso_Cookies {
             $this->banner = new Kesso_Cookies_Banner();
         }
 
-        // Add footer link to reopen consent panel
-        add_action( 'wp_footer', array( $this, 'add_consent_link' ) );
+        // Add footer link to reopen consent panel (front-end only)
+        if ( ! is_admin() ) {
+            add_action( 'wp_footer', array( $this, 'add_consent_link' ) );
+        }
     }
 
     /**

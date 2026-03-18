@@ -78,19 +78,19 @@ class Kesso_Widget {
 		
 		if ( null === $defaults ) {
 			$defaults = [
-				'kesso_toolbar_title' => __( 'Accessibility Tools', 'kesso-widget' ),
-				'kesso_toolbar_button_resize_font_add_title' => __( 'Increase Text', 'kesso-widget' ),
-				'kesso_toolbar_button_resize_font_less_title' => __( 'Decrease Text', 'kesso-widget' ),
-				'kesso_toolbar_button_grayscale_title' => __( 'Grayscale', 'kesso-widget' ),
-				'kesso_toolbar_button_high_contrast_title' => __( 'High Contrast', 'kesso-widget' ),
-				'kesso_toolbar_button_negative_contrast_title' => __( 'Negative Contrast', 'kesso-widget' ),
-				'kesso_toolbar_button_light_bg_title' => __( 'Light Background', 'kesso-widget' ),
-				'kesso_toolbar_button_links_underline_title' => __( 'Links Underline', 'kesso-widget' ),
-				'kesso_toolbar_button_readable_font_title' => __( 'Readable Font', 'kesso-widget' ),
-				'kesso_toolbar_button_pause_animations_title' => __( 'Pause Animations', 'kesso-widget' ),
-				'kesso_toolbar_button_sitemap_title' => __( 'Sitemap', 'kesso-widget' ),
-				'kesso_toolbar_button_help_title' => __( 'Help', 'kesso-widget' ),
-				'kesso_toolbar_button_feedback_title' => __( 'Feedback', 'kesso-widget' ),
+				'kesso_toolbar_title' => __( 'Accessibility Tools', 'kesso-access' ),
+				'kesso_toolbar_button_resize_font_add_title' => __( 'Increase Text', 'kesso-access' ),
+				'kesso_toolbar_button_resize_font_less_title' => __( 'Decrease Text', 'kesso-access' ),
+				'kesso_toolbar_button_grayscale_title' => __( 'Grayscale', 'kesso-access' ),
+				'kesso_toolbar_button_high_contrast_title' => __( 'High Contrast', 'kesso-access' ),
+				'kesso_toolbar_button_negative_contrast_title' => __( 'Negative Contrast', 'kesso-access' ),
+				'kesso_toolbar_button_light_bg_title' => __( 'Light Background', 'kesso-access' ),
+				'kesso_toolbar_button_links_underline_title' => __( 'Links Underline', 'kesso-access' ),
+				'kesso_toolbar_button_readable_font_title' => __( 'Readable Font', 'kesso-access' ),
+				'kesso_toolbar_button_pause_animations_title' => __( 'Pause Animations', 'kesso-access' ),
+				'kesso_toolbar_button_sitemap_title' => __( 'Sitemap', 'kesso-access' ),
+				'kesso_toolbar_button_help_title' => __( 'Help', 'kesso-access' ),
+				'kesso_toolbar_button_feedback_title' => __( 'Feedback', 'kesso-access' ),
 			];
 		}
 		
@@ -107,7 +107,7 @@ class Kesso_Widget {
 		}
 
 		wp_register_script(
-			'kesso-widget',
+			'kesso-access',
 			KESSO_ASSETS_URL . 'js/widget.js',
 			[ 'jquery' ],
 			KESSO_VERSION,
@@ -115,31 +115,31 @@ class Kesso_Widget {
 		);
 
 		wp_register_style(
-			'kesso-widget',
+			'kesso-access',
 			KESSO_ASSETS_URL . 'css/widget.css',
 			[],
 			KESSO_VERSION
 		);
 
-		wp_enqueue_script( 'kesso-widget' );
-		wp_enqueue_style( 'kesso-widget' );
+		wp_enqueue_script( 'kesso-access' );
+		wp_enqueue_style( 'kesso-access' );
 
 		wp_localize_script(
-			'kesso-widget',
+			'kesso-access',
 			'KessoOptions',
 			[
-				'focusable' => ( 'enable' === get_option( 'kesso_focusable' ) ),
-				'remove_link_target' => ( 'enable' === get_option( 'kesso_remove_link_target' ) ),
-				'add_role_links' => ( 'enable' === get_option( 'kesso_add_role_links' ) ),
-				'enable_save' => ( 'enable' === get_option( 'kesso_save' ) ),
-				'save_expiration' => get_option( 'kesso_save_expiration' ),
+				'focusable'          => ( 'enable' === get_option( 'kesso_focusable' ) ) ? '1' : '0',
+				'remove_link_target' => ( 'enable' === get_option( 'kesso_remove_link_target' ) ) ? '1' : '0',
+				'add_role_links'     => ( 'enable' === get_option( 'kesso_add_role_links' ) ) ? '1' : '0',
+				'enable_save'        => ( 'enable' === get_option( 'kesso_save' ) ) ? '1' : '0',
+				'save_expiration'    => get_option( 'kesso_save_expiration' ),
 			]
 		);
 
 		// Add inline CSS for custom widget styling
 		$custom_css = $this->get_custom_css();
 		if ( ! empty( $custom_css ) ) {
-			wp_add_inline_style( 'kesso-widget', $custom_css );
+			wp_add_inline_style( 'kesso-access', $custom_css );
 		}
 	}
 
@@ -159,7 +159,7 @@ class Kesso_Widget {
 
 		$element_id = get_option( 'kesso_skip_to_content_link_element_id', 'content' );
 		?>
-		<a id="kesso-skip-content" class="kesso-skip-link kesso-skip-content" tabindex="1" accesskey="s" href="#<?php echo esc_html( $element_id ); ?>"><?php esc_html_e( 'Skip to content', 'kesso-widget' ); ?></a>
+		<a id="kesso-skip-content" class="kesso-skip-link kesso-skip-content" tabindex="0" accesskey="s" href="#<?php echo esc_attr( $element_id ); ?>"><?php esc_html_e( 'Skip to content', 'kesso-access' ); ?></a>
 		<?php
 	}
 
@@ -245,13 +245,13 @@ class Kesso_Widget {
 		?>
 		<nav id="kesso-toolbar" class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" role="navigation">
 			<div class="kesso-toolbar-toggle">
-				<a class="kesso-toolbar-link kesso-toolbar-toggle-link" href="javascript:void(0);" title="<?php echo esc_attr( $toolbar_title ); ?>" role="button">
-					<span class="kesso-sr-only sr-only"><?php esc_html_e( 'Open toolbar', 'kesso-widget' ); ?></span>
+				<button type="button" class="kesso-toolbar-link kesso-toolbar-toggle-link" title="<?php echo esc_attr( $toolbar_title ); ?>">
+					<span class="kesso-sr-only sr-only"><?php esc_html_e( 'Open toolbar', 'kesso-access' ); ?></span>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor" width="1em">
 						<title><?php echo esc_html( $toolbar_title ); ?></title>
 						<?php echo $this->get_svg_icon( $icon ); ?>
 					</svg>
-				</a>
+				</button>
 			</div>
 			<div class="kesso-toolbar-overlay">
 				<div class="kesso-toolbar-inner">
@@ -261,79 +261,79 @@ class Kesso_Widget {
 						<?php do_action( 'kesso_toolbar_before_buttons' ); ?>
 						<?php if ( $this->is_toolbar_button_active( 'resize_font' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-resize-font kesso-btn-resize-plus" data-action="resize-plus" data-action-group="resize" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-resize-font kesso-btn-resize-plus" data-action="resize-plus" data-action-group="resize" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'resize_font_add' ); ?>
-								</a>
+								</button>
 							</li>
 
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-resize-font kesso-btn-resize-minus" data-action="resize-minus" data-action-group="resize" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-resize-font kesso-btn-resize-minus" data-action="resize-minus" data-action-group="resize" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'resize_font_less' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'grayscale' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-grayscale" data-action="grayscale" data-action-group="schema" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-grayscale" data-action="grayscale" data-action-group="schema" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'grayscale' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'high_contrast' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-high-contrast" data-action="high-contrast" data-action-group="schema" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-high-contrast" data-action="high-contrast" data-action-group="schema" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'high_contrast' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'negative_contrast' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-negative-contrast" data-action="negative-contrast" data-action-group="schema" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-negative-contrast" data-action="negative-contrast" data-action-group="schema" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'negative_contrast' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'light_bg' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-light-background" data-action="light-background" data-action-group="schema" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-background-group kesso-btn-light-background" data-action="light-background" data-action-group="schema" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'light_bg' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'links_underline' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-links-underline" data-action="links-underline" data-action-group="toggle" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-links-underline" data-action="links-underline" data-action-group="toggle" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'links_underline' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'readable_font' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-readable-font" data-action="readable-font" data-action-group="toggle" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-readable-font" data-action="readable-font" data-action-group="toggle" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'readable_font' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 
 						<?php if ( $this->is_toolbar_button_active( 'pause_animations' ) ) : ?>
 							<li class="kesso-toolbar-item">
-								<a href="#" class="kesso-toolbar-link kesso-btn-pause-animations" data-action="pause-animations" data-action-group="toggle" tabindex="-1" role="button">
+								<button type="button" class="kesso-toolbar-link kesso-btn-pause-animations" data-action="pause-animations" data-action-group="toggle" tabindex="-1">
 									<?php echo $this->get_toolbar_button_title( 'pause_animations' ); ?>
-								</a>
+								</button>
 							</li>
 						<?php endif; ?>
 						<?php do_action( 'kesso_toolbar_after_buttons' ); ?>
 						<li class="kesso-toolbar-item">
-							<a href="#" class="kesso-toolbar-link kesso-btn-reset" data-action="reset" tabindex="-1" role="button">
-								<span class="kesso-toolbar-icon"><?php echo $this->get_toolbar_svg( 'reset', esc_html__( 'Reset', 'kesso-widget' ) ); ?></span>
-								<span class="kesso-toolbar-text"><?php esc_html_e( 'Reset', 'kesso-widget' ); ?></span>
-							</a>
+							<button type="button" class="kesso-toolbar-link kesso-btn-reset" data-action="reset" tabindex="-1">
+								<span class="kesso-toolbar-icon"><?php echo $this->get_toolbar_svg( 'reset', esc_html__( 'Reset', 'kesso-access' ) ); ?></span>
+								<span class="kesso-toolbar-text"><?php esc_html_e( 'Reset', 'kesso-access' ); ?></span>
+							</button>
 						</li>
 					</ul>
 					<?php if ( $has_custom_links ) : ?>
@@ -365,7 +365,7 @@ class Kesso_Widget {
 					<!-- Kesso Credit -->
 					<div class="kesso-toolbar-credit">
 						<a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-toolbar-credit-link" tabindex="-1">
-							<?php esc_html_e( '🧀 Powered by', 'kesso-widget' ); ?> <strong>kesso.io</strong>
+							<?php esc_html_e( '🧀 Powered by', 'kesso-access' ); ?> <strong>kesso.io</strong>
 						</a>
 					</div>
 				</div>
@@ -460,16 +460,16 @@ class Kesso_Widget {
 		
 		if ( isset( $icon_sizes[ $size ] ) ) {
 			// Apply size only to widget toggle button icon
-			$css .= '#kesso-toolbar .kesso-toolbar-toggle a svg {';
+			$css .= '#kesso-toolbar .kesso-toolbar-toggle button svg {';
 			$css .= 'width: ' . esc_attr( $icon_sizes[ $size ] ) . ';';
 			$css .= 'height: ' . esc_attr( $icon_sizes[ $size ] ) . ';';
 			$css .= 'min-width: unset;';
 			$css .= 'min-height: unset;';
 			$css .= '}';
-			
+
 			// Apply padding to toggle button
 			if ( isset( $paddings[ $size ] ) ) {
-				$css .= '#kesso-toolbar .kesso-toolbar-toggle a {';
+				$css .= '#kesso-toolbar .kesso-toolbar-toggle button {';
 				$css .= 'padding: ' . esc_attr( $paddings[ $size ] ) . ';';
 				$css .= '}';
 			}
@@ -487,7 +487,7 @@ class Kesso_Widget {
 			
 			if ( isset( $radius_values[ $border_radius ] ) ) {
 				// Apply to toggle button
-				$css .= '#kesso-toolbar .kesso-toolbar-toggle a {';
+				$css .= '#kesso-toolbar .kesso-toolbar-toggle button {';
 				$css .= 'border-radius: ' . esc_attr( $radius_values[ $border_radius ] ) . ';';
 				$css .= '}';
 				
@@ -503,17 +503,17 @@ class Kesso_Widget {
 		$icon_color = get_option( 'kesso_widget_icon_color', '#000000' );
 		if ( $icon_color ) {
 			// Apply to toggle button icon
-			$css .= '#kesso-toolbar .kesso-toolbar-toggle a svg {';
+			$css .= '#kesso-toolbar .kesso-toolbar-toggle button svg {';
 			$css .= 'fill: ' . esc_attr( $icon_color ) . ';';
 			$css .= '}';
-			
+
 			// Apply to overlay icons
-			$css .= '#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a svg {';
+			$css .= '#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {';
 			$css .= 'fill: ' . esc_attr( $icon_color ) . ';';
 			$css .= '}';
-			
+
 			// Apply as text color in options list
-			$css .= '#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a .kesso-toolbar-text {';
+			$css .= '#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link .kesso-toolbar-text {';
 			$css .= 'color: ' . esc_attr( $icon_color ) . ';';
 			$css .= '}';
 		}
@@ -525,14 +525,14 @@ class Kesso_Widget {
 			$border_hex = $this->extract_hex_from_color( $border_color );
 			$border_rgb = $this->hex_to_rgb( $border_hex );
 			$shadow_color = 'rgba(' . $border_rgb['r'] . ', ' . $border_rgb['g'] . ', ' . $border_rgb['b'] . ', 0.05)';
-			
+
 			// Apply to toggle button
-			$css .= '#kesso-toolbar .kesso-toolbar-toggle a {';
+			$css .= '#kesso-toolbar .kesso-toolbar-toggle button {';
 			$css .= 'border-color: ' . esc_attr( $border_color ) . ';';
 			$css .= 'border: 1px solid ' . esc_attr( $border_color ) . ';';
 			$css .= 'box-shadow: 0 0 10px 5px ' . esc_attr( $shadow_color ) . ';';
 			$css .= '}';
-			
+
 			// Apply to overlay
 			$css .= '#kesso-toolbar .kesso-toolbar-overlay {';
 			$css .= 'border-color: ' . esc_attr( $border_color ) . ';';
@@ -540,10 +540,10 @@ class Kesso_Widget {
 			$css .= '}';
 		} else {
 			// Default box-shadow if no border color is set
-			$css .= '#kesso-toolbar .kesso-toolbar-toggle a {';
+			$css .= '#kesso-toolbar .kesso-toolbar-toggle button {';
 			$css .= 'box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);';
 			$css .= '}';
-			
+
 			$css .= '#kesso-toolbar .kesso-toolbar-overlay {';
 			$css .= 'box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.05);';
 			$css .= '}';
@@ -553,10 +553,10 @@ class Kesso_Widget {
 		$background_color = get_option( 'kesso_widget_background_color', '#ffffff' );
 		if ( $background_color ) {
 			// Apply to toggle button
-			$css .= '#kesso-toolbar .kesso-toolbar-toggle a {';
+			$css .= '#kesso-toolbar .kesso-toolbar-toggle button {';
 			$css .= 'background-color: ' . esc_attr( $background_color ) . ';';
 			$css .= '}';
-			
+
 			// Apply to overlay
 			$css .= '#kesso-toolbar .kesso-toolbar-overlay {';
 			$css .= 'background-color: ' . esc_attr( $background_color ) . ';';

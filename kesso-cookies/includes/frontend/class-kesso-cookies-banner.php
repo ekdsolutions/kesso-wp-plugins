@@ -57,7 +57,7 @@ class Kesso_Cookies_Banner {
         }
 
         // Add custom CSS from admin settings
-        $user_custom_css = get_option( 'kesso_cookies_custom_css', '' );
+        $user_custom_css = wp_strip_all_tags( get_option( 'kesso_cookies_custom_css', '' ) );
         if ( ! empty( $user_custom_css ) ) {
             wp_add_inline_style( 'kesso-cookies-frontend', $user_custom_css );
         }
@@ -258,19 +258,6 @@ class Kesso_Cookies_Banner {
         $privacy_page_id = get_option( 'wp_page_for_privacy_policy' );
         if ( $privacy_page_id ) {
             return get_permalink( $privacy_page_id );
-        }
-
-        // Try to find page with "privacy" in title
-        $pages = get_pages( array(
-            'post_status' => 'publish',
-            'number'     => 1,
-            'meta_key'   => '_wp_page_template',
-        ) );
-
-        foreach ( $pages as $page ) {
-            if ( stripos( $page->post_title, 'privacy' ) !== false ) {
-                return get_permalink( $page->ID );
-            }
         }
 
         return '';

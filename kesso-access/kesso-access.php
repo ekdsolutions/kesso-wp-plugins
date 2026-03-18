@@ -88,7 +88,7 @@ final class Kesso_Plugin {
 	 * Prevent unserializing
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, esc_html__( 'Something went wrong.', 'kesso-widget' ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'Something went wrong.', 'kesso-access' ), '1.0.0' );
 	}
 }
 
