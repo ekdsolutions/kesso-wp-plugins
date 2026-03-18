@@ -1,5 +1,16 @@
 /*! Accessibility Widget CSS */
 
+/* Button reset — toolbar uses <button> for action items */
+#kesso-toolbar button.kesso-toolbar-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+}
+
 /* Pause animations */
 body.kesso-pause-animations *,
 body.kesso-pause-animations *::before,
@@ -66,14 +77,14 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
   z-index: 10000;
   flex-shrink: 0;
 }
-#kesso-toolbar .kesso-toolbar-toggle a {
+#kesso-toolbar .kesso-toolbar-toggle button {
   display: inline-block;
   font-size: 200%;
   line-height: 0;
   padding: 12px;
 }
-#kesso-toolbar .kesso-toolbar-toggle a:hover,
-#kesso-toolbar .kesso-toolbar-toggle a:focus {
+#kesso-toolbar .kesso-toolbar-toggle button:hover,
+#kesso-toolbar .kesso-toolbar-toggle button:focus {
   /* Hover/focus shadow will be overridden by inline CSS based on border color */
 }
 #kesso-toolbar .kesso-toolbar-toggle svg {
@@ -110,7 +121,7 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
   line-height: 1;
   min-width: max-content;
 }
-#kesso-toolbar .kesso-toolbar-overlay.kesso-toolbar-open .kesso-toolbar-toggle a,
+#kesso-toolbar .kesso-toolbar-overlay.kesso-toolbar-open .kesso-toolbar-toggle button,
 #kesso-toolbar .kesso-toolbar-overlay.kesso-toolbar-open .kesso-toolbar-overlay {
   -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
@@ -124,17 +135,17 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
 #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items.kesso-links {
   border-top: 1px solid;
 }
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a {
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
   display: block;
   padding: 10px 15px;
   font-size: 80%;
   line-height: 1;
   text-decoration: none; /* Remove underline by default */
 }
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a.active {
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link.active {
   font-weight: bold;
 }
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a svg {
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {
   padding-right: 6px;
   display: inline-block;
   width: 1.5em;
@@ -146,14 +157,14 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
   text-rendering: auto;
   vertical-align: middle;
 }
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a:hover,
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a:focus {
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:hover,
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus {
   text-decoration: underline; /* Add underline on hover/focus */
 }
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a .kesso-toolbar-text {
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link .kesso-toolbar-text {
   vertical-align: middle;
 }
-body.rtl #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a svg {
+body.rtl #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {
   padding-left: 6px;
   padding-right: 0;
 }
@@ -164,7 +175,7 @@ body.rtl #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-t
   #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items {
     padding: 7px 0;
   }
-  #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item a {
+  #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
     display: block;
     padding: 7px 12px;
   }
