@@ -24,7 +24,7 @@ class Kesso_Admin {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->_page_title = strtoupper( __( '🧀 Kesso Accessibility Widget', 'kesso-widget' ) );
+		$this->_page_title = strtoupper( __( '🧀 Kesso Accessibility Widget', 'kesso-access' ) );
 
 		add_action( 'admin_menu', [ $this, 'admin_menu' ], 21 );
 		add_action( 'admin_init', [ $this, 'admin_init' ], 20 );
@@ -63,8 +63,8 @@ class Kesso_Admin {
 		$icon_url = KESSO_ASSETS_URL . 'img/kesso-favicon.png';
 
 		add_menu_page(
-			__( 'Accessibility', 'kesso-widget' ),
-			'# ' . __( 'Accessibility', 'kesso-widget' ),
+			__( 'Accessibility', 'kesso-access' ),
+			'# ' . __( 'Accessibility', 'kesso-access' ),
 			'manage_options',
 			'kesso-settings',
 			[ $this, 'display_settings_page' ],
@@ -73,8 +73,8 @@ class Kesso_Admin {
 		);
 		add_submenu_page(
 			'kesso-settings',
-			__( 'Kesso Settings', 'kesso-widget' ),
-			__( 'Settings', 'kesso-widget' ),
+			__( 'Kesso Settings', 'kesso-access' ),
+			__( 'Settings', 'kesso-access' ),
 			'manage_options',
 			'kesso-settings',
 			[ $this, 'display_settings_page' ]
@@ -165,17 +165,17 @@ class Kesso_Admin {
 		// Toolbar Display Settings
 		$fields[] = [
 			'id'      => 'kesso_toolbar',
-			'title'   => __( 'Display Toolbar', 'kesso-widget' ),
+			'title'   => __( 'Display Toolbar', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'options' => [
-				'enable'          => __( 'Show on all devices', 'kesso-widget' ),
-				'visible-desktop' => __( 'Visible Desktop', 'kesso-widget' ),
-				'visible-tablet'  => __( 'Visible Tablet', 'kesso-widget' ),
-				'visible-phone'   => __( 'Visible Phone', 'kesso-widget' ),
-				'hidden-desktop'  => __( 'Hidden Desktop', 'kesso-widget' ),
-				'hidden-tablet'   => __( 'Hidden Tablet', 'kesso-widget' ),
-				'hidden-phone'    => __( 'Hidden Phone', 'kesso-widget' ),
-				'disable'         => __( 'Disable', 'kesso-widget' ),
+				'enable'          => __( 'Show on all devices', 'kesso-access' ),
+				'visible-desktop' => __( 'Visible Desktop', 'kesso-access' ),
+				'visible-tablet'  => __( 'Visible Tablet', 'kesso-access' ),
+				'visible-phone'   => __( 'Visible Phone', 'kesso-access' ),
+				'hidden-desktop'  => __( 'Hidden Desktop', 'kesso-access' ),
+				'hidden-tablet'   => __( 'Hidden Tablet', 'kesso-access' ),
+				'hidden-phone'    => __( 'Hidden Phone', 'kesso-access' ),
+				'disable'         => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_toolbar_display' ],
@@ -183,16 +183,16 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_title',
-			'title' => __( 'Toolbar Title', 'kesso-widget' ),
+			'title' => __( 'Toolbar Title', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
-			'std'   => __( 'Accessibility Tools', 'kesso-widget' ),
+			'std'   => __( 'Accessibility Tools', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		// Add divider/heading for Toolbar Buttons
 		$fields[] = [
 			'id'    => 'toolbar_buttons_heading',
-			'title' => '<h3 class="kesso-section-heading">' . __( 'Toolbar Buttons', 'kesso-widget' ) . '</h3>',
+			'title' => '<h3 class="kesso-section-heading">' . __( 'Toolbar Buttons', 'kesso-access' ) . '</h3>',
 			'type'  => 'html',
 		];
 
@@ -202,12 +202,12 @@ class Kesso_Admin {
 		// (Resize Font, Grayscale, High Contrast, etc.)
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_resize_font',
-			'title'   => __( 'Resize Font', 'kesso-widget' ),
+			'title'   => __( 'Resize Font', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -215,30 +215,30 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_resize_font_add_title',
-			'title' => __( 'Increase Text', 'kesso-widget' ),
+			'title' => __( 'Increase Text', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row no-border',
-			'std'   => __( 'Increase Text', 'kesso-widget' ),
+			'std'   => __( 'Increase Text', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_resize_font_less_title',
-			'title' => __( 'Decrease Text', 'kesso-widget' ),
+			'title' => __( 'Decrease Text', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Decrease Text', 'kesso-widget' ),
+			'std'   => __( 'Decrease Text', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_grayscale',
-			'title'   => __( 'Grayscale', 'kesso-widget' ),
+			'title'   => __( 'Grayscale', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -246,21 +246,21 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_grayscale_title',
-			'title' => __( 'Grayscale', 'kesso-widget' ),
+			'title' => __( 'Grayscale', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Grayscale', 'kesso-widget' ),
+			'std'   => __( 'Grayscale', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_high_contrast',
-			'title'   => __( 'High Contrast', 'kesso-widget' ),
+			'title'   => __( 'High Contrast', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -268,21 +268,21 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_high_contrast_title',
-			'title' => __( 'High Contrast', 'kesso-widget' ),
+			'title' => __( 'High Contrast', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'High Contrast', 'kesso-widget' ),
+			'std'   => __( 'High Contrast', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_negative_contrast',
-			'title'   => __( 'Negative Contrast', 'kesso-widget' ),
+			'title'   => __( 'Negative Contrast', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -290,21 +290,21 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_negative_contrast_title',
-			'title' => __( 'Negative Contrast', 'kesso-widget' ),
+			'title' => __( 'Negative Contrast', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Negative Contrast', 'kesso-widget' ),
+			'std'   => __( 'Negative Contrast', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_light_bg',
-			'title'   => __( 'Light Background', 'kesso-widget' ),
+			'title'   => __( 'Light Background', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -312,21 +312,21 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_light_bg_title',
-			'title' => __( 'Light Background', 'kesso-widget' ),
+			'title' => __( 'Light Background', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Light Background', 'kesso-widget' ),
+			'std'   => __( 'Light Background', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_links_underline',
-			'title'   => __( 'Links Underline', 'kesso-widget' ),
+			'title'   => __( 'Links Underline', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -334,21 +334,21 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_links_underline_title',
-			'title' => __( 'Links Underline', 'kesso-widget' ),
+			'title' => __( 'Links Underline', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Links Underline', 'kesso-widget' ),
+			'std'   => __( 'Links Underline', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_readable_font',
-			'title'   => __( 'Readable Font', 'kesso-widget' ),
+			'title'   => __( 'Readable Font', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -356,21 +356,21 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_readable_font_title',
-			'title' => __( 'Readable Font', 'kesso-widget' ),
+			'title' => __( 'Readable Font', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Readable Font', 'kesso-widget' ),
+			'std'   => __( 'Readable Font', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'      => 'kesso_toolbar_button_pause_animations',
-			'title'   => __( 'Pause Animations', 'kesso-widget' ),
+			'title'   => __( 'Pause Animations', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'class'   => $toolbar_options_classes,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -378,28 +378,28 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_pause_animations_title',
-			'title' => __( 'Pause Animations', 'kesso-widget' ),
+			'title' => __( 'Pause Animations', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes . ' kesso-settings-child-row',
-			'std'   => __( 'Pause Animations', 'kesso-widget' ),
+			'std'   => __( 'Pause Animations', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_sitemap_title',
-			'title' => __( 'Sitemap', 'kesso-widget' ),
+			'title' => __( 'Sitemap', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes,
-			'std'   => __( 'Sitemap', 'kesso-widget' ),
+			'std'   => __( 'Sitemap', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'          => 'kesso_toolbar_button_sitemap_link',
-			'title'       => __( 'Sitemap Link', 'kesso-widget' ),
+			'title'       => __( 'Sitemap Link', 'kesso-access' ),
 			'type'        => self::FIELD_TEXT,
 			'placeholder' => 'https://your-domain.com/sitemap',
-			'desc'        => __( 'Link for sitemap page in your website. Leave blank to disable.', 'kesso-widget' ),
+			'desc'        => __( 'Link for sitemap page in your website. Leave blank to disable.', 'kesso-access' ),
 			'class'       => $toolbar_options_classes . ' kesso-settings-child-row',
 			'std'         => '',
 			'sanitize_callback' => 'esc_url_raw',
@@ -407,19 +407,19 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_help_title',
-			'title' => __( 'Help', 'kesso-widget' ),
+			'title' => __( 'Help', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes,
-			'std'   => __( 'Help', 'kesso-widget' ),
+			'std'   => __( 'Help', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'          => 'kesso_toolbar_button_help_link',
-			'title'       => __( 'Help Link', 'kesso-widget' ),
+			'title'       => __( 'Help Link', 'kesso-access' ),
 			'type'        => self::FIELD_TEXT,
 			'placeholder' => 'https://your-domain.com/help',
-			'desc'        => __( 'Link for help page in your website. Leave blank to disable.', 'kesso-widget' ),
+			'desc'        => __( 'Link for help page in your website. Leave blank to disable.', 'kesso-access' ),
 			'class'       => $toolbar_options_classes . ' kesso-settings-child-row',
 			'std'         => '',
 			'sanitize_callback' => 'esc_url_raw',
@@ -427,19 +427,19 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'    => 'kesso_toolbar_button_feedback_title',
-			'title' => __( 'Feedback Title', 'kesso-widget' ),
+			'title' => __( 'Feedback Title', 'kesso-access' ),
 			'type'  => self::FIELD_TEXT,
 			'class' => $toolbar_options_classes,
-			'std'   => __( 'Feedback', 'kesso-widget' ),
+			'std'   => __( 'Feedback', 'kesso-access' ),
 			'sanitize_callback' => 'sanitize_text_field',
 		];
 
 		$fields[] = [
 			'id'          => 'kesso_toolbar_button_feedback_link',
-			'title'       => __( 'Feedback', 'kesso-widget' ),
+			'title'       => __( 'Feedback', 'kesso-access' ),
 			'type'        => self::FIELD_TEXT,
 			'placeholder' => 'https://your-domain.com/feedback',
-			'desc'        => __( 'Link for feedback page in your website. Leave blank to disable.', 'kesso-widget' ),
+			'desc'        => __( 'Link for feedback page in your website. Leave blank to disable.', 'kesso-access' ),
 			'class'       => $toolbar_options_classes . ' kesso-settings-child-row',
 			'std'         => '',
 			'sanitize_callback' => 'esc_url_raw',
@@ -448,20 +448,20 @@ class Kesso_Admin {
 		// Add divider/heading for Widget Styling
 		$fields[] = [
 			'id'    => 'widget_styling_heading',
-			'title' => '<h3 class="kesso-section-heading">' . __( 'Widget Styling', 'kesso-widget' ) . '</h3>',
+			'title' => '<h3 class="kesso-section-heading">' . __( 'Widget Styling', 'kesso-access' ) . '</h3>',
 			'type'  => 'html',
 		];
 
 		// Position field
 		$fields[] = [
 			'id'      => 'kesso_widget_position',
-			'title'   => __( 'Position', 'kesso-widget' ),
+			'title'   => __( 'Position', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'options' => [
-				'top-right'  => __( 'Top Right', 'kesso-widget' ),
-				'top-left'  => __( 'Top Left', 'kesso-widget' ),
-				'bottom-right' => __( 'Bottom Right', 'kesso-widget' ),
-				'bottom-left'  => __( 'Bottom Left', 'kesso-widget' ),
+				'top-right'  => __( 'Top Right', 'kesso-access' ),
+				'top-left'  => __( 'Top Left', 'kesso-access' ),
+				'bottom-right' => __( 'Bottom Right', 'kesso-access' ),
+				'bottom-left'  => __( 'Bottom Left', 'kesso-access' ),
 			],
 			'std'     => 'bottom-left',
 			'sanitize_callback' => 'sanitize_text_field',
@@ -470,13 +470,13 @@ class Kesso_Admin {
 		// Size field (icon size and padding combined)
 		$fields[] = [
 			'id'      => 'kesso_widget_size',
-			'title'   => __( 'Size', 'kesso-widget' ),
+			'title'   => __( 'Size', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'options' => [
-				'xs' => __( 'XS', 'kesso-widget' ),
-				'sm' => __( 'SM', 'kesso-widget' ),
-				'md' => __( 'MD', 'kesso-widget' ),
-				'lg' => __( 'LG', 'kesso-widget' ),
+				'xs' => __( 'XS', 'kesso-access' ),
+				'sm' => __( 'SM', 'kesso-access' ),
+				'md' => __( 'MD', 'kesso-access' ),
+				'lg' => __( 'LG', 'kesso-access' ),
 			],
 			'std'     => 'md',
 			'sanitize_callback' => 'sanitize_text_field',
@@ -485,13 +485,13 @@ class Kesso_Admin {
 		// Border radius
 		$fields[] = [
 			'id'      => 'kesso_widget_border_radius',
-			'title'   => __( 'Border Radius', 'kesso-widget' ),
+			'title'   => __( 'Border Radius', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'options' => [
-				'full' => __( 'Full', 'kesso-widget' ),
-				'sm'   => __( 'SM', 'kesso-widget' ),
-				'md'   => __( 'MD', 'kesso-widget' ),
-				'lg'   => __( 'LG', 'kesso-widget' ),
+				'full' => __( 'Full', 'kesso-access' ),
+				'sm'   => __( 'SM', 'kesso-access' ),
+				'md'   => __( 'MD', 'kesso-access' ),
+				'lg'   => __( 'LG', 'kesso-access' ),
 			],
 			'std'     => '',
 			'sanitize_callback' => 'sanitize_text_field',
@@ -500,7 +500,7 @@ class Kesso_Admin {
 		// Background color
 		$fields[] = [
 			'id'    => 'kesso_widget_background_color',
-			'title' => __( 'Background Color', 'kesso-widget' ),
+			'title' => __( 'Background Color', 'kesso-access' ),
 			'type'  => 'color',
 			'std'   => '#ffffff',
 			'sanitize_callback' => [ $this, 'sanitize_color' ],
@@ -509,7 +509,7 @@ class Kesso_Admin {
 		// Icon color
 		$fields[] = [
 			'id'    => 'kesso_widget_icon_color',
-			'title' => __( 'Icon Color', 'kesso-widget' ),
+			'title' => __( 'Icon Color', 'kesso-access' ),
 			'type'  => 'color',
 			'std'   => '#000000',
 			'sanitize_callback' => [ $this, 'sanitize_color' ],
@@ -518,7 +518,7 @@ class Kesso_Admin {
 		// Border color
 		$fields[] = [
 			'id'    => 'kesso_widget_border_color',
-			'title' => __( 'Border Color', 'kesso-widget' ),
+			'title' => __( 'Border Color', 'kesso-access' ),
 			'type'  => 'color',
 			'std'   => 'rgba(0, 0, 0, 0.1)',
 			'sanitize_callback' => [ $this, 'sanitize_color' ],
@@ -527,14 +527,14 @@ class Kesso_Admin {
 		// Add divider/heading for General Settings
 		$fields[] = [
 			'id'    => 'general_settings_heading',
-			'title' => '<h3 class="kesso-section-heading">' . __( 'General Settings', 'kesso-widget' ) . '</h3>',
+			'title' => '<h3 class="kesso-section-heading">' . __( 'General Settings', 'kesso-access' ) . '</h3>',
 			'type'  => 'html',
 		];
 
 		// Existing general settings fields
 		$fields[] = [
 			'id'          => 'kesso_skip_to_content_link_element_id',
-			'title'       => __( 'Skip to Content Element ID', 'kesso-widget' ),
+			'title'       => __( 'Skip to Content Element ID', 'kesso-access' ),
 			'placeholder' => 'content',
 			'type'        => self::FIELD_TEXT,
 			'std'         => 'content',
@@ -543,12 +543,12 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'      => 'kesso_skip_to_content_link',
-			'title'   => __( 'Skip to Content link', 'kesso-widget' ),
+			'title'   => __( 'Skip to Content link', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
-			'desc'    => __( 'Add skip to content link when using keyboard.', 'kesso-widget' ),
+			'desc'    => __( 'Add skip to content link when using keyboard.', 'kesso-access' ),
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -556,12 +556,12 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'      => 'kesso_focusable',
-			'title'   => __( 'Add Outline Focus', 'kesso-widget' ),
+			'title'   => __( 'Add Outline Focus', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
-			'desc'    => __( 'Add outline to elements on keyboard focus.', 'kesso-widget' ),
+			'desc'    => __( 'Add outline to elements on keyboard focus.', 'kesso-access' ),
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'disable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -569,12 +569,12 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'      => 'kesso_remove_link_target',
-			'title'   => __( 'Remove target attribute from links', 'kesso-widget' ),
+			'title'   => __( 'Remove target attribute from links', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
-			'desc'    => __( 'This option will reset all your target links to open in the same window or tab.', 'kesso-widget' ),
+			'desc'    => __( 'This option will reset all your target links to open in the same window or tab.', 'kesso-access' ),
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'disable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -582,12 +582,12 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'      => 'kesso_add_role_links',
-			'title'   => __( 'Add landmark roles to all links', 'kesso-widget' ),
+			'title'   => __( 'Add landmark roles to all links', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
-			'desc'    => __( 'This option will add <code>role="link"</code> to all links on the page.', 'kesso-widget' ),
+			'desc'    => __( 'This option will add <code>role="link"</code> to all links on the page.', 'kesso-access' ),
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -595,12 +595,12 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'      => 'kesso_save',
-			'title'   => __( 'Sitewide Accessibility', 'kesso-widget' ),
-			'desc'    => __( 'Consistent accessibility throughout your site visit. Site remembers you and stays accessible.', 'kesso-widget' ),
+			'title'   => __( 'Sitewide Accessibility', 'kesso-access' ),
+			'desc'    => __( 'Consistent accessibility throughout your site visit. Site remembers you and stays accessible.', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
 			'options' => [
-				'enable'  => __( 'Enable', 'kesso-widget' ),
-				'disable' => __( 'Disable', 'kesso-widget' ),
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
 			],
 			'std'     => 'enable',
 			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
@@ -608,18 +608,18 @@ class Kesso_Admin {
 
 		$fields[] = [
 			'id'      => 'kesso_save_expiration',
-			'title'   => __( 'Remember user for', 'kesso-widget' ),
+			'title'   => __( 'Remember user for', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,
-			'desc'    => __( 'Define how long your toolbar settings will be remembered', 'kesso-widget' ),
+			'desc'    => __( 'Define how long your toolbar settings will be remembered', 'kesso-access' ),
 			'options' => [
-				'1'   => __( '1 Hour', 'kesso-widget' ),
-				'6'   => __( '6 Hours', 'kesso-widget' ),
-				'12'  => __( '12 Hours', 'kesso-widget' ),
-				'24'  => __( '1 Day', 'kesso-widget' ),
-				'48'  => __( '2 Days', 'kesso-widget' ),
-				'72'  => __( '3 Days', 'kesso-widget' ),
-				'168' => __( '1 Week', 'kesso-widget' ),
-				'720' => __( '1 Month', 'kesso-widget' ),
+				'1'   => __( '1 Hour', 'kesso-access' ),
+				'6'   => __( '6 Hours', 'kesso-access' ),
+				'12'  => __( '12 Hours', 'kesso-access' ),
+				'24'  => __( '1 Day', 'kesso-access' ),
+				'48'  => __( '2 Days', 'kesso-access' ),
+				'72'  => __( '3 Days', 'kesso-access' ),
+				'168' => __( '1 Week', 'kesso-access' ),
+				'720' => __( '1 Month', 'kesso-access' ),
 			],
 			'std'     => '12',
 			'sanitize_callback' => [ $this, 'sanitize_expiration' ],
@@ -628,7 +628,7 @@ class Kesso_Admin {
 		$sections[] = [
 			'id'     => 'section-kesso-settings',
 			'page'   => self::SETTINGS_PAGE,
-			'title'  => __( 'Settings', 'kesso-widget' ),
+			'title'  => __( 'Settings', 'kesso-access' ),
 			'intro'  => '',
 			'fields' => $fields,
 		];
@@ -742,7 +742,7 @@ class Kesso_Admin {
 		<!-- Kesso Banner -->
 		<div class="kesso-banner">
 			<div class="kesso-banner-content">
-				<?php echo esc_html__( 'This plugin was developed and distributed with ❤️ for free use by', 'kesso-widget' ); ?> 
+				<?php echo esc_html__( 'This plugin was developed and distributed with ❤️ for free use by', 'kesso-access' ); ?> 
 				<a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-banner-link">kesso.io</a>
 			</div>
 		</div>
@@ -751,8 +751,8 @@ class Kesso_Admin {
 				<main class="kesso-main">
 					<div class="kesso-page-heading">
 						<div class="kesso-heading-left">
-							<h1 class="kesso-title"><?php echo esc_html__( 'Accessibility Widget', 'kesso-widget' ); ?></h1>
-							<p class="kesso-subtitle"><?php echo esc_html__( 'Configure the toolbar, button labels, and widget appearance.', 'kesso-widget' ); ?></p>
+							<h1 class="kesso-title"><?php echo esc_html__( 'Accessibility Widget', 'kesso-access' ); ?></h1>
+							<p class="kesso-subtitle"><?php echo esc_html__( 'Configure the toolbar, button labels, and widget appearance.', 'kesso-access' ); ?></p>
 						</div>
 					</div>
 
@@ -765,9 +765,9 @@ class Kesso_Admin {
 						// Ensure correct order: General Settings, Toolbar Button Texts, Widget Styling
 						$ordered_sections = [];
 						$section_order = [
-							__( 'General Settings', 'kesso-widget' ),
-							__( 'Toolbar Button Texts', 'kesso-widget' ),
-							__( 'Widget Styling', 'kesso-widget' ),
+							__( 'General Settings', 'kesso-access' ),
+							__( 'Toolbar Button Texts', 'kesso-access' ),
+							__( 'Widget Styling', 'kesso-access' ),
 						];
 						foreach ( $section_order as $section_name ) {
 							if ( isset( $grouped_fields[ $section_name ] ) ) {
@@ -839,7 +839,7 @@ class Kesso_Admin {
 
 						// Move 'Toolbar Title' field to Feature Copy section
 						$toolbar_title_field = null;
-						$general_fields = $ordered_sections[ __( 'General Settings', 'kesso-widget' ) ] ?? array();
+						$general_fields = $ordered_sections[ __( 'General Settings', 'kesso-access' ) ] ?? array();
 						$general_fields_filtered = array();
 						$toggle_field_ids = array_keys( $feature_toggle_fields );
 						$general_toggle_field_ids_list = array_keys( $general_toggle_fields );
@@ -867,7 +867,7 @@ class Kesso_Admin {
 							array_unshift( $feature_copy_fields, $toolbar_title_field );
 						}
 
-						$toolbar_text_fields = $ordered_sections[ __( 'Toolbar Button Texts', 'kesso-widget' ) ] ?? array();
+						$toolbar_text_fields = $ordered_sections[ __( 'Toolbar Button Texts', 'kesso-access' ) ] ?? array();
 						$toolbar_text_fields = array_values(
 							array_filter(
 								$toolbar_text_fields,
@@ -894,7 +894,7 @@ class Kesso_Admin {
 							<div class="kesso-card-header">
 								<h2 class="kesso-card-title">
 									<span class="material-symbols-outlined kesso-icon" aria-hidden="true">tune</span>
-									<?php echo esc_html__( 'Toolbar', 'kesso-widget' ); ?>
+									<?php echo esc_html__( 'Toolbar', 'kesso-access' ); ?>
 								</h2>
 							</div>
 							<div class="kesso-card-body">
@@ -916,7 +916,7 @@ class Kesso_Admin {
 													<?php checked( $checked ); ?> />
 												<span class="kesso-access-feature-text">
 													<span class="kesso-access-feature-name"><?php echo esc_html( $title ); ?></span>
-													<span class="kesso-access-feature-desc"><?php echo esc_html__( 'Enable or disable this feature in the toolbar.', 'kesso-widget' ); ?></span>
+													<span class="kesso-access-feature-desc"><?php echo esc_html__( 'Enable or disable this feature in the toolbar.', 'kesso-access' ); ?></span>
 												</span>
 											</label>
 										</div>
@@ -927,7 +927,7 @@ class Kesso_Admin {
 								<details class="kesso-collapsible-container" style="margin-top: 24px;">
 									<summary class="kesso-collapsible-summary">
 										<span class="material-symbols-outlined kesso-icon" aria-hidden="true">edit</span>
-										<?php echo esc_html__( 'Toolbar Copy', 'kesso-widget' ); ?>
+										<?php echo esc_html__( 'Toolbar Copy', 'kesso-access' ); ?>
 										<span class="material-symbols-outlined kesso-collapsible-icon" aria-hidden="true">expand_more</span>
 									</summary>
 									<div class="kesso-collapsible-content" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--kesso-border, #e2e8f0);">
@@ -966,7 +966,7 @@ class Kesso_Admin {
 							<div class="kesso-card-header">
 								<h2 class="kesso-card-title">
 									<span class="material-symbols-outlined kesso-icon" aria-hidden="true">settings</span>
-									<?php echo esc_html__( 'General Features', 'kesso-widget' ); ?>
+									<?php echo esc_html__( 'General Features', 'kesso-access' ); ?>
 								</h2>
 							</div>
 							<div class="kesso-card-body kesso-card-body--stack">
@@ -988,7 +988,7 @@ class Kesso_Admin {
 													<?php checked( $checked ); ?> />
 												<span class="kesso-access-feature-text">
 													<span class="kesso-access-feature-name"><?php echo esc_html( $title ); ?></span>
-													<span class="kesso-access-feature-desc"><?php echo esc_html__( 'Enable or disable this feature.', 'kesso-widget' ); ?></span>
+													<span class="kesso-access-feature-desc"><?php echo esc_html__( 'Enable or disable this feature.', 'kesso-access' ); ?></span>
 												</span>
 											</label>
 										</div>
@@ -1058,7 +1058,7 @@ class Kesso_Admin {
 							<div class="kesso-card-header">
 								<h2 class="kesso-card-title">
 									<span class="material-symbols-outlined kesso-icon" aria-hidden="true">link</span>
-									<?php echo esc_html__( 'Useful Links', 'kesso-widget' ); ?>
+									<?php echo esc_html__( 'Useful Links', 'kesso-access' ); ?>
 								</h2>
 							</div>
 							<div class="kesso-card-body kesso-card-body--stack">
@@ -1092,13 +1092,13 @@ class Kesso_Admin {
 
 						<?php
 						// 4) Styling (keep, with improved color inputs)
-						$styling_fields = $ordered_sections[ __( 'Widget Styling', 'kesso-widget' ) ] ?? array();
+						$styling_fields = $ordered_sections[ __( 'Widget Styling', 'kesso-access' ) ] ?? array();
 						?>
 						<section class="kesso-card">
 							<div class="kesso-card-header">
 								<h2 class="kesso-card-title">
 									<span class="material-symbols-outlined kesso-icon" aria-hidden="true">palette</span>
-									<?php echo esc_html__( 'Widget Styling', 'kesso-widget' ); ?>
+									<?php echo esc_html__( 'Widget Styling', 'kesso-access' ); ?>
 								</h2>
 							</div>
 							<div class="kesso-card-body kesso-card-body--stack">
@@ -1162,14 +1162,14 @@ class Kesso_Admin {
 						<div class="kesso-footer-left">
 							<div class="kesso-footer-status">
 								<span class="kesso-footer-dot" aria-hidden="true"></span>
-								<span class="kesso-footer-label"><?php echo esc_html__( 'Ready to Save', 'kesso-widget' ); ?></span>
+								<span class="kesso-footer-label"><?php echo esc_html__( 'Ready to Save', 'kesso-access' ); ?></span>
 							</div>
-							<p class="kesso-footer-subtitle"><?php echo esc_html__( 'Review your changes and save when ready.', 'kesso-widget' ); ?></p>
+							<p class="kesso-footer-subtitle"><?php echo esc_html__( 'Review your changes and save when ready.', 'kesso-access' ); ?></p>
 						</div>
 
 						<div class="kesso-footer-right">
-							<button type="button" class="kesso-btn kesso-btn--ghost" id="kesso-reset-button"><?php echo esc_html__( 'Reset to Defaults', 'kesso-widget' ); ?></button>
-							<button type="submit" form="kesso-settings-form" class="kesso-btn kesso-btn--primary"><?php echo esc_html__( 'Save Changes', 'kesso-widget' ); ?></button>
+							<button type="button" class="kesso-btn kesso-btn--ghost" id="kesso-reset-button"><?php echo esc_html__( 'Reset to Defaults', 'kesso-access' ); ?></button>
+							<button type="submit" form="kesso-settings-form" class="kesso-btn kesso-btn--primary"><?php echo esc_html__( 'Save Changes', 'kesso-access' ); ?></button>
 						</div>
 					</div>
 				</footer>
@@ -1206,7 +1206,7 @@ class Kesso_Admin {
 				// Handle reset button
 				$( '#kesso-reset-button' ).on( 'click', function ( e ) {
 					e.preventDefault();
-					if ( confirm( '<?php echo esc_js( __( 'Are you sure you want to reset all settings to their default values?', 'kesso-widget' ) ); ?>' ) ) {
+					if ( confirm( '<?php echo esc_js( __( 'Are you sure you want to reset all settings to their default values?', 'kesso-access' ) ); ?>' ) ) {
 						// Get all default values from the form
 						var $form = $( '#kesso-settings-form' );
 						var defaults = {};
@@ -1414,8 +1414,8 @@ class Kesso_Admin {
 						// Before processing heading, handle any fields that came before it (like toolbar_title)
 						if ( empty( $current_section ) && ! empty( $section_fields ) ) {
 							// These are fields before any heading - add them to General Settings
-							if ( ! isset( $grouped[ __( 'General Settings', 'kesso-widget' ) ] ) ) {
-								$grouped[ __( 'General Settings', 'kesso-widget' ) ] = [];
+							if ( ! isset( $grouped[ __( 'General Settings', 'kesso-access' ) ] ) ) {
+								$grouped[ __( 'General Settings', 'kesso-access' ) ] = [];
 							}
 							// Ensure toolbar_title is first
 							$title_field = null;
@@ -1429,7 +1429,7 @@ class Kesso_Admin {
 							}
 							$ordered_fields = $title_field ? [ $title_field ] : [];
 							$ordered_fields = array_merge( $ordered_fields, $other_fields );
-							$grouped[ __( 'General Settings', 'kesso-widget' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-widget' ) ], $ordered_fields );
+							$grouped[ __( 'General Settings', 'kesso-access' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-access' ) ], $ordered_fields );
 							$section_fields = [];
 						}
 						
@@ -1453,13 +1453,13 @@ class Kesso_Admin {
 							
 							// Merge Toolbar Setup fields into General Settings
 							if ( ! empty( $toolbar_setup_fields ) ) {
-								if ( ! isset( $grouped[ __( 'General Settings', 'kesso-widget' ) ] ) ) {
-									$grouped[ __( 'General Settings', 'kesso-widget' ) ] = [];
+								if ( ! isset( $grouped[ __( 'General Settings', 'kesso-access' ) ] ) ) {
+									$grouped[ __( 'General Settings', 'kesso-access' ) ] = [];
 								}
-								$grouped[ __( 'General Settings', 'kesso-widget' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-widget' ) ], $toolbar_setup_fields );
+								$grouped[ __( 'General Settings', 'kesso-access' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-access' ) ], $toolbar_setup_fields );
 							}
 							if ( ! empty( $toolbar_text_fields ) ) {
-								$grouped[ __( 'Toolbar Button Texts', 'kesso-widget' ) ] = $toolbar_text_fields;
+								$grouped[ __( 'Toolbar Button Texts', 'kesso-access' ) ] = $toolbar_text_fields;
 							}
 							
 							$section_fields = [];
@@ -1469,11 +1469,11 @@ class Kesso_Admin {
 							// Save previous section
 							if ( ! empty( $current_section ) && ! empty( $section_fields ) ) {
 								// If it's General Settings, merge with any existing General Settings
-								if ( __( 'General Settings', 'kesso-widget' ) === $current_section ) {
-									if ( ! isset( $grouped[ __( 'General Settings', 'kesso-widget' ) ] ) ) {
-										$grouped[ __( 'General Settings', 'kesso-widget' ) ] = [];
+								if ( __( 'General Settings', 'kesso-access' ) === $current_section ) {
+									if ( ! isset( $grouped[ __( 'General Settings', 'kesso-access' ) ] ) ) {
+										$grouped[ __( 'General Settings', 'kesso-access' ) ] = [];
 									}
-									$grouped[ __( 'General Settings', 'kesso-widget' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-widget' ) ], $section_fields );
+									$grouped[ __( 'General Settings', 'kesso-access' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-access' ) ], $section_fields );
 								} else {
 									$grouped[ $current_section ] = $section_fields;
 								}
@@ -1505,8 +1505,8 @@ class Kesso_Admin {
 				
 				// Merge Toolbar Setup fields into General Settings
 				if ( ! empty( $toolbar_setup_fields ) ) {
-					if ( ! isset( $grouped[ __( 'General Settings', 'kesso-widget' ) ] ) ) {
-						$grouped[ __( 'General Settings', 'kesso-widget' ) ] = [];
+					if ( ! isset( $grouped[ __( 'General Settings', 'kesso-access' ) ] ) ) {
+						$grouped[ __( 'General Settings', 'kesso-access' ) ] = [];
 					}
 					// Ensure toolbar_title is first
 					$title_field = null;
@@ -1520,16 +1520,16 @@ class Kesso_Admin {
 					}
 					$ordered_fields = $title_field ? [ $title_field ] : [];
 					$ordered_fields = array_merge( $ordered_fields, $other_fields );
-					$grouped[ __( 'General Settings', 'kesso-widget' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-widget' ) ], $ordered_fields );
+					$grouped[ __( 'General Settings', 'kesso-access' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-access' ) ], $ordered_fields );
 				}
 				if ( ! empty( $toolbar_text_fields ) ) {
-					$grouped[ __( 'Toolbar Button Texts', 'kesso-widget' ) ] = $toolbar_text_fields;
+					$grouped[ __( 'Toolbar Button Texts', 'kesso-access' ) ] = $toolbar_text_fields;
 				}
 			} elseif ( ! empty( $current_section ) && ! empty( $section_fields ) ) {
 				// If it's General Settings, merge with any existing General Settings
-				if ( __( 'General Settings', 'kesso-widget' ) === $current_section ) {
-					if ( ! isset( $grouped[ __( 'General Settings', 'kesso-widget' ) ] ) ) {
-						$grouped[ __( 'General Settings', 'kesso-widget' ) ] = [];
+				if ( __( 'General Settings', 'kesso-access' ) === $current_section ) {
+					if ( ! isset( $grouped[ __( 'General Settings', 'kesso-access' ) ] ) ) {
+						$grouped[ __( 'General Settings', 'kesso-access' ) ] = [];
 					}
 					// Ensure toolbar_title is first
 					$title_field = null;
@@ -1543,7 +1543,7 @@ class Kesso_Admin {
 					}
 					$ordered_fields = $title_field ? [ $title_field ] : [];
 					$ordered_fields = array_merge( $ordered_fields, $other_fields );
-					$grouped[ __( 'General Settings', 'kesso-widget' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-widget' ) ], $ordered_fields );
+					$grouped[ __( 'General Settings', 'kesso-access' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-access' ) ], $ordered_fields );
 				} else {
 					$grouped[ $current_section ] = $section_fields;
 				}
@@ -1554,8 +1554,8 @@ class Kesso_Admin {
 			
 			// Handle any remaining fields that didn't get processed (fields before any heading)
 			if ( empty( $current_section ) && ! empty( $section_fields ) ) {
-				if ( ! isset( $grouped[ __( 'General Settings', 'kesso-widget' ) ] ) ) {
-					$grouped[ __( 'General Settings', 'kesso-widget' ) ] = [];
+				if ( ! isset( $grouped[ __( 'General Settings', 'kesso-access' ) ] ) ) {
+					$grouped[ __( 'General Settings', 'kesso-access' ) ] = [];
 				}
 				// Ensure toolbar_title is first
 				$title_field = null;
@@ -1569,7 +1569,7 @@ class Kesso_Admin {
 				}
 				$ordered_fields = $title_field ? [ $title_field ] : [];
 				$ordered_fields = array_merge( $ordered_fields, $other_fields );
-				$grouped[ __( 'General Settings', 'kesso-widget' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-widget' ) ], $ordered_fields );
+				$grouped[ __( 'General Settings', 'kesso-access' ) ] = array_merge( $grouped[ __( 'General Settings', 'kesso-access' ) ], $ordered_fields );
 			}
 		}
 

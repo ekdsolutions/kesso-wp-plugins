@@ -1654,3 +1654,40 @@
 .kesso-color-picker-hex {
     grid-column: 1 / -1;
 }
+
+/* Color picker text input (the editable hex field attached to the picker) */
+.kesso-access-app .kesso-color-picker-input {
+    padding: 8px 10px;
+    border-radius: var(--kesso-radius-lg);
+    border: 1px solid var(--kesso-slate-200);
+    background: #f8fafc;
+    font-size: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    transition: all 0.15s;
+    width: 200px !important;
+}
+
+.kesso-access-app .kesso-color-picker-input:focus {
+    outline: none;
+    border-color: var(--kesso-primary);
+    box-shadow: 0 0 0 2px rgba(19,127,236,0.20);
+    background: #ffffff;
+}
+
+/* Section headings injected via WP settings API title field */
+.kesso-access-app .kesso-section-heading {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--kesso-text);
+    margin: 0;
+    padding: 0;
+}
+
+/* Checkbox inside a feature card row */
+.kesso-access-app .kesso-access-feature-checkbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    cursor: pointer;
+    margin: 0;
+}
