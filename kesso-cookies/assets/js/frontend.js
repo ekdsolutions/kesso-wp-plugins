@@ -269,24 +269,21 @@
         showBanner: function() {
             const banner = document.getElementById('kesso-cookies-banner');
             const creditBanner = document.querySelector('.kesso-cookies-credit-banner');
-            
+
+            // Show credit banner first so its height is measurable
+            if (creditBanner) {
+                creditBanner.classList.add('is-visible');
+                creditBanner.style.display = 'block';
+            }
+
             if (banner) {
+                // Read credit banner height after it's visible, then batch the write
+                const creditHeight = creditBanner ? creditBanner.offsetHeight : 0;
+                banner.style.bottom = creditHeight ? creditHeight + 'px' : '';
                 banner.classList.add('is-visible');
                 banner.style.display = 'block';
                 // Do not auto-focus any button to avoid drawing attention to a specific choice
                 // Keyboard navigation will still work naturally when user tabs
-            }
-            
-            // Show credit banner along with main banner
-            if (creditBanner) {
-                creditBanner.classList.add('is-visible');
-                creditBanner.style.display = 'block';
-                
-                // Calculate and set main banner position above credit banner
-                if (banner) {
-                    const creditHeight = creditBanner.offsetHeight;
-                    banner.style.bottom = creditHeight + 'px';
-                }
             }
         },
 
