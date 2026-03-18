@@ -129,6 +129,7 @@ final class Ratio_Pricing_Plugin {
 
 		require_once RATIO_PRICING_PATH . 'includes/frontend/class-ratio-pricing-product.php';
 		require_once RATIO_PRICING_PATH . 'includes/frontend/class-ratio-pricing-price.php';
+		require_once RATIO_PRICING_PATH . 'includes/frontend/class-ratio-pricing-bricks-tags.php';
 		require_once RATIO_PRICING_PATH . 'includes/cart/class-ratio-pricing-cart.php';
 	}
 
@@ -145,6 +146,7 @@ final class Ratio_Pricing_Plugin {
 		if ( class_exists( 'WooCommerce' ) && ! is_admin() ) {
 			new Ratio_Pricing_Product();
 			new Ratio_Pricing_Price();
+			new Ratio_Pricing_Bricks_Tags();
 		}
 	
 		// Core/cart logic only when fields provider exists
