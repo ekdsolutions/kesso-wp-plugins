@@ -1577,11 +1577,17 @@
     function displayResults(result) {
         if (!resultsDiv) return;
 
+        // Escape any value interpolated into the results HTML. Server error
+        // strings, slugs, and theme names are not guaranteed to be markup-safe.
+        const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+
         resultsDiv.className = 'kesso-results ' + (result.success ? 'success' : 'error');
         resultsDiv.style.display = 'block';
 
         let html = '<div class="kesso-results-header">';
-        html += '<h3>' + (result.success ? '✓ ' : '✗ ') + (result.message || '') + '</h3>';
+        html += '<h3>' + (result.success ? '✓ ' : '✗ ') + esc(result.message || '') + '</h3>';
         html += '</div>';
 
         if (result.data) {
@@ -1618,19 +1624,19 @@
                 if (plugins.installed && plugins.installed.length > 0) {
                     html += '<li class="kesso-result-success">';
                     html += '<strong>✓ Plugins Installed (' + plugins.installed.length + '):</strong> ';
-                    html += '<span>' + plugins.installed.join(', ') + '</span>';
+                    html += '<span>' + plugins.installed.map(esc).join(', ') + '</span>';
                     html += '</li>';
                 }
                 if (plugins.activated && plugins.activated.length > 0) {
                     html += '<li class="kesso-result-success">';
                     html += '<strong>✓ Plugins Activated (' + plugins.activated.length + '):</strong> ';
-                    html += '<span>' + plugins.activated.join(', ') + '</span>';
+                    html += '<span>' + plugins.activated.map(esc).join(', ') + '</span>';
                     html += '</li>';
                 }
                 if (plugins.skipped && plugins.skipped.length > 0) {
                     html += '<li class="kesso-result-skipped">';
                     html += '<strong>⊘ Plugins Skipped (already installed) (' + plugins.skipped.length + '):</strong> ';
-                    html += '<span>' + plugins.skipped.join(', ') + '</span>';
+                    html += '<span>' + plugins.skipped.map(esc).join(', ') + '</span>';
                     html += '</li>';
                 }
                 if (plugins.failed && plugins.failed.length > 0) {
@@ -1638,7 +1644,7 @@
                     html += '<strong>✗ Plugins Failed (' + plugins.failed.length + '):</strong>';
                     html += '<ul class="kesso-result-sublist">';
                     plugins.failed.forEach(fail => {
-                        html += '<li><strong>' + fail.slug + ':</strong> ' + fail.error + '</li>';
+                        html += '<li><strong>' + esc(fail.slug) + ':</strong> ' + esc(fail.error) + '</li>';
                     });
                     html += '</ul>';
                     html += '</li>';
@@ -1649,7 +1655,7 @@
             if (result.data.theme) {
                 html += '<li class="kesso-result-success">';
                 html += '<strong>✓ Theme:</strong> ';
-                html += '<span>' + (result.data.theme.theme || result.data.theme.active_theme || 'Unknown') + '</span>';
+                html += '<span>' + esc(result.data.theme.theme || result.data.theme.active_theme || 'Unknown') + '</span>';
                 if (result.data.theme.active_theme) {
                     html += ' <em>(Active)</em>';
                 }
@@ -1660,9 +1666,9 @@
             if (result.data.child_theme) {
                 html += '<li class="kesso-result-success">';
                 html += '<strong>✓ Child Theme:</strong> ';
-                html += '<span>' + (result.data.child_theme.child_theme || result.data.child_theme.active_theme || 'Unknown') + '</span>';
+                html += '<span>' + esc(result.data.child_theme.child_theme || result.data.child_theme.active_theme || 'Unknown') + '</span>';
                 if (result.data.child_theme.parent_theme) {
-                    html += ' <em>(Parent: ' + result.data.child_theme.parent_theme + ')</em>';
+                    html += ' <em>(Parent: ' + esc(result.data.child_theme.parent_theme) + ')</em>';
                 }
                 if (result.data.child_theme.status === 'already_exists') {
                     html += ' <em>(Already existed, activated)</em>';
@@ -1690,7 +1696,7 @@
                 html += '<strong>✗ Errors (' + result.data.errors.length + '):</strong>';
                 html += '<ul class="kesso-result-sublist">';
                 result.data.errors.forEach(error => {
-                    html += '<li><strong>' + error.step + ':</strong> ' + error.message + '</li>';
+                    html += '<li><strong>' + esc(error.step) + ':</strong> ' + esc(error.message) + '</li>';
                 });
                 html += '</ul>';
                 html += '</li>';
@@ -1700,7 +1706,7 @@
             if (result.data.note) {
                 html += '<li class="kesso-result-note">';
                 html += '<strong>ℹ Important Note:</strong> ';
-                html += '<span>' + result.data.note + '</span>';
+                html += '<span>' + esc(result.data.note) + '</span>';
                 html += '</li>';
             }
 

@@ -24,7 +24,7 @@ class Kesso_Cookies_Admin {
      * Constructor
      */
     public function __construct() {
-        add_action( 'admin_menu', array( $this, 'register_menu_page' ), 99.3 );
+        add_action( 'admin_menu', array( $this, 'register_menu_page' ), 99 );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
         add_action( 'admin_footer', array( $this, 'print_reset_js' ) );
@@ -39,12 +39,12 @@ class Kesso_Cookies_Admin {
         
         $hook_suffix = add_menu_page(
             __( 'Cookie Consent', 'kesso-cookies' ),
-            '# ' . __( 'Cookies', 'kesso-cookies' ),
+            __( 'Cookies', 'kesso-cookies' ),
             'manage_options',
             self::SETTINGS_PAGE,
             array( $this, 'render_page' ),
             $icon_url,
-            99.3  // Position at bottom, after kesso-access
+            '99.3'  // Position at bottom, after kesso-access
         );
         
         // Add CSS for menu icon
@@ -74,13 +74,13 @@ class Kesso_Cookies_Admin {
         register_setting( 'kesso_cookies_settings', 'kesso_cookies_banner_title', array(
             'type'              => 'string',
             'sanitize_callback' => 'sanitize_text_field',
-            'default'           => __( 'Cookies Consent', 'kesso-cookies' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_banner_title' ),
         ) );
 
         register_setting( 'kesso_cookies_settings', 'kesso_cookies_banner_description', array(
             'type'              => 'string',
             'sanitize_callback' => 'wp_kses_post',
-            'default'           => __( 'By clicking "Accept All", you consent to the use of analytics and marketing cookies, as described in our', 'kesso-cookies' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_banner_description' ),
         ) );
 
         register_setting( 'kesso_cookies_settings', 'kesso_cookies_button_accept', array(
@@ -171,8 +171,53 @@ class Kesso_Cookies_Admin {
         register_setting( 'kesso_cookies_settings', 'kesso_cookies_settings_border_color', array(
             'type'              => 'string',
             'sanitize_callback' => array( $this, 'sanitize_color' ),
-            'default'           => 'rgba(0, 0, 0, 0.1)',
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_settings_border_color' ),
         ) );
+
+        // Script blocking.
+        register_setting( 'kesso_cookies_settings', 'kesso_cookies_blocking_enabled', array(
+            'type'              => 'boolean',
+            'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_blocking_enabled' ),
+        ) );
+
+        register_setting( 'kesso_cookies_settings', 'kesso_cookies_block_known_trackers', array(
+            'type'              => 'boolean',
+            'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_block_known_trackers' ),
+        ) );
+
+        // Design / theme preset.
+        register_setting( 'kesso_cookies_settings', 'kesso_cookies_theme', array(
+            'type'              => 'string',
+            'sanitize_callback' => array( $this, 'sanitize_theme' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_theme' ),
+        ) );
+
+        // "Powered by kesso.io" credit visibility (opt-in).
+        register_setting( 'kesso_cookies_settings', 'kesso_cookies_show_credit', array(
+            'type'              => 'boolean',
+            'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_show_credit' ),
+        ) );
+
+        // Trust signal strip in preferences modal.
+        register_setting( 'kesso_cookies_settings', 'kesso_cookies_show_trust_signal', array(
+            'type'              => 'boolean',
+            'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+            'default'           => Kesso_Cookies_Defaults::default_for( 'kesso_cookies_show_trust_signal' ),
+        ) );
+    }
+
+    /**
+     * Sanitize theme preset.
+     *
+     * @param string $input
+     * @return string
+     */
+    public function sanitize_theme( $input ) {
+        $allowed = array( 'minimal', 'warm', 'bold', 'elegant' );
+        return in_array( $input, $allowed, true ) ? $input : 'minimal';
     }
 
     /**
@@ -447,6 +492,82 @@ class Kesso_Cookies_Admin {
                                 </div>
                             </section>
 
+                            <!-- Script Blocking -->
+                            <section class="kesso-cookies-card">
+                                <div class="kesso-cookies-card-header">
+                                    <h2 class="kesso-cookies-card-title">
+                                        <span class="material-symbols-outlined kesso-cookies-icon" aria-hidden="true">block</span>
+                                        <?php echo esc_html__( 'Script Blocking', 'kesso-cookies' ); ?>
+                                    </h2>
+                                </div>
+                                <div class="kesso-cookies-card-body kesso-cookies-card-body--stack">
+                                    <p style="margin: 0 0 4px; font-size: 13px; color: var(--kesso-cookies-muted, #4c739a);">
+                                        <?php echo esc_html__( 'Hold analytics & marketing scripts until the visitor consents. Tag any custom script with data-kesso-category="analytics" or "marketing" to gate it manually.', 'kesso-cookies' ); ?>
+                                    </p>
+                                    <div class="kesso-cookies-grid kesso-cookies-grid-2">
+                                        <div class="kesso-cookies-field">
+                                            <span class="kesso-cookies-label"><?php echo esc_html__( 'Enable Script Blocking', 'kesso-cookies' ); ?></span>
+                                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; border-radius: var(--kesso-cookies-radius-lg, 8px); border: 1px solid var(--kesso-cookies-slate-200, #e2e8f0); background: #f8fafc; min-height: 54px; margin-top: 8px;">
+                                                <input type="hidden" name="kesso_cookies_blocking_enabled" value="0" />
+                                                <input type="checkbox" id="kesso_cookies_blocking_enabled" name="kesso_cookies_blocking_enabled" value="1" <?php checked( Kesso_Cookies_Defaults::get( 'kesso_cookies_blocking_enabled' ), true ); ?> style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" />
+                                                <span style="font-size: 14px; color: var(--kesso-cookies-text, #0d141b);"><?php echo esc_html__( 'Block scripts until consent is given', 'kesso-cookies' ); ?></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="kesso-cookies-field">
+                                            <span class="kesso-cookies-label"><?php echo esc_html__( 'Auto-detect Known Trackers', 'kesso-cookies' ); ?></span>
+                                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; border-radius: var(--kesso-cookies-radius-lg, 8px); border: 1px solid var(--kesso-cookies-slate-200, #e2e8f0); background: #f8fafc; min-height: 54px; margin-top: 8px;">
+                                                <input type="hidden" name="kesso_cookies_block_known_trackers" value="0" />
+                                                <input type="checkbox" id="kesso_cookies_block_known_trackers" name="kesso_cookies_block_known_trackers" value="1" <?php checked( Kesso_Cookies_Defaults::get( 'kesso_cookies_block_known_trackers' ), true ); ?> style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" />
+                                                <span style="font-size: 14px; color: var(--kesso-cookies-text, #0d141b);"><?php echo esc_html__( 'Auto-block Google Analytics, GTM, Meta Pixel, Hotjar, etc.', 'kesso-cookies' ); ?></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Design & Branding -->
+                            <section class="kesso-cookies-card">
+                                <div class="kesso-cookies-card-header">
+                                    <h2 class="kesso-cookies-card-title">
+                                        <span class="material-symbols-outlined kesso-cookies-icon" aria-hidden="true">brush</span>
+                                        <?php echo esc_html__( 'Design &amp; Branding', 'kesso-cookies' ); ?>
+                                    </h2>
+                                </div>
+                                <div class="kesso-cookies-card-body kesso-cookies-card-body--stack">
+                                    <div class="kesso-cookies-grid kesso-cookies-grid-3">
+                                        <label class="kesso-cookies-field">
+                                            <span class="kesso-cookies-label"><?php echo esc_html__( 'Theme Preset', 'kesso-cookies' ); ?></span>
+                                            <?php $theme_val = Kesso_Cookies_Defaults::get( 'kesso_cookies_theme' ); ?>
+                                            <select class="kesso-cookies-control kesso-cookies-select" id="kesso_cookies_theme" name="kesso_cookies_theme">
+                                                <option value="minimal" <?php selected( $theme_val, 'minimal' ); ?>><?php echo esc_html__( 'Minimal (cool)', 'kesso-cookies' ); ?></option>
+                                                <option value="warm" <?php selected( $theme_val, 'warm' ); ?>><?php echo esc_html__( 'Warm (terracotta)', 'kesso-cookies' ); ?></option>
+                                                <option value="bold" <?php selected( $theme_val, 'bold' ); ?>><?php echo esc_html__( 'Bold (monochrome)', 'kesso-cookies' ); ?></option>
+                                                <option value="elegant" <?php selected( $theme_val, 'elegant' ); ?>><?php echo esc_html__( 'Elegant (muted serif)', 'kesso-cookies' ); ?></option>
+                                            </select>
+                                        </label>
+
+                                        <div class="kesso-cookies-field">
+                                            <span class="kesso-cookies-label"><?php echo esc_html__( 'Show "Powered by" credit', 'kesso-cookies' ); ?></span>
+                                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; border-radius: var(--kesso-cookies-radius-lg, 8px); border: 1px solid var(--kesso-cookies-slate-200, #e2e8f0); background: #f8fafc; min-height: 54px; margin-top: 8px;">
+                                                <input type="hidden" name="kesso_cookies_show_credit" value="0" />
+                                                <input type="checkbox" id="kesso_cookies_show_credit" name="kesso_cookies_show_credit" value="1" <?php checked( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_credit' ), true ); ?> style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" />
+                                                <span style="font-size: 14px; color: var(--kesso-cookies-text, #0d141b);"><?php echo esc_html__( 'Show kesso.io branding below banner', 'kesso-cookies' ); ?></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="kesso-cookies-field">
+                                            <span class="kesso-cookies-label"><?php echo esc_html__( 'Show trust info in modal', 'kesso-cookies' ); ?></span>
+                                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; border-radius: var(--kesso-cookies-radius-lg, 8px); border: 1px solid var(--kesso-cookies-slate-200, #e2e8f0); background: #f8fafc; min-height: 54px; margin-top: 8px;">
+                                                <input type="hidden" name="kesso_cookies_show_trust_signal" value="0" />
+                                                <input type="checkbox" id="kesso_cookies_show_trust_signal" name="kesso_cookies_show_trust_signal" value="1" <?php checked( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_trust_signal' ), true ); ?> style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" />
+                                                <span style="font-size: 14px; color: var(--kesso-cookies-text, #0d141b);"><?php echo esc_html__( 'Show "choices saved for 180 days" + privacy link', 'kesso-cookies' ); ?></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
                         </div>
 
                         <footer class="kesso-cookies-footer kesso-cookies-glass-footer" role="contentinfo">
@@ -522,13 +643,30 @@ class Kesso_Cookies_Admin {
             return '';
         }
 
-        // Strip out any potentially dangerous content
+        // Strip out any markup.
         $input = wp_strip_all_tags( $input );
-        
-        // Allow CSS characters and basic structure
-        $input = preg_replace( '/[^a-zA-Z0-9\s\{\}\[\]\(\):;,\-\.#%!@\*\/]/', '', $input );
 
-        return trim( $input );
+        // Remove backslash escapes that can be used to obfuscate the tokens below.
+        $input = str_replace( '\\', '', $input );
+
+        // Drop @import — it can pull in remote stylesheets.
+        $input = preg_replace( '/@import\b[^;]*;?/i', '', $input );
+
+        // Drop legacy/dangerous constructs.
+        $input = preg_replace( '/expression\s*\(/i', '', $input );
+        $input = preg_replace( '/(javascript|vbscript)\s*:/i', '', $input );
+        $input = preg_replace( '/-moz-binding\b/i', '', $input );
+        $input = preg_replace( '/behaviou?r\s*:/i', '', $input );
+
+        // Neutralise remote url() references (http:, https:, protocol-relative)
+        // so admin CSS cannot phone home / leak the referer. Local and data:
+        // URLs are preserved.
+        $input = preg_replace( '#url\(\s*([\'"]?)\s*(?:https?:)?//#i', 'url($1', $input );
+
+        // Whitelist the characters CSS legitimately needs.
+        $input = preg_replace( '/[^a-zA-Z0-9\s\{\}\[\]\(\):;,\-\.#%!@\*\/\'"&_=+]/', '', $input );
+
+        return trim( (string) $input );
     }
 
     /**

@@ -1,0 +1,70 @@
+# Hebrew translation for Kesso Accessibility widget.
+# Copyright (C) 2026 Kesso
+# This file is distributed under the same license as the plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Kesso Accessibility 1.1.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-10\n"
+"PO-Revision-Date: 2026-07-10\n"
+"Last-Translator: Kesso\n"
+"Language-Team: Hebrew\n"
+"Language: he_IL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# --- Toolbar chrome ---
+msgid "Accessibility Tools"
+msgstr "כלי נגישות"
+
+msgid "Open toolbar"
+msgstr "פתח את סרגל הכלים"
+
+msgid "Close toolbar"
+msgstr "סגור את סרגל הכלים"
+
+msgid "Skip to content"
+msgstr "דלג אל התוכן"
+
+# --- Feature buttons ---
+msgid "Increase Text"
+msgstr "הגדל טקסט"
+
+msgid "Decrease Text"
+msgstr "הקטן טקסט"
+
+msgid "Grayscale"
+msgstr "גווני אפור"
+
+msgid "High Contrast"
+msgstr "ניגודיות גבוהה"
+
+msgid "Negative Contrast"
+msgstr "ניגודיות הפוכה"
+
+msgid "Light Background"
+msgstr "רקע בהיר"
+
+msgid "Links Underline"
+msgstr "הדגשת קישורים"
+
+msgid "Readable Font"
+msgstr "גופן קריא"
+
+msgid "Pause Animations"
+msgstr "עצירת אנימציות"
+
+msgid "Reset"
+msgstr "איפוס"
+
+# --- Optional link items ---
+msgid "Sitemap"
+msgstr "מפת אתר"
+
+msgid "Help"
+msgstr "עזרה"
+
+msgid "Feedback"
+msgstr "משוב"

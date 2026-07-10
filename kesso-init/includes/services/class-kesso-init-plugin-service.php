@@ -404,6 +404,31 @@ class Kesso_Init_Plugin_Service {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
         require_once KESSO_INIT_PATH . 'includes/services/class-kesso-init-silent-upgrader-skin.php';
 
+        // SECURITY: only ever install from the curated Kesso allow-list. This
+        // prevents an authenticated request from pointing the installer at an
+        // arbitrary slug/repository (remote-code install).
+        $allowed = array();
+        foreach ( Kesso_Init::get_instance()->get_kesso_plugin_list() as $entry ) {
+            $allowed[ $entry['slug'] ] = $entry;
+        }
+
+        if ( ! isset( $allowed[ $plugin_slug ] ) ) {
+            return array(
+                'status' => 'failed',
+                'slug'   => $plugin_slug,
+                'name'   => $plugin_slug,
+                'error'  => __( 'This plugin is not in the allowed Kesso plugin list.', 'kesso-init' ),
+            );
+        }
+
+        // Force the canonical repository from the allow-list; never trust a
+        // caller-supplied repo. Restrict the branch to safe path characters.
+        $github_repo = $allowed[ $plugin_slug ]['github_repo'];
+        if ( ! preg_match( '#^[A-Za-z0-9._/-]+$#', (string) $branch ) ) {
+            $branch = 'master';
+        }
+        $expected_file = $allowed[ $plugin_slug ]['file'];
+
         // Initialize filesystem
         global $wp_filesystem;
         if ( empty( $wp_filesystem ) ) {
@@ -412,7 +437,7 @@ class Kesso_Init_Plugin_Service {
         }
 
         // Check if already installed - try to find the plugin file
-        $plugin_file = $this->find_plugin_file( $plugin_slug, $plugin_slug . '/' . $plugin_slug . '.php' );
+        $plugin_file = $this->find_plugin_file( $plugin_slug, $expected_file );
         
         if ( ! is_wp_error( $plugin_file ) && kesso_init_is_plugin_installed( $plugin_file ) ) {
             // Try to activate if not active
@@ -486,7 +511,8 @@ class Kesso_Init_Plugin_Service {
             // We need to move only the specific plugin subfolder to the plugins directory.
             $extracted_folder = $temp_extract . $repo_name . '-' . $branch;
             $plugin_source    = $extracted_folder . '/' . $plugin_slug;
-            $plugin_dest = $unzip_path . $plugin_slug;
+            $plugins_dir      = $wp_filesystem->wp_content_dir() . 'plugins/';
+            $plugin_dest      = $plugins_dir . $plugin_slug;
 
             // Check if plugin folder exists in extracted ZIP
             if ( ! $wp_filesystem->exists( $plugin_source ) ) {

@@ -51,12 +51,6 @@ class Kesso_Init_Theme_Endpoint {
                         'description'       => __( 'Page builder to install.', 'kesso-init' ),
                         'sanitize_callback' => 'sanitize_text_field',
                     ),
-                    'bricks_url' => array(
-                        'required'          => false,
-                        'type'              => 'string',
-                        'description'       => __( 'Remote ZIP URL for Bricks.', 'kesso-init' ),
-                        'sanitize_callback' => 'esc_url_raw',
-                    ),
                 ),
             )
         );
@@ -98,7 +92,7 @@ class Kesso_Init_Theme_Endpoint {
      * @return bool|WP_Error
      */
     public function check_permission() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'install_themes' ) ) {
             return new WP_Error(
                 'rest_forbidden',
                 __( 'You do not have permission to perform this action.', 'kesso-init' ),
@@ -115,24 +109,21 @@ class Kesso_Init_Theme_Endpoint {
      * @return WP_REST_Response
      */
     public function install_theme( $request ) {
-        $builder    = $request->get_param( 'builder' );
-        $bricks_url = $request->get_param( 'bricks_url' );
+        $builder = $request->get_param( 'builder' );
 
         if ( 'elementor' === $builder ) {
             // Install Elementor plugin and Hello Elementor theme
             $result = $this->kesso->get_theme_service()->install_elementor();
         } else {
-            // Install Bricks from URL if provided
-            if ( ! empty( $bricks_url ) ) {
-                $result = $this->kesso->get_theme_service()->install_bricks_from_url( $bricks_url );
-            } else {
-                return rest_ensure_response(
-                    kesso_init_api_response(
-                        false,
-                        __( 'Bricks requires a ZIP file upload or remote URL.', 'kesso-init' )
-                    )
-                );
-            }
+            // Bricks is a commercial theme; it must be uploaded as a ZIP via the
+            // dedicated upload endpoint. Remote-URL installation is intentionally
+            // not supported (it would be an SSRF / arbitrary-theme-install vector).
+            return rest_ensure_response(
+                kesso_init_api_response(
+                    false,
+                    __( 'Bricks must be installed by uploading its ZIP file.', 'kesso-init' )
+                )
+            );
         }
 
         if ( is_wp_error( $result ) ) {

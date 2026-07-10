@@ -1,4 +1,138 @@
-/*! Accessibility Widget CSS */
+/*! Accessibility Widget CSS
+ * BUILD-SIGNATURE: KESSO-ACCESS-CSS-1-1-5-PREMIUM
+ */
+
+/* =========================================================================
+   Design tokens — kept in sync with kesso-cookies for a unified look.
+   Override these to reskin the widget.
+   ========================================================================= */
+:root {
+  --kesso-access-primary: #137fec;
+  --kesso-access-primary-focus: rgba(19, 127, 236, 0.18);
+  --kesso-access-bg: #ffffff;
+  --kesso-access-text: #0d141b;
+  --kesso-access-text-muted: #4c739a;
+  --kesso-access-border: rgba(15, 23, 42, 0.08);
+  --kesso-access-radius-sm: 8px;
+  --kesso-access-radius-lg: 16px;
+  --kesso-access-shadow-toggle:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+  --kesso-access-shadow-panel:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px rgba(15, 23, 42, 0.06),
+    0 20px 48px rgba(15, 23, 42, 0.04);
+  --kesso-access-transition: 180ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  --kesso-access-transition-spring: 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* NOTE: Automatic dark-mode intentionally not applied — the widget stays
+   crisp white regardless of OS theme so text and icons are always visible. */
+
+/* Lock our font/color independently of the site's theme so the accessibility
+   widget always renders professionally. Site CSS can't override these. */
+#kesso-toolbar,
+#kesso-toolbar * {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
+      "Helvetica Neue", Arial, sans-serif !important;
+  color: var(--kesso-access-text) !important;
+}
+#kesso-toolbar .kesso-toolbar-overlay,
+#kesso-toolbar .kesso-toolbar-overlay * {
+  background-color: transparent;
+}
+#kesso-toolbar .kesso-toolbar-overlay {
+  background-color: var(--kesso-access-bg) !important;
+}
+#kesso-toolbar .kesso-toolbar-toggle button {
+  background-color: var(--kesso-access-bg) !important;
+}
+
+@keyframes kesso-access-scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #kesso-toolbar .kesso-toolbar-overlay,
+  #kesso-toolbar.kesso-toolbar-open .kesso-toolbar-overlay {
+    animation: none !important;
+  }
+}
+
+/* Toggle button — matches kesso-cookies visual weight */
+#kesso-toolbar .kesso-toolbar-toggle button {
+  background: var(--kesso-access-bg);
+  border: 1px solid var(--kesso-access-border) !important;
+  color: var(--kesso-access-text);
+  box-shadow: var(--kesso-access-shadow-toggle) !important;
+  transition:
+    box-shadow var(--kesso-access-transition),
+    transform var(--kesso-access-transition);
+}
+#kesso-toolbar .kesso-toolbar-toggle button:hover {
+  transform: translateY(-2px);
+}
+#kesso-toolbar .kesso-toolbar-toggle button:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--kesso-access-shadow-toggle),
+    0 0 0 3px var(--kesso-access-primary-focus) !important;
+}
+
+/* Open panel — softer shadow + entrance animation + rounded to match toggle */
+#kesso-toolbar.kesso-toolbar-open .kesso-toolbar-overlay {
+  box-shadow: var(--kesso-access-shadow-panel) !important;
+  border: 1px solid var(--kesso-access-border) !important;
+  border-radius: var(--kesso-access-radius-lg) !important;
+  overflow: hidden;
+  animation: kesso-access-scale-in var(--kesso-access-transition-spring) both;
+}
+
+/* Panel background + text — force so it can't inherit dark from site theme */
+#kesso-toolbar .kesso-toolbar-overlay {
+  background: var(--kesso-access-bg) !important;
+  color: var(--kesso-access-text) !important;
+  border-radius: var(--kesso-access-radius-lg);
+}
+
+/* Icons inside items — always use accessible text color */
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link,
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg,
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link .kesso-toolbar-text,
+#kesso-toolbar .kesso-toolbar-overlay p.kesso-toolbar-title {
+  color: var(--kesso-access-text) !important;
+}
+#kesso-toolbar .kesso-toolbar-overlay p.kesso-toolbar-title {
+  color: var(--kesso-access-text);
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
+  color: var(--kesso-access-text);
+  transition: background-color var(--kesso-access-transition), color var(--kesso-access-transition);
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:hover,
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
+  background: rgba(15, 23, 42, 0.04);
+  text-decoration: none;
+  outline: none;
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--kesso-access-primary-focus);
+}
+@media (prefers-color-scheme: dark) {
+  #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:hover,
+  #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items.kesso-links {
+  border-top-color: var(--kesso-access-border);
+}
+
+/* Toolbar credit (footer of open panel) */
+#kesso-toolbar .kesso-toolbar-credit {
+  border-top-color: var(--kesso-access-border);
+  color: var(--kesso-access-text-muted);
+}
 
 /* Button reset — toolbar uses <button> for action items */
 #kesso-toolbar button.kesso-toolbar-link {
@@ -7,7 +141,7 @@
   cursor: pointer;
   font: inherit;
   color: inherit;
-  text-align: left;
+  text-align: start; /* logical: left in LTR, right in RTL */
   width: 100%;
 }
 
@@ -25,7 +159,9 @@ body.kesso-pause-animations *::after {
   position: fixed;
   font-size: 16px !important;
   line-height: 1.4;
-  z-index: 9999;
+  /* Above any consent/cookie banner (kesso-cookies uses 999999) so the
+     accessibility widget is always reachable — a11y requirement. */
+  z-index: 1000001;
   display: flex;
   align-items: flex-start;
 }
@@ -82,6 +218,10 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
   font-size: 200%;
   line-height: 0;
   padding: 12px;
+  /* Base radius matches kesso-cookies' floating settings link (8px) so the
+     two floating widgets look like a matched pair when both are on the page.
+     Admin's "Border Radius" setting overrides this via inline CSS. */
+  border-radius: 8px;
 }
 #kesso-toolbar .kesso-toolbar-toggle button:hover,
 #kesso-toolbar .kesso-toolbar-toggle button:focus {
@@ -98,6 +238,9 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
   display: none;
   margin-left: 20px;
   margin-right: 20px;
+  /* Never let the open panel exceed the viewport on short/mobile screens. */
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 #kesso-toolbar.kesso-toolbar-position-top-right .kesso-toolbar-overlay,
 #kesso-toolbar.kesso-toolbar-position-bottom-right .kesso-toolbar-overlay {

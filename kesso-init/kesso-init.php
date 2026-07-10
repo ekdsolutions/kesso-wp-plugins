@@ -3,7 +3,7 @@
  * Plugin Name: Kesso Initialization
  * Plugin URI: https://kesso.io
  * Description: A unified setup wizard for new WordPress sites - install plugins, page builders, child themes, and configure settings all from one page.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Kesso
  * Author URI: https://kesso.io
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'KESSO_INIT_VERSION', '1.0.0' );
+define( 'KESSO_INIT_VERSION', '1.1.0' );
 define( 'KESSO_INIT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'KESSO_INIT_URL', plugin_dir_url( __FILE__ ) );
 define( 'KESSO_INIT_BASENAME', plugin_basename( __FILE__ ) );

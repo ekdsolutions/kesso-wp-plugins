@@ -49,27 +49,40 @@
 
 			$self.cache.$btnToolbarToggle.on( 'click', function( event ) {
 				event.preventDefault();
-
-				$self.cache.$toolbar.toggleClass( 'kesso-toolbar-open' );
-
-				if ( $self.cache.$toolbar.hasClass( 'kesso-toolbar-open' ) ) {
-					$self.cache.$toolbarLinks.attr( 'tabindex', '0' );
-				} else {
-					$self.cache.$toolbarLinks.attr( 'tabindex', '-1' );
-				}
+				$self.setToolbarOpen( ! $self.cache.$toolbar.hasClass( 'kesso-toolbar-open' ) );
 			} );
 
 			$( document ).on( 'keyup', function( event ) {
 				var TAB_KEY = 9;
-				
+
 				if ( TAB_KEY !== event.which || ! $self.cache.$btnToolbarToggle.is( ':focus' ) ) {
 					return;
 				}
-				$self.cache.$toolbar.addClass( 'kesso-toolbar-open' );
-				$self.cache.$toolbarLinks.attr( 'tabindex', '0' );
+				$self.setToolbarOpen( true );
+			} );
+
+			// Escape closes the toolbar and returns focus to the toggle button.
+			$( document ).on( 'keydown', function( event ) {
+				var ESC_KEY = 27;
+
+				if ( ESC_KEY === event.which && $self.cache.$toolbar.hasClass( 'kesso-toolbar-open' ) ) {
+					$self.setToolbarOpen( false );
+					$self.cache.$btnToolbarToggle.trigger( 'focus' );
+				}
 			} );
 
 			$self.bindToolbarButtons();
+		},
+
+		setToolbarOpen: function( open ) {
+			this.cache.$toolbar.toggleClass( 'kesso-toolbar-open', open );
+			this.cache.$toolbarLinks.attr( 'tabindex', open ? '0' : '-1' );
+			this.cache.$btnToolbarToggle.attr( 'aria-expanded', open ? 'true' : 'false' );
+
+			var label = open
+				? ( KessoOptions.label_close || 'Close toolbar' )
+				: ( KessoOptions.label_open || 'Open toolbar' );
+			this.cache.$toolbar.find( '.kesso-toolbar-toggle-label' ).text( label );
 		},
 
 		bindToolbarButtons: function() {
@@ -260,17 +273,66 @@
 			}
 
 			if ( '1' === KessoOptions.add_role_links ) {
-				$( 'a:not([role])' ).attr( 'role', 'link' );
+				// Only anchors without an href lack the implicit link role; native
+				// links already expose it, so leave them untouched.
+				$( 'a:not([href]):not([role])' ).attr( 'role', 'link' );
 			}
 		},
 
-		pauseAnimations: function() {
-			// Pause all CSS animations and transitions
-			var style = document.createElement( 'style' );
-			style.id = 'kesso-pause-animations';
-			style.textContent = 'body.kesso-pause-animations *, body.kesso-pause-animations *::before, body.kesso-pause-animations *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }';
-			if ( ! document.getElementById( 'kesso-pause-animations' ) ) {
-				document.head.appendChild( style );
+		/**
+		 * Smart positioning: detect other floating widgets in the same corner
+		 * as the accessibility toolbar and offset it to avoid visual collisions.
+		 * Best-effort — capped at 100px offset so we don't fly off-screen.
+		 */
+		smartPositioning: function() {
+			var toolbar = this.cache.$toolbar && this.cache.$toolbar[0];
+			if ( ! toolbar ) return;
+			var tRect = toolbar.getBoundingClientRect();
+			if ( tRect.width === 0 ) return;
+
+			// Determine which corner we're in (based on where the toggle sits).
+			var vw = window.innerWidth || document.documentElement.clientWidth;
+			var vh = window.innerHeight || document.documentElement.clientHeight;
+			var isBottom = ( tRect.top > vh / 2 );
+			var isLeft   = ( tRect.left < vw / 2 );
+			if ( ! isBottom ) return; // Only auto-adjust the bottom corners.
+
+			// Cheap query: only candidates likely to be floating widgets.
+			var selectors = [
+				'a[class*="lang"], a[class*="switcher"]',
+				'.wp-toolbar-lang, .lang-widget, .langswitch',
+				'[id*="chat"], [class*="chat-widget"], [class*="Intercom"], [class*="livechat"]',
+				'[id*="scroll-top"], [class*="scroll-top"], [class*="back-to-top"]',
+				'[id*="whatsapp"], [class*="whatsapp"]',
+				'a[href*="wa.me"], a[href*="whatsapp"]'
+			];
+			var candidates = document.querySelectorAll( selectors.join(',') );
+			var maxOffset = 0;
+			for ( var i = 0; i < candidates.length; i++ ) {
+				var el = candidates[ i ];
+				if ( el === toolbar || toolbar.contains( el ) ) continue;
+				if ( el.closest && el.closest( '#kesso-toolbar' ) ) continue;
+				if ( el.closest && el.closest( '#kesso-cookies-banner' ) ) continue;
+				var cs = getComputedStyle( el );
+				if ( cs.position !== 'fixed' && cs.position !== 'sticky' ) continue;
+				if ( cs.visibility === 'hidden' || cs.display === 'none' ) continue;
+				var r = el.getBoundingClientRect();
+				if ( r.width === 0 || r.height === 0 ) continue;
+				// Corner filter: candidate must be in the same bottom corner.
+				var candLeft = isLeft ? ( r.left < 200 ) : ( vw - r.right < 200 );
+				var candBottom = ( vh - r.bottom < 200 );
+				if ( ! candLeft || ! candBottom ) continue;
+				// If it vertically overlaps our toolbar zone, note the offset needed.
+				var overlaps = ! ( r.bottom < tRect.top || r.top > tRect.bottom );
+				var nearVertical = Math.abs( r.top - tRect.top ) < ( tRect.height + 20 );
+				if ( overlaps || nearVertical ) {
+					var offset = Math.ceil( r.height + 12 );
+					if ( offset > maxOffset ) maxOffset = offset;
+				}
+			}
+			if ( maxOffset > 0 && maxOffset < 100 ) {
+				var currentBottom = parseInt( getComputedStyle( toolbar ).bottom, 10 ) || 20;
+				toolbar.style.bottom = ( currentBottom + maxOffset ) + 'px';
 			}
 		},
 
@@ -279,7 +341,8 @@
 			this.buildElements();
 			this.bindEvents();
 			this.handleGlobalOptions();
-			this.pauseAnimations();
+			// Smart-positioning intentionally NOT called — jumps around too
+			// unpredictably. The widget stays at the admin-configured corner.
 		}
 	};
 

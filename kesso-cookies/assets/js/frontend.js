@@ -41,8 +41,11 @@
             // Initialize UI
             this.initUI();
 
-            // Process queued scripts
+            // Process queued scripts registered via the JS API
             this.processScriptQueue();
+
+            // Activate any server-blocked scripts the visitor has consented to
+            this.activateBlockedScripts(this.getConsentedCategories());
         },
 
         /**
@@ -68,9 +71,11 @@
             }
 
             // Try localStorage
+            let hadStored = false;
             try {
                 const stored = localStorage.getItem(cookieName);
                 if (stored) {
+                    hadStored = true;
                     const parsed = JSON.parse(stored);
                     if (parsed && parsed.version === cookieVersion) {
                         this.consent = parsed;
@@ -81,8 +86,28 @@
                 // localStorage may not be available
             }
 
+            // A cookie/localStorage entry existed but was stale (e.g. a version
+            // bump) — clear it so we don't leave orphaned consent records behind.
+            if (cookie || hadStored) {
+                this.clearStoredConsent();
+            }
+
             // No valid consent found
             this.consent = null;
+        },
+
+        /**
+         * Remove any stored consent (cookie + localStorage)
+         */
+        clearStoredConsent: function() {
+            const cookieName = this.config ? this.config.cookieName : 'kesso_cookies_consent';
+            const secureFlag = (location.protocol === 'https:') ? '; Secure' : '';
+            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax${secureFlag}`;
+            try {
+                localStorage.removeItem(cookieName);
+            } catch (e) {
+                // localStorage may not be available
+            }
         },
 
         /**
@@ -129,6 +154,10 @@
 
             // Process scripts based on new consent
             this.processScriptQueue();
+            this.activateBlockedScripts(this.getConsentedCategories());
+
+            // Purge third-party cookies for categories that are not consented
+            this.purgeWithdrawnCookies(previousConsent, this.consent);
         },
 
         /**
@@ -314,6 +343,9 @@
             const panel = document.getElementById('kesso-cookies-panel');
             const banner = document.getElementById('kesso-cookies-banner');
             if (panel) {
+                // Remember what had focus so we can restore it on close.
+                this._lastFocused = document.activeElement;
+
                 panel.classList.add('is-visible');
                 panel.style.display = 'block';
                 // Hide banner when showing panel
@@ -325,6 +357,9 @@
                 if (closeButton) {
                     setTimeout(() => closeButton.focus(), 100);
                 }
+                // Trap focus and enable Escape-to-close while the modal is open.
+                this._panelKeydownHandler = (e) => this.handlePanelKeydown(e);
+                document.addEventListener('keydown', this._panelKeydownHandler);
                 // Prevent body scroll, preserving whatever was set before
                 this._prevBodyOverflow = document.body.style.overflow;
                 document.body.style.overflow = 'hidden';
@@ -340,6 +375,54 @@
                 panel.classList.remove('is-visible');
                 panel.style.display = 'none';
                 document.body.style.overflow = typeof this._prevBodyOverflow === 'string' ? this._prevBodyOverflow : '';
+            }
+
+            // Tear down the focus trap and restore focus to the trigger.
+            if (this._panelKeydownHandler) {
+                document.removeEventListener('keydown', this._panelKeydownHandler);
+                this._panelKeydownHandler = null;
+            }
+            if (this._lastFocused && typeof this._lastFocused.focus === 'function') {
+                this._lastFocused.focus();
+                this._lastFocused = null;
+            }
+        },
+
+        /**
+         * Keyboard handling for the open modal: Escape closes, Tab is trapped.
+         */
+        handlePanelKeydown: function(e) {
+            const panel = document.getElementById('kesso-cookies-panel');
+            if (!panel || panel.style.display === 'none') {
+                return;
+            }
+
+            if (e.key === 'Escape' || e.key === 'Esc') {
+                e.preventDefault();
+                this.hidePanel();
+                return;
+            }
+
+            if (e.key !== 'Tab') {
+                return;
+            }
+
+            const selector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            const focusable = Array.prototype.slice.call(panel.querySelectorAll(selector))
+                .filter((el) => el.offsetParent !== null);
+            if (!focusable.length) {
+                return;
+            }
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
             }
         },
 
@@ -482,6 +565,11 @@
                 return;
             }
 
+            // Basic scheme safety for API-supplied sources.
+            if (config.src && /^\s*(javascript|data|vbscript):/i.test(config.src)) {
+                return;
+            }
+
             this.scripts.loaded[scriptId] = true;
 
             const script = document.createElement('script');
@@ -536,11 +624,150 @@
                 return true; // Always true
             }
             return this.consent ? (this.consent[category] || false) : false;
+        },
+
+        /**
+         * List of categories the visitor has currently consented to
+         */
+        getConsentedCategories: function() {
+            const cats = [];
+            if (this.consent) {
+                if (this.consent.analytics) { cats.push('analytics'); }
+                if (this.consent.marketing) { cats.push('marketing'); }
+            }
+            return cats;
+        },
+
+        /**
+         * Re-activate scripts the server blocked (type="text/plain"), for the
+         * given consented categories. Preserves attributes and document order.
+         */
+        activateBlockedScripts: function(categories) {
+            if (!categories || !categories.length) {
+                return;
+            }
+
+            const blocked = document.querySelectorAll('script[type="text/plain"][data-kesso-blocked]');
+            blocked.forEach((old) => {
+                const cat = old.getAttribute('data-kesso-category');
+                if (categories.indexOf(cat) === -1) {
+                    return;
+                }
+                if (old.getAttribute('data-kesso-activated')) {
+                    return;
+                }
+
+                const fresh = document.createElement('script');
+                for (let i = 0; i < old.attributes.length; i++) {
+                    const attr = old.attributes[i];
+                    const name = attr.name;
+                    if (name === 'type' || name === 'data-kesso-blocked' ||
+                        name === 'data-kesso-category' || name === 'data-kesso-activated') {
+                        continue;
+                    }
+                    if (name === 'data-kesso-src') {
+                        fresh.setAttribute('src', attr.value);
+                    } else {
+                        fresh.setAttribute(name, attr.value);
+                    }
+                }
+
+                // Inline body (only when there is no external src)
+                if (!old.getAttribute('data-kesso-src') && old.textContent) {
+                    fresh.text = old.textContent;
+                }
+
+                old.setAttribute('data-kesso-activated', '1');
+                if (old.parentNode) {
+                    old.parentNode.replaceChild(fresh, old);
+                }
+            });
+        },
+
+        /**
+         * Delete known third-party cookies for categories that are not consented.
+         * Loaded scripts can't be unloaded, but their cookies can be cleared.
+         */
+        purgeWithdrawnCookies: function(previous, current) {
+            const withdrawn = [];
+            ['analytics', 'marketing'].forEach((cat) => {
+                if (!current || !current[cat]) {
+                    withdrawn.push(cat);
+                }
+            });
+            if (!withdrawn.length) {
+                return;
+            }
+
+            const map = this.getPurgeCookieMap();
+            withdrawn.forEach((cat) => {
+                (map[cat] || []).forEach((pattern) => this.deleteCookieByPattern(pattern));
+            });
+        },
+
+        /**
+         * Default third-party cookie names per category (extendable via config).
+         */
+        getPurgeCookieMap: function() {
+            const fromConfig = (this.config && this.config.purgeCookies) || {};
+            const defaults = {
+                analytics: ['_ga', '_ga_*', '_gid', '_gat', '_gat_*', '_gcl_au',
+                    '__utma', '__utmb', '__utmc', '__utmt', '__utmz',
+                    '_hjSession_*', '_hjSessionUser_*', '_hjIncludedInSessionSample_*',
+                    '_clck', '_clsk', '_pk_id.*', '_pk_ses.*'],
+                marketing: ['_fbp', '_fbc', 'fr', '_gcl_aw', '_gcl_dc',
+                    'personalization_id', 'muc_ads', 'IDE', 'test_cookie',
+                    '_uetsid', '_uetvid', 'li_sugr', 'bcookie', 'lidc',
+                    'UserMatchHistory', '_ttp', '_pin_unauth']
+            };
+            return {
+                analytics: defaults.analytics.concat(fromConfig.analytics || []),
+                marketing: defaults.marketing.concat(fromConfig.marketing || [])
+            };
+        },
+
+        /**
+         * Expire a cookie by exact name, or by prefix when the pattern ends in '*'.
+         * Attempts each plausible domain/path so it catches third-party writes.
+         */
+        deleteCookieByPattern: function(pattern) {
+            const names = [];
+            if (pattern.indexOf('*') !== -1) {
+                const prefix = pattern.replace('*', '');
+                document.cookie.split(';').forEach((c) => {
+                    const name = c.split('=')[0].trim();
+                    if (name && name.indexOf(prefix) === 0) {
+                        names.push(name);
+                    }
+                });
+            } else {
+                names.push(pattern);
+            }
+
+            const host = location.hostname;
+            const domains = ['', host, '.' + host];
+            const parts = host.split('.');
+            if (parts.length > 2) {
+                domains.push('.' + parts.slice(-2).join('.'));
+            }
+
+            names.forEach((name) => {
+                domains.forEach((d) => {
+                    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' +
+                        (d ? '; domain=' + d : '');
+                });
+            });
         }
     };
 
     // Expose global API
     window.kessoCookies = KessoCookies;
+
+    // Migrate any registrations captured by the early <head> shim before we
+    // replace it, so registrations made before this script loads aren't lost.
+    if (window.kessoCookiesScripts && Array.isArray(window.kessoCookiesScripts.queue) && window.kessoCookiesScripts.queue.length) {
+        KessoCookies.scripts.queue = KessoCookies.scripts.queue.concat(window.kessoCookiesScripts.queue);
+    }
 
     // Expose registerScript function for early script registration
     window.kessoCookiesScripts = {

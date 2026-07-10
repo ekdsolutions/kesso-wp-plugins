@@ -76,8 +76,19 @@ function kesso_init_get_plugin_download_url( $slug ) {
  */
 function kesso_init_validate_zip_upload( $file ) {
     // Check for upload errors
-    if ( $file['error'] !== UPLOAD_ERR_OK ) {
+    if ( ! isset( $file['error'] ) || UPLOAD_ERR_OK !== $file['error'] ) {
         return new WP_Error( 'upload_error', __( 'File upload failed.', 'kesso-init' ) );
+    }
+
+    // Ensure the file genuinely came in via HTTP POST (not a local server path).
+    if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
+        return new WP_Error( 'not_uploaded', __( 'Invalid upload.', 'kesso-init' ) );
+    }
+
+    // Enforce a maximum size to avoid memory/disk exhaustion (default 64 MB).
+    $max_size = (int) apply_filters( 'kesso_init_max_zip_size', 64 * MB_IN_BYTES );
+    if ( ! empty( $file['size'] ) && $file['size'] > $max_size ) {
+        return new WP_Error( 'too_large', __( 'The ZIP file is too large.', 'kesso-init' ) );
     }
 
     // Check file extension
@@ -87,10 +98,24 @@ function kesso_init_validate_zip_upload( $file ) {
     }
 
     // Check MIME type
-    $mime = mime_content_type( $file['tmp_name'] );
+    $mime          = function_exists( 'mime_content_type' ) ? mime_content_type( $file['tmp_name'] ) : '';
     $allowed_mimes = array( 'application/zip', 'application/x-zip-compressed', 'application/octet-stream' );
-    if ( ! in_array( $mime, $allowed_mimes, true ) ) {
+    if ( $mime && ! in_array( $mime, $allowed_mimes, true ) ) {
         return new WP_Error( 'invalid_mime', __( 'Invalid file type.', 'kesso-init' ) );
+    }
+
+    // Verify the real ZIP signature. The octet-stream MIME above matches almost
+    // anything, so confirm the magic bytes to reject non-ZIP payloads.
+    $handle = fopen( $file['tmp_name'], 'rb' );
+    if ( false === $handle ) {
+        return new WP_Error( 'unreadable', __( 'Uploaded file could not be read.', 'kesso-init' ) );
+    }
+    $signature = fread( $handle, 4 );
+    fclose( $handle );
+
+    $zip_signatures = array( "PK\x03\x04", "PK\x05\x06", "PK\x07\x08" );
+    if ( ! in_array( $signature, $zip_signatures, true ) ) {
+        return new WP_Error( 'invalid_zip', __( 'The uploaded file is not a valid ZIP archive.', 'kesso-init' ) );
     }
 
     return array(

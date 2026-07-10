@@ -22,6 +22,25 @@ class Kesso_Cookies_Banner {
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
         add_action( 'wp_footer', array( $this, 'render_banner' ) );
         add_action( 'wp_head', array( $this, 'add_script_blocking' ) );
+        // Emit the theme preset as early as possible so the token overrides
+        // are in place before the banner renders.
+        add_action( 'wp_head', array( $this, 'output_theme_marker' ), 2 );
+    }
+
+    /**
+     * Emit the plugin's design-token theme preset onto <html> as a data
+     * attribute. Kept in <head> so CSS variables cascade to the whole page
+     * (banner + modal + settings link).
+     */
+    public function output_theme_marker() {
+        if ( Kesso_Cookies_Helpers::is_page_builder() ) {
+            return;
+        }
+        $theme = Kesso_Cookies_Defaults::get( 'kesso_cookies_theme' );
+        $theme = in_array( $theme, array( 'minimal', 'warm', 'bold', 'elegant' ), true ) ? $theme : 'minimal';
+        ?>
+        <script>document.documentElement.setAttribute('data-kesso-cookies-theme', <?php echo wp_json_encode( $theme ); ?>);</script>
+        <?php
     }
 
     /**
@@ -29,7 +48,7 @@ class Kesso_Cookies_Banner {
      */
     public function enqueue_assets() {
         // Don't enqueue in page builders
-        if ( $this->is_page_builder() ) {
+        if ( Kesso_Cookies_Helpers::is_page_builder() ) {
             return;
         }
 
@@ -67,13 +86,13 @@ class Kesso_Cookies_Banner {
             'kesso-cookies-frontend',
             'kessoCookiesConfig',
             array(
-                'bannerTitle'       => get_option( 'kesso_cookies_banner_title', __( 'We use cookies', 'kesso-cookies' ) ),
-                'bannerDescription'  => get_option( 'kesso_cookies_banner_description', __( 'We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.', 'kesso-cookies' ) ),
-                'buttonAccept'       => get_option( 'kesso_cookies_button_accept', __( 'Accept All', 'kesso-cookies' ) ),
-                'buttonReject'       => get_option( 'kesso_cookies_button_reject', __( 'Reject All', 'kesso-cookies' ) ),
-                'buttonCustomize'    => get_option( 'kesso_cookies_button_customize', __( 'Customize', 'kesso-cookies' ) ),
-                'buttonSave'          => get_option( 'kesso_cookies_button_save', __( 'Save Preferences', 'kesso-cookies' ) ),
-                'privacyLinkText'     => get_option( 'kesso_cookies_privacy_link_text', __( 'Privacy Policy', 'kesso-cookies' ) ),
+                'bannerTitle'       => Kesso_Cookies_Defaults::get( 'kesso_cookies_banner_title' ),
+                'bannerDescription'  => Kesso_Cookies_Defaults::get( 'kesso_cookies_banner_description' ),
+                'buttonAccept'       => Kesso_Cookies_Defaults::get( 'kesso_cookies_button_accept' ),
+                'buttonReject'       => Kesso_Cookies_Defaults::get( 'kesso_cookies_button_reject' ),
+                'buttonCustomize'    => Kesso_Cookies_Defaults::get( 'kesso_cookies_button_customize' ),
+                'buttonSave'          => Kesso_Cookies_Defaults::get( 'kesso_cookies_button_save' ),
+                'privacyLinkText'     => Kesso_Cookies_Defaults::get( 'kesso_cookies_privacy_link_text' ),
                 'privacyLinkUrl'      => $this->get_privacy_policy_url(),
                 'cookieName'          => 'kesso_cookies_consent',
                 'cookieVersion'       => '1.0',
@@ -177,7 +196,7 @@ class Kesso_Cookies_Banner {
         }
 
         // Border color (with shadow generation, matching kesso-access)
-        $border_color = get_option( 'kesso_cookies_settings_border_color', '#000000' );
+        $border_color = Kesso_Cookies_Defaults::get( 'kesso_cookies_settings_border_color' );
         if ( $border_color ) {
             // Extract hex from rgba if needed for box-shadow
             $border_hex = $this->extract_hex_from_color( $border_color );
@@ -264,17 +283,22 @@ class Kesso_Cookies_Banner {
     }
 
     /**
-     * Add script blocking mechanism in head
+     * Provide an early registration shim in <head>.
+     *
+     * Primary blocking is done server-side by Kesso_Cookies_Script_Blocker; this
+     * shim only captures programmatic registerScript() calls made before the
+     * front-end script loads, so they are not lost. The queue is migrated into
+     * the main controller during init.
      */
     public function add_script_blocking() {
         // Don't initialize in page builders
-        if ( $this->is_page_builder() ) {
+        if ( Kesso_Cookies_Helpers::is_page_builder() ) {
             return;
         }
 
         ?>
         <script>
-        // Initialize script blocking before any other scripts load
+        // Buffer early script registrations before the consent controller loads.
         (function() {
             window.kessoCookiesScripts = window.kessoCookiesScripts || {
                 queue: [],
@@ -288,66 +312,25 @@ class Kesso_Cookies_Banner {
     }
 
     /**
-     * Check if we're in a page builder context
-     *
-     * @return bool
-     */
-    private function is_page_builder() {
-        // Bricks Builder
-        if ( defined( 'BRICKS_VERSION' ) && function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) {
-            return true;
-        }
-
-        // Elementor
-        if ( defined( 'ELEMENTOR_VERSION' ) && class_exists( '\Elementor\Plugin' ) ) {
-            if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
-                return true;
-            }
-        }
-
-        // Beaver Builder
-        if ( class_exists( 'FLBuilderModel' ) && FLBuilderModel::is_builder_active() ) {
-            return true;
-        }
-
-        // Divi Builder
-        if ( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) {
-            return true;
-        }
-
-        // Visual Composer
-        if ( function_exists( 'vc_is_inline' ) && vc_is_inline() ) {
-            return true;
-        }
-
-        // Check for common builder query parameters
-        if ( isset( $_GET['bricks'] ) || isset( $_GET['elementor-preview'] ) || isset( $_GET['fl_builder'] ) || isset( $_GET['et_fb'] ) || isset( $_GET['vc_editable'] ) ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Render the cookie consent banner
      */
     public function render_banner() {
         // Don't render in page builders
-        if ( $this->is_page_builder() ) {
+        if ( Kesso_Cookies_Helpers::is_page_builder() ) {
             return;
         }
 
-        $banner_title       = get_option( 'kesso_cookies_banner_title', __( 'We use cookies', 'kesso-cookies' ) );
-        $banner_description = get_option( 'kesso_cookies_banner_description', __( 'We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.', 'kesso-cookies' ) );
-        $button_accept      = get_option( 'kesso_cookies_button_accept', __( 'Accept All', 'kesso-cookies' ) );
-        $button_reject      = get_option( 'kesso_cookies_button_reject', __( 'Reject All', 'kesso-cookies' ) );
-        $button_customize   = get_option( 'kesso_cookies_button_customize', __( 'Customize', 'kesso-cookies' ) );
-        $privacy_link_text  = get_option( 'kesso_cookies_privacy_link_text', __( 'Privacy Policy', 'kesso-cookies' ) );
+        $banner_title       = Kesso_Cookies_Defaults::get( 'kesso_cookies_banner_title' );
+        $banner_description = Kesso_Cookies_Defaults::get( 'kesso_cookies_banner_description' );
+        $button_accept      = Kesso_Cookies_Defaults::get( 'kesso_cookies_button_accept' );
+        $button_reject      = Kesso_Cookies_Defaults::get( 'kesso_cookies_button_reject' );
+        $button_customize   = Kesso_Cookies_Defaults::get( 'kesso_cookies_button_customize' );
+        $privacy_link_text  = Kesso_Cookies_Defaults::get( 'kesso_cookies_privacy_link_text' );
         $privacy_link_url   = $this->get_privacy_policy_url();
-        
+
         // Get layout and overlay settings
-        $banner_layout = get_option( 'kesso_cookies_banner_layout', 'bottom' );
-        $banner_overlay = get_option( 'kesso_cookies_banner_overlay', false );
+        $banner_layout  = Kesso_Cookies_Defaults::get( 'kesso_cookies_banner_layout' );
+        $banner_overlay = Kesso_Cookies_Defaults::get( 'kesso_cookies_banner_overlay' );
         
         // Build banner classes
         $banner_classes = 'kesso-cookies-banner';
@@ -355,18 +338,26 @@ class Kesso_Cookies_Banner {
         if ( $banner_overlay ) {
             $banner_classes .= ' kesso-cookies-overlay-enabled';
         }
+
+        // Open the privacy link in a new tab only when it points off-site.
+        $privacy_is_external = false;
+        if ( ! empty( $privacy_link_url ) ) {
+            $link_host = wp_parse_url( $privacy_link_url, PHP_URL_HOST );
+            $home_host = wp_parse_url( home_url(), PHP_URL_HOST );
+            $privacy_is_external = ( ! empty( $link_host ) && strtolower( $link_host ) !== strtolower( (string) $home_host ) );
+        }
         ?>
-        <div id="kesso-cookies-banner" class="<?php echo esc_attr( $banner_classes ); ?>" role="dialog" aria-labelledby="kesso-cookies-banner-title" aria-modal="true">
+        <div id="kesso-cookies-banner" class="<?php echo esc_attr( $banner_classes ); ?>" role="dialog" aria-labelledby="kesso-cookies-banner-title" aria-describedby="kesso-cookies-banner-desc" aria-modal="false">
             <?php if ( $banner_overlay ) : ?>
             <div class="kesso-cookies-banner-overlay"></div>
             <?php endif; ?>
             <div class="kesso-cookies-banner-container">
                 <div class="kesso-cookies-banner-content">
-                    <h3 id="kesso-cookies-banner-title" class="kesso-cookies-banner-title"><?php echo esc_html( $banner_title ); ?></h3>
-                    <div class="kesso-cookies-banner-description">
+                    <h3 id="kesso-cookies-banner-title" class="kesso-cookies-banner-title" dir="auto"><?php echo esc_html( $banner_title ); ?></h3>
+                    <div id="kesso-cookies-banner-desc" class="kesso-cookies-banner-description" dir="auto">
                         <?php echo wp_kses_post( $banner_description ); ?>
                         <?php if ( ! empty( $privacy_link_url ) ) : ?>
-                            <a href="<?php echo esc_url( $privacy_link_url ); ?>" target="_blank" rel="noopener noreferrer" class="kesso-cookies-privacy-link"><?php echo esc_html( $privacy_link_text ); ?></a>
+                            <a href="<?php echo esc_url( $privacy_link_url ); ?>"<?php echo $privacy_is_external ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> class="kesso-cookies-privacy-link"><?php echo esc_html( $privacy_link_text ); ?></a>
                         <?php endif; ?>
                       </div>
                   </div>
@@ -384,60 +375,83 @@ class Kesso_Cookies_Banner {
               </div>
           </div>
           
-          <!-- Kesso Credit Banner -->
+          <?php if ( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_credit' ) ) : ?>
+          <!-- Kesso Credit Banner (opt-in) -->
           <div class="kesso-cookies-credit-banner">
               <div class="kesso-cookies-credit-banner-container">
-                  <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-credit-banner-link">
+                  <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-credit-banner-link" dir="auto">
                       <?php esc_html_e( '🧀 Powered by', 'kesso-cookies' ); ?> <strong>kesso.io</strong>
                   </a>
-                  <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-credit-banner-link kesso-cookies-credit-banner-link--right">
+                  <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-credit-banner-link kesso-cookies-credit-banner-link--right" dir="auto">
                       <?php esc_html_e( 'kesso-cookies plugin', 'kesso-cookies' ); ?>
                   </a>
               </div>
           </div>
+          <?php endif; ?>
 
         <!-- Customize Panel -->
         <div id="kesso-cookies-panel" class="kesso-cookies-panel" role="dialog" aria-labelledby="kesso-cookies-panel-title" aria-modal="true" style="display: none;">
             <div class="kesso-cookies-panel-overlay"></div>
             <div class="kesso-cookies-panel-container">
                 <div class="kesso-cookies-panel-header">
-                    <h3 id="kesso-cookies-panel-title" class="kesso-cookies-panel-title"><?php echo esc_html__( 'Cookie Preferences', 'kesso-cookies' ); ?></h3>
+                    <h3 id="kesso-cookies-panel-title" class="kesso-cookies-panel-title" dir="auto"><?php echo esc_html__( 'Cookie Preferences', 'kesso-cookies' ); ?></h3>
                     <button type="button" class="kesso-cookies-panel-close" id="kesso-cookies-panel-close" aria-label="<?php echo esc_attr__( 'Close', 'kesso-cookies' ); ?>">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
+                <?php if ( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_trust_signal' ) ) : ?>
+                <div class="kesso-cookies-panel-trust" dir="auto">
+                    <svg class="kesso-cookies-panel-trust-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="9" width="12" height="8" rx="2"></rect>
+                        <path d="M7 9V6a3 3 0 0 1 6 0v3"></path>
+                    </svg>
+                    <span>
+                        <?php
+                        $expiry_days = 180;
+                        printf(
+                            /* translators: %d: number of days consent is remembered */
+                            esc_html__( 'Your choices are saved for %d days. You can change them anytime.', 'kesso-cookies' ),
+                            (int) $expiry_days
+                        );
+                        if ( ! empty( $privacy_link_url ) ) {
+                            echo ' <a href="' . esc_url( $privacy_link_url ) . '"' . ( $privacy_is_external ? ' target="_blank" rel="noopener noreferrer"' : '' ) . '>' . esc_html( $privacy_link_text ) . '</a>';
+                        }
+                        ?>
+                    </span>
+                </div>
+                <?php endif; ?>
                 <div class="kesso-cookies-panel-content">
                     <div class="kesso-cookies-category">
                         <div class="kesso-cookies-category-header">
-                            <h4 class="kesso-cookies-category-title"><?php echo esc_html__( 'Essential Cookies', 'kesso-cookies' ); ?></h4>
+                            <h4 class="kesso-cookies-category-title" dir="auto"><?php echo esc_html__( 'Essential Cookies', 'kesso-cookies' ); ?></h4>
                             <label class="kesso-cookies-toggle">
                                 <input type="checkbox" id="kesso-cookies-essential" checked disabled aria-label="<?php echo esc_attr__( 'Essential Cookies', 'kesso-cookies' ); ?>" />
                                 <span class="kesso-cookies-toggle-slider"></span>
                             </label>
                         </div>
-                        <p class="kesso-cookies-category-description"><?php echo esc_html__( 'These cookies are necessary for the website to function and cannot be disabled.', 'kesso-cookies' ); ?></p>
+                        <p class="kesso-cookies-category-description" dir="auto"><?php echo esc_html__( 'These cookies are necessary for the website to function and cannot be disabled.', 'kesso-cookies' ); ?></p>
                     </div>
 
                     <div class="kesso-cookies-category">
                         <div class="kesso-cookies-category-header">
-                            <h4 class="kesso-cookies-category-title"><?php echo esc_html__( 'Analytics Cookies', 'kesso-cookies' ); ?></h4>
+                            <h4 class="kesso-cookies-category-title" dir="auto"><?php echo esc_html__( 'Analytics Cookies', 'kesso-cookies' ); ?></h4>
                             <label class="kesso-cookies-toggle">
                                 <input type="checkbox" id="kesso-cookies-analytics" aria-label="<?php echo esc_attr__( 'Analytics Cookies', 'kesso-cookies' ); ?>" />
                                 <span class="kesso-cookies-toggle-slider"></span>
                             </label>
                         </div>
-                        <p class="kesso-cookies-category-description"><?php echo esc_html__( 'These cookies help us understand how visitors interact with our website by collecting and reporting aggregated statistical information.', 'kesso-cookies' ); ?></p>
+                        <p class="kesso-cookies-category-description" dir="auto"><?php echo esc_html__( 'These cookies help us understand how visitors interact with our website by collecting and reporting aggregated statistical information.', 'kesso-cookies' ); ?></p>
                     </div>
 
                     <div class="kesso-cookies-category">
                         <div class="kesso-cookies-category-header">
-                            <h4 class="kesso-cookies-category-title"><?php echo esc_html__( 'Marketing Cookies', 'kesso-cookies' ); ?></h4>
+                            <h4 class="kesso-cookies-category-title" dir="auto"><?php echo esc_html__( 'Marketing Cookies', 'kesso-cookies' ); ?></h4>
                             <label class="kesso-cookies-toggle">
                                 <input type="checkbox" id="kesso-cookies-marketing" aria-label="<?php echo esc_attr__( 'Marketing Cookies', 'kesso-cookies' ); ?>" />
                                 <span class="kesso-cookies-toggle-slider"></span>
                             </label>
                         </div>
-                        <p class="kesso-cookies-category-description"><?php echo esc_html__( 'These cookies are used to deliver advertisements and track campaign effectiveness.', 'kesso-cookies' ); ?></p>
+                        <p class="kesso-cookies-category-description" dir="auto"><?php echo esc_html__( 'These cookies are used to deliver advertisements and track campaign effectiveness.', 'kesso-cookies' ); ?></p>
                     </div>
                 </div>
                 <div class="kesso-cookies-panel-actions">
@@ -445,7 +459,7 @@ class Kesso_Cookies_Banner {
                         <?php echo esc_html( $button_reject ); ?>
                     </button>
                     <button type="button" class="kesso-cookies-btn kesso-cookies-btn--accept" id="kesso-cookies-panel-save">
-                        <?php echo esc_html( get_option( 'kesso_cookies_button_save', __( 'Save Preferences', 'kesso-cookies' ) ) ); ?>
+                        <?php echo esc_html( Kesso_Cookies_Defaults::get( 'kesso_cookies_button_save' ) ); ?>
                     </button>
                 </div>
             </div>

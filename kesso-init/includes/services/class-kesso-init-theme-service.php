@@ -111,35 +111,6 @@ class Kesso_Init_Theme_Service {
     }
 
     /**
-     * Install Bricks from remote URL
-     *
-     * @param string $url Remote ZIP URL.
-     * @return array|WP_Error
-     */
-    public function install_bricks_from_url( $url ) {
-        // Ensure required files are loaded
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-        require_once ABSPATH . 'wp-admin/includes/theme.php';
-        require_once KESSO_INIT_PATH . 'includes/services/class-kesso-init-silent-upgrader-skin.php';
-
-        $upgrader = new Theme_Upgrader( new Kesso_Init_Silent_Upgrader_Skin() );
-        $result = $upgrader->install( $url );
-
-        if ( is_wp_error( $result ) || false === $result ) {
-            return new WP_Error( 'bricks_install_failed', __( 'Failed to install Bricks theme from URL.', 'kesso-init' ) );
-        }
-
-        // Activate Bricks
-        switch_theme( 'bricks' );
-
-        return array(
-            'theme'        => 'bricks',
-            'active_theme' => 'bricks',
-        );
-    }
-
-    /**
      * Install Bricks from uploaded file
      *
      * @param string $file_path Path to uploaded ZIP file.
@@ -159,18 +130,29 @@ class Kesso_Init_Theme_Service {
         }
 
         $upgrader = new Theme_Upgrader( new Kesso_Init_Silent_Upgrader_Skin() );
-        $result = $upgrader->install( $file_path );
+        $result   = $upgrader->install( $file_path );
 
         if ( is_wp_error( $result ) || false === $result ) {
             return new WP_Error( 'bricks_install_failed', __( 'Failed to install Bricks theme from uploaded file.', 'kesso-init' ) );
         }
 
-        // Activate Bricks
-        switch_theme( 'bricks' );
+        // Resolve the ACTUAL installed stylesheet instead of assuming 'bricks'
+        // (the uploaded ZIP's top folder may be versioned, e.g. "bricks-1.x").
+        $stylesheet = '';
+        $installed  = $upgrader->theme_info();
+        if ( $installed instanceof WP_Theme && $installed->exists() ) {
+            $stylesheet = $installed->get_stylesheet();
+        }
+        if ( '' === $stylesheet ) {
+            $stylesheet = 'bricks';
+        }
+
+        // Activate the installed theme.
+        switch_theme( $stylesheet );
 
         return array(
-            'theme'        => 'bricks',
-            'active_theme' => 'bricks',
+            'theme'        => $stylesheet,
+            'active_theme' => $stylesheet,
         );
     }
 

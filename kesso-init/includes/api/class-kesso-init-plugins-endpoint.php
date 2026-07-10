@@ -122,7 +122,10 @@ class Kesso_Init_Plugins_Endpoint {
      * @return bool|WP_Error
      */
     public function check_permission() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        // install_plugins is the capability WordPress core checks before any
+        // plugin install/activate, and it is automatically revoked when
+        // DISALLOW_FILE_MODS is set.
+        if ( ! current_user_can( 'install_plugins' ) ) {
             return new WP_Error(
                 'rest_forbidden',
                 __( 'You do not have permission to perform this action.', 'kesso-init' ),
@@ -279,21 +282,12 @@ class Kesso_Init_Plugins_Endpoint {
             return $expected_file;
         }
 
-        // Search for plugin by slug in all plugin files
+        // Match on the plugin's own directory exactly (e.g. slug "polylang"
+        // matches "polylang/polylang.php"). The previous substring /
+        // shared-token fallbacks could mis-identify an unrelated plugin that
+        // merely shared a word (e.g. "code-snippets" vs "code-*").
         foreach ( $plugins as $file => $plugin_data ) {
-            // Check if the file path contains the slug
-            if ( strpos( $file, $slug ) !== false ) {
-                return $file;
-            }
-        }
-
-        // If still not found, try searching by plugin name or slug parts
-        $slug_parts = explode( '-', $slug );
-        foreach ( $plugins as $file => $plugin_data ) {
-            $file_slug = dirname( $file );
-            $file_slug_parts = explode( '-', $file_slug );
-            // Check if any significant part matches
-            if ( ! empty( array_intersect( $slug_parts, $file_slug_parts ) ) ) {
+            if ( dirname( $file ) === $slug ) {
                 return $file;
             }
         }

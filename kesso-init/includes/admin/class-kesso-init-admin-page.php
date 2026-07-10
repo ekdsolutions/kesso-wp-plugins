@@ -39,7 +39,7 @@ class Kesso_Init_Admin_Page {
         
         $this->hook_suffix = add_menu_page(
             __( 'Kesso Init', 'kesso-init' ),
-            '# ' . __( 'Initialization', 'kesso-init' ),
+            __( 'Initialization', 'kesso-init' ),
             'manage_options',
             'kesso-init',
             array( $this, 'render_page' ),

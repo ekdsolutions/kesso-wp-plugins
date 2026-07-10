@@ -61,11 +61,6 @@ class Kesso_Init_Batch_Endpoint {
                         'enum'     => array( 'elementor', 'bricks', '' ),
                         'default'  => '',
                     ),
-                    'bricks_url' => array(
-                        'required' => false,
-                        'type'     => 'string',
-                        'default'  => '',
-                    ),
                     'install_child_theme' => array(
                         'required' => false,
                         'type'     => 'boolean',
@@ -87,7 +82,9 @@ class Kesso_Init_Batch_Endpoint {
      * @return bool|WP_Error
      */
     public function check_permission() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        // The batch applies plugin/theme installs, so require install_plugins
+        // (also honours DISALLOW_FILE_MODS).
+        if ( ! current_user_can( 'install_plugins' ) ) {
             return new WP_Error(
                 'rest_forbidden',
                 __( 'You do not have permission to perform this action.', 'kesso-init' ),
@@ -174,7 +171,6 @@ class Kesso_Init_Batch_Endpoint {
         try {
             $plugins            = $request->get_param( 'plugins' ) ?: array();
             $builder            = $request->get_param( 'builder' ) ?: '';
-            $bricks_url         = $request->get_param( 'bricks_url' ) ?: '';
             $install_child      = (bool) $request->get_param( 'install_child_theme' );
             $settings           = $request->get_param( 'settings' ) ?: array();
 
@@ -220,7 +216,7 @@ class Kesso_Init_Batch_Endpoint {
                             $parent_theme = 'bricks';
                             $results['theme'] = array(
                                 'theme'        => 'bricks',
-                                'active_theme' => get_stylesheet() === 'bricks' ? 'bricks' : 'bricks',
+                                'active_theme' => get_stylesheet(),
                             );
                         } else {
                             // Bricks not installed - this shouldn't happen if file was uploaded

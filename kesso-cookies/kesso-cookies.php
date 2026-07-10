@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Kesso Cookies
  * Plugin URI: https://kesso.io
- * Description: GDPR-compliant cookie consent banner with script blocking and category management.
- * Version: 1.0.0
+ * Description: GDPR-compliant cookie consent banner with automatic script blocking and category management.
+ * Version: 1.1.8
  * Author: Kesso
  * Author URI: https://kesso.io
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'KESSO_COOKIES_VERSION', '1.0.0' );
+define( 'KESSO_COOKIES_VERSION', '1.1.8' );
 define( 'KESSO_COOKIES_PATH', plugin_dir_path( __FILE__ ) );
 define( 'KESSO_COOKIES_URL', plugin_dir_url( __FILE__ ) );
 define( 'KESSO_COOKIES_BASENAME', plugin_basename( __FILE__ ) );
@@ -82,6 +82,13 @@ class Kesso_Cookies {
     public $banner;
 
     /**
+     * Front-end script blocker
+     *
+     * @var Kesso_Cookies_Script_Blocker
+     */
+    public $blocker;
+
+    /**
      * Get the singleton instance
      *
      * @return Kesso_Cookies
@@ -105,72 +112,43 @@ class Kesso_Cookies {
      * Load required files
      */
     private function load_dependencies() {
+        // Shared utilities + canonical defaults
+        require_once KESSO_COOKIES_PATH . 'includes/class-kesso-cookies-helpers.php';
+        require_once KESSO_COOKIES_PATH . 'includes/class-kesso-cookies-defaults.php';
+
         // Admin
         require_once KESSO_COOKIES_PATH . 'includes/admin/class-kesso-cookies-admin.php';
-        
+
         // Frontend
         require_once KESSO_COOKIES_PATH . 'includes/frontend/class-kesso-cookies-banner.php';
+        require_once KESSO_COOKIES_PATH . 'includes/frontend/class-kesso-cookies-script-blocker.php';
     }
 
     /**
      * Initialize WordPress hooks
      */
     private function init_hooks() {
-        // Initialize admin page
+        // Load translations.
+        add_action( 'init', array( $this, 'load_textdomain' ) );
+
         if ( is_admin() ) {
+            // Admin settings page.
             $this->admin = new Kesso_Cookies_Admin();
-        }
+        } else {
+            // Front-end banner + server-side script blocker.
+            $this->banner  = new Kesso_Cookies_Banner();
+            $this->blocker = new Kesso_Cookies_Script_Blocker();
 
-        // Initialize frontend banner
-        if ( ! is_admin() ) {
-            $this->banner = new Kesso_Cookies_Banner();
-        }
-
-        // Add footer link to reopen consent panel (front-end only)
-        if ( ! is_admin() ) {
+            // Footer link to reopen the consent panel.
             add_action( 'wp_footer', array( $this, 'add_consent_link' ) );
         }
     }
 
     /**
-     * Check if we're in a page builder context
-     *
-     * @return bool
+     * Load the plugin text domain for translations.
      */
-    private function is_page_builder() {
-        // Bricks Builder
-        if ( defined( 'BRICKS_VERSION' ) && function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) {
-            return true;
-        }
-
-        // Elementor
-        if ( defined( 'ELEMENTOR_VERSION' ) && class_exists( '\Elementor\Plugin' ) ) {
-            if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
-                return true;
-            }
-        }
-
-        // Beaver Builder
-        if ( class_exists( 'FLBuilderModel' ) && FLBuilderModel::is_builder_active() ) {
-            return true;
-        }
-
-        // Divi Builder
-        if ( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) {
-            return true;
-        }
-
-        // Visual Composer
-        if ( function_exists( 'vc_is_inline' ) && vc_is_inline() ) {
-            return true;
-        }
-
-        // Check for common builder query parameters
-        if ( isset( $_GET['bricks'] ) || isset( $_GET['elementor-preview'] ) || isset( $_GET['fl_builder'] ) || isset( $_GET['et_fb'] ) || isset( $_GET['vc_editable'] ) ) {
-            return true;
-        }
-
-        return false;
+    public function load_textdomain() {
+        load_plugin_textdomain( 'kesso-cookies', false, dirname( KESSO_COOKIES_BASENAME ) . '/languages' );
     }
 
     /**
@@ -178,7 +156,7 @@ class Kesso_Cookies {
      */
     public function add_consent_link() {
         // Don't render in page builders
-        if ( $this->is_page_builder() ) {
+        if ( Kesso_Cookies_Helpers::is_page_builder() ) {
             return;
         }
 

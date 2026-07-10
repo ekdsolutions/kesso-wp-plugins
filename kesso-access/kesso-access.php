@@ -4,7 +4,7 @@
  * Plugin Name: Kesso Accessibility
  * Plugin URI: https://kesso.io
  * Description: Accessibility widget with font resizing, contrast modes, and keyboard navigation helpers.
- * Version: 1.0.0
+ * Version: 1.1.6
  * Author: Kesso
  * Author URI: https://kesso.io
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'KESSO_VERSION', '1.0.0' );
+define( 'KESSO_VERSION', '1.1.6' );
 define( 'KESSO_MAIN_FILE', __FILE__ );
 define( 'KESSO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'KESSO_URL', plugins_url( '/', __FILE__ ) );
@@ -70,6 +70,9 @@ final class Kesso_Plugin {
 	 * Initialize plugin
 	 */
 	private function init() {
+		// Load translations.
+		add_action( 'init', [ $this, 'load_textdomain' ] );
+
 		// Initialize frontend widget
 		new Kesso_Widget();
 
@@ -77,6 +80,13 @@ final class Kesso_Plugin {
 		if ( is_admin() ) {
 			new Kesso_Admin();
 		}
+	}
+
+	/**
+	 * Load the plugin text domain for translations.
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'kesso-access', false, dirname( plugin_basename( KESSO_MAIN_FILE ) ) . '/languages' );
 	}
 
 	/**
