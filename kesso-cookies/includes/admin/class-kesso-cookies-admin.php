@@ -552,7 +552,7 @@ class Kesso_Cookies_Admin {
                                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px; border-radius: var(--kesso-cookies-radius-lg, 8px); border: 1px solid var(--kesso-cookies-slate-200, #e2e8f0); background: #f8fafc; min-height: 54px; margin-top: 8px;">
                                                 <input type="hidden" name="kesso_cookies_show_credit" value="0" />
                                                 <input type="checkbox" id="kesso_cookies_show_credit" name="kesso_cookies_show_credit" value="1" <?php checked( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_credit' ), true ); ?> style="width: 18px; height: 18px; cursor: pointer; margin: 0; flex-shrink: 0;" />
-                                                <span style="font-size: 14px; color: var(--kesso-cookies-text, #0d141b);"><?php echo esc_html__( 'Show kesso.io branding below banner', 'kesso-cookies' ); ?></span>
+                                                <span style="font-size: 14px; color: var(--kesso-cookies-text, #0d141b);"><?php echo esc_html__( 'Show kesso.io credit in the banner', 'kesso-cookies' ); ?></span>
                                             </label>
                                         </div>
 

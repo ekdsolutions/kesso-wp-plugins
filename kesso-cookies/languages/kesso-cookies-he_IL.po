@@ -72,3 +72,8 @@ msgstr "🧀 מופעל על ידי"
 
 msgid "kesso-cookies plugin"
 msgstr "תוסף kesso-cookies"
+
+# --- Preferences modal trust line ---
+#, php-format
+msgid "Your choices are saved for %d days. You can change them anytime."
+msgstr "הבחירות שלכם נשמרות למשך %d ימים. ניתן לשנות אותן בכל עת."

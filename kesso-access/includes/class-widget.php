@@ -366,8 +366,8 @@ class Kesso_Widget {
 						</ul>
 					<?php endif; ?>
 					
-					<?php if ( 'enable' === get_option( 'kesso_show_credit', 'disable' ) ) : ?>
-					<!-- Kesso Credit (opt-in) -->
+					<?php if ( 'disable' !== get_option( 'kesso_show_credit', 'enable' ) ) : ?>
+					<!-- Kesso Credit -->
 					<div class="kesso-toolbar-credit">
 						<a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-toolbar-credit-link" tabindex="-1">
 							<?php esc_html_e( '🧀 Powered by', 'kesso-access' ); ?> <strong>kesso.io</strong>
@@ -518,15 +518,8 @@ class Kesso_Widget {
 			$css .= 'fill: ' . esc_attr( $icon_color ) . ';';
 			$css .= '}';
 
-			// Apply to overlay icons
-			$css .= '#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {';
-			$css .= 'fill: ' . esc_attr( $icon_color ) . ';';
-			$css .= '}';
-
-			// Apply as text color in options list
-			$css .= '#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link .kesso-toolbar-text {';
-			$css .= 'color: ' . esc_attr( $icon_color ) . ';';
-			$css .= '}';
+			// Apply as text colour in the options list (stroke icons inherit it).
+			$css .= ':root { --kesso-access-text: ' . esc_attr( $icon_color ) . '; }';
 		}
 		
 		// Border color
@@ -547,9 +540,9 @@ class Kesso_Widget {
 			$css .= '}';
 
 			// Apply to overlay
+			$css .= ':root { --kesso-access-border: ' . esc_attr( $border_color ) . '; }';
 			$css .= '#kesso-toolbar .kesso-toolbar-overlay {';
 			$css .= 'border-color: ' . esc_attr( $border_color ) . ';';
-			$css .= 'box-shadow: 0 0 10px 5px ' . esc_attr( $shadow_color ) . ';';
 			$css .= '}';
 		} else {
 			// Default box-shadow if no border color is set
@@ -571,9 +564,7 @@ class Kesso_Widget {
 			$css .= '}';
 
 			// Apply to overlay
-			$css .= '#kesso-toolbar .kesso-toolbar-overlay {';
-			$css .= 'background-color: ' . esc_attr( $background_color ) . ';';
-			$css .= '}';
+			$css .= ':root { --kesso-access-bg: ' . esc_attr( $background_color ) . '; }';
 		}
 		
 		return $css;

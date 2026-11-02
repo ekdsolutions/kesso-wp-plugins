@@ -4,7 +4,7 @@ Tags: Web Accessibility, Accessibility, A11Y, WCAG
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.7
 License: GPLv2 or later
 
 Self-hosted accessibility widget for WordPress with font resizing, contrast modes, and keyboard navigation helpers.

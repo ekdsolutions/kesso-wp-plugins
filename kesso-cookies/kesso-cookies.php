@@ -3,7 +3,7 @@
  * Plugin Name: Kesso Cookies
  * Plugin URI: https://kesso.io
  * Description: GDPR-compliant cookie consent banner with automatic script blocking and category management.
- * Version: 1.1.8
+ * Version: 1.1.9
  * Author: Kesso
  * Author URI: https://kesso.io
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'KESSO_COOKIES_VERSION', '1.1.8' );
+define( 'KESSO_COOKIES_VERSION', '1.1.9' );
 define( 'KESSO_COOKIES_PATH', plugin_dir_path( __FILE__ ) );
 define( 'KESSO_COOKIES_URL', plugin_dir_url( __FILE__ ) );
 define( 'KESSO_COOKIES_BASENAME', plugin_basename( __FILE__ ) );

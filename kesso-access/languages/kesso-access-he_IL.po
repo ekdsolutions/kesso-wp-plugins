@@ -68,3 +68,7 @@ msgstr "עזרה"
 
 msgid "Feedback"
 msgstr "משוב"
+
+# --- Credit ---
+msgid "🧀 Powered by"
+msgstr "🧀 מופעל על ידי"

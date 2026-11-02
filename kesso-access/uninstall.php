@@ -34,6 +34,7 @@ function kesso_access_uninstall_cleanup() {
 
     // Individually-named options.
     $singletons = array(
+        'kesso_show_credit',
         'kesso_focusable',
         'kesso_remove_link_target',
         'kesso_add_role_links',

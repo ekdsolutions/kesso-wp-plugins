@@ -189,17 +189,11 @@
             }
 
             // Show banner if no consent, hide if consent exists
-            const creditBanner = document.querySelector('.kesso-cookies-credit-banner');
             if (!this.consent) {
                 this.showBanner();
             } else {
                 // Hide banner and show settings link if consent exists
                 this.hideBanner();
-                // Also hide credit banner if consent exists
-                if (creditBanner) {
-                    creditBanner.style.display = 'none';
-                    creditBanner.classList.remove('is-visible');
-                }
                 if (settingsLink) {
                     settingsLink.style.display = 'block';
                 }
@@ -297,18 +291,8 @@
          */
         showBanner: function() {
             const banner = document.getElementById('kesso-cookies-banner');
-            const creditBanner = document.querySelector('.kesso-cookies-credit-banner');
-
-            // Show credit banner first so its height is measurable
-            if (creditBanner) {
-                creditBanner.classList.add('is-visible');
-                creditBanner.style.display = 'block';
-            }
 
             if (banner) {
-                // Read credit banner height after it's visible, then batch the write
-                const creditHeight = creditBanner ? creditBanner.offsetHeight : 0;
-                banner.style.bottom = creditHeight ? creditHeight + 'px' : '';
                 banner.classList.add('is-visible');
                 banner.style.display = 'block';
                 // Do not auto-focus any button to avoid drawing attention to a specific choice
@@ -321,18 +305,10 @@
          */
         hideBanner: function() {
             const banner = document.getElementById('kesso-cookies-banner');
-            const creditBanner = document.querySelector('.kesso-cookies-credit-banner');
-            
+
             if (banner) {
                 banner.classList.remove('is-visible');
                 banner.style.display = 'none';
-                banner.style.bottom = '';
-            }
-            
-            // Hide credit banner along with main banner
-            if (creditBanner) {
-                creditBanner.classList.remove('is-visible');
-                creditBanner.style.display = 'none';
             }
         },
 
@@ -375,6 +351,11 @@
                 panel.classList.remove('is-visible');
                 panel.style.display = 'none';
                 document.body.style.overflow = typeof this._prevBodyOverflow === 'string' ? this._prevBodyOverflow : '';
+            }
+
+            // No choice made yet: the visitor still needs the banner.
+            if (!this.consent) {
+                this.showBanner();
             }
 
             // Tear down the focus trap and restore focus to the trigger.
@@ -647,13 +628,24 @@
                 return;
             }
 
-            const blocked = document.querySelectorAll('script[type="text/plain"][data-kesso-blocked]');
-            blocked.forEach((old) => {
-                const cat = old.getAttribute('data-kesso-category');
-                if (categories.indexOf(cat) === -1) {
+            const queue = [];
+            document.querySelectorAll('script[type="text/plain"][data-kesso-blocked]').forEach((old) => {
+                if (categories.indexOf(old.getAttribute('data-kesso-category')) === -1) {
                     return;
                 }
                 if (old.getAttribute('data-kesso-activated')) {
+                    return;
+                }
+                old.setAttribute('data-kesso-activated', '1');
+                queue.push(old);
+            });
+
+            // Scripts inserted from JS run as soon as they load, so an inline
+            // snippet could run before the library it needs. Wait for each
+            // external script unless it was already marked async.
+            const activateNext = () => {
+                const old = queue.shift();
+                if (!old) {
                     return;
                 }
 
@@ -672,16 +664,30 @@
                     }
                 }
 
+                const isExternal = !!old.getAttribute('data-kesso-src');
+
                 // Inline body (only when there is no external src)
-                if (!old.getAttribute('data-kesso-src') && old.textContent) {
+                if (!isExternal && old.textContent) {
                     fresh.text = old.textContent;
                 }
 
-                old.setAttribute('data-kesso-activated', '1');
+                const waitForLoad = isExternal && !old.hasAttribute('async');
+                if (waitForLoad) {
+                    fresh.async = false;
+                    fresh.onload = activateNext;
+                    fresh.onerror = activateNext;
+                }
+
                 if (old.parentNode) {
                     old.parentNode.replaceChild(fresh, old);
                 }
-            });
+
+                if (!waitForLoad) {
+                    activateNext();
+                }
+            };
+
+            activateNext();
         },
 
         /**

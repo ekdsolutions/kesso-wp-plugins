@@ -360,6 +360,9 @@ class Kesso_Cookies_Banner {
                             <a href="<?php echo esc_url( $privacy_link_url ); ?>"<?php echo $privacy_is_external ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> class="kesso-cookies-privacy-link"><?php echo esc_html( $privacy_link_text ); ?></a>
                         <?php endif; ?>
                       </div>
+                    <?php if ( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_credit' ) ) : ?>
+                    <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-banner-credit" dir="auto"><?php esc_html_e( '🧀 Powered by', 'kesso-cookies' ); ?> <strong>kesso.io</strong></a>
+                    <?php endif; ?>
                   </div>
                   <div class="kesso-cookies-banner-actions">
                       <button type="button" class="kesso-cookies-btn kesso-cookies-btn--reject" id="kesso-cookies-reject-all" aria-label="<?php echo esc_attr( $button_reject ); ?>">
@@ -375,20 +378,6 @@ class Kesso_Cookies_Banner {
               </div>
           </div>
           
-          <?php if ( Kesso_Cookies_Defaults::get( 'kesso_cookies_show_credit' ) ) : ?>
-          <!-- Kesso Credit Banner (opt-in) -->
-          <div class="kesso-cookies-credit-banner">
-              <div class="kesso-cookies-credit-banner-container">
-                  <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-credit-banner-link" dir="auto">
-                      <?php esc_html_e( '🧀 Powered by', 'kesso-cookies' ); ?> <strong>kesso.io</strong>
-                  </a>
-                  <a href="https://kesso.io" target="_blank" rel="noopener noreferrer" class="kesso-cookies-credit-banner-link kesso-cookies-credit-banner-link--right" dir="auto">
-                      <?php esc_html_e( 'kesso-cookies plugin', 'kesso-cookies' ); ?>
-                  </a>
-              </div>
-          </div>
-          <?php endif; ?>
-
         <!-- Customize Panel -->
         <div id="kesso-cookies-panel" class="kesso-cookies-panel" role="dialog" aria-labelledby="kesso-cookies-panel-title" aria-modal="true" style="display: none;">
             <div class="kesso-cookies-panel-overlay"></div>

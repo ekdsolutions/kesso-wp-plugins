@@ -555,6 +555,19 @@ class Kesso_Admin {
 		];
 
 		$fields[] = [
+			'id'      => 'kesso_show_credit',
+			'title'   => __( 'Show "Powered by" Credit', 'kesso-access' ),
+			'type'    => self::FIELD_SELECT,
+			'desc'    => __( 'Show the kesso.io credit at the bottom of the toolbar.', 'kesso-access' ),
+			'options' => [
+				'enable'  => __( 'Enable', 'kesso-access' ),
+				'disable' => __( 'Disable', 'kesso-access' ),
+			],
+			'std'     => 'enable',
+			'sanitize_callback' => [ $this, 'sanitize_enabled_disabled' ],
+		];
+
+		$fields[] = [
 			'id'      => 'kesso_focusable',
 			'title'   => __( 'Add Outline Focus', 'kesso-access' ),
 			'type'    => self::FIELD_SELECT,

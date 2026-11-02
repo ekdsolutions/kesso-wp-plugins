@@ -46,7 +46,7 @@ class Kesso_Cookies_Defaults {
             'kesso_cookies_blocking_enabled'          => true,
             'kesso_cookies_block_known_trackers'      => true,
             'kesso_cookies_theme'                     => 'minimal',
-            'kesso_cookies_show_credit'               => false,
+            'kesso_cookies_show_credit'               => true,
             'kesso_cookies_show_trust_signal'         => true,
         );
     }

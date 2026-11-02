@@ -145,7 +145,7 @@ class Kesso_Cookies_Script_Blocker {
         }
 
         // Only touch executable JavaScript — leave JSON-LD, templates, etc. alone.
-        if ( preg_match( '/\btype\s*=\s*([\'"])(.*?)\1/i', $attrs, $tm ) ) {
+        if ( preg_match( '/(?<![\w-])type\s*=\s*([\'"])(.*?)\1/i', $attrs, $tm ) ) {
             $type = strtolower( trim( $tm[2] ) );
             $executable = in_array( $type, array( 'text/javascript', 'application/javascript', 'module', '' ), true );
             if ( ! $executable ) {
@@ -167,7 +167,7 @@ class Kesso_Cookies_Script_Blocker {
         // 2) Known-tracker auto-detection.
         if ( '' === $category && $this->auto_detect ) {
             $src = '';
-            if ( preg_match( '/\bsrc\s*=\s*([\'"])(.*?)\1/i', $attrs, $sm ) ) {
+            if ( preg_match( '/(?<![\w-])src\s*=\s*([\'"])(.*?)\1/i', $attrs, $sm ) ) {
                 $src = $sm[2];
             }
             $haystack = $src . ' ' . $content;
@@ -199,9 +199,9 @@ class Kesso_Cookies_Script_Blocker {
      */
     private function rewrite_blocked( $attrs, $content, $category ) {
         // Move src out of the way so the browser does not fetch it.
-        $new_attrs = preg_replace( '/\bsrc\s*=\s*([\'"])(.*?)\1/i', 'data-kesso-src=$1$2$1', $attrs, 1 );
+        $new_attrs = preg_replace( '/(?<![\w-])src\s*=\s*([\'"])(.*?)\1/i', 'data-kesso-src=$1$2$1', $attrs, 1 );
         // Strip any existing type / category attributes (re-added canonically).
-        $new_attrs = preg_replace( '/\btype\s*=\s*([\'"]).*?\1/i', '', $new_attrs );
+        $new_attrs = preg_replace( '/(?<![\w-])type\s*=\s*([\'"]).*?\1/i', '', $new_attrs );
         $new_attrs = preg_replace( '/\bdata-kesso-category\s*=\s*([\'"]).*?\1/i', '', $new_attrs );
         $new_attrs = trim( preg_replace( '/\s+/', ' ', (string) $new_attrs ) );
 

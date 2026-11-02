@@ -74,6 +74,96 @@
 			$self.bindToolbarButtons();
 		},
 
+		/**
+		 * Scale page text to the selected level.
+		 *
+		 * Each element is measured once at its natural size and given an absolute
+		 * size, so nesting can't compound and the theme's units don't matter. Text
+		 * that is already large grows only up to a ceiling, so display headings
+		 * can't push the page wider than the screen.
+		 */
+		applyFontScale: function() {
+			var self = this,
+				levels = { 130: 1.1, 140: 1.2, 150: 1.3, 160: 1.4, 170: 1.5, 180: 1.6, 190: 1.8, 200: 2 },
+				factor = levels[ this.variables.currentFontSize ] || 1,
+				skip = '#kesso-toolbar, #kesso-skip-content, #wpadminbar, .kesso-cookies-banner, .kesso-cookies-panel, .kesso-cookies-settings-link',
+				ignoredTags = /^(SCRIPT|STYLE|NOSCRIPT|SVG|PATH|IMG|VIDEO|CANVAS|IFRAME|BR|HR)$/i,
+				controlTags = /^(INPUT|SELECT|TEXTAREA|BUTTON)$/i,
+				maxScaledSize = 48,
+				targets = [];
+
+			// Restore everything first so measurements are always the natural size.
+			$.each( this.variables.scaledElements || [], function( index, item ) {
+				item.el.style.removeProperty( 'font-size' );
+				item.el.style.removeProperty( 'overflow-wrap' );
+				if ( item.value ) {
+					item.el.style.setProperty( 'font-size', item.value, item.priority );
+				}
+			} );
+			this.variables.scaledElements = [];
+
+			if ( 1 === factor ) {
+				this.watchFontScale( false );
+				return;
+			}
+
+			$.each( document.body.querySelectorAll( '*' ), function( index, el ) {
+				if ( ignoredTags.test( el.tagName ) || el.closest( skip ) ) {
+					return;
+				}
+				var hasOwnText = Array.prototype.some.call( el.childNodes, function( node ) {
+					return 3 === node.nodeType && node.textContent.trim();
+				} );
+				if ( hasOwnText || controlTags.test( el.tagName ) ) {
+					targets.push( { el: el, size: parseFloat( getComputedStyle( el ).fontSize ) } );
+				}
+			} );
+
+			$.each( targets, function( index, target ) {
+				var size = Math.max( target.size, Math.min( target.size * factor, maxScaledSize ) );
+				self.variables.scaledElements.push( {
+					el: target.el,
+					value: target.el.style.getPropertyValue( 'font-size' ),
+					priority: target.el.style.getPropertyPriority( 'font-size' )
+				} );
+				target.el.style.setProperty( 'font-size', size + 'px', 'important' );
+				// Long emails, phone numbers and URLs may break rather than widen the page.
+				target.el.style.setProperty( 'overflow-wrap', 'anywhere' );
+			} );
+
+			this.watchFontScale( true );
+		},
+
+		/**
+		 * Keep the scale applied to content added later and after screen changes.
+		 */
+		watchFontScale: function( enable ) {
+			var self = this;
+
+			if ( ! window.MutationObserver ) {
+				return;
+			}
+
+			if ( ! this.fontScaleWatcher ) {
+				var timer;
+				this.onFontScaleChange = function() {
+					clearTimeout( timer );
+					timer = setTimeout( function() {
+						self.applyFontScale();
+					}, 250 );
+				};
+				this.fontScaleWatcher = new MutationObserver( this.onFontScaleChange );
+			}
+
+			this.fontScaleWatcher.disconnect();
+			window.removeEventListener( 'orientationchange', this.onFontScaleChange );
+
+			if ( enable ) {
+				this.fontScaleWatcher.observe( document.body, { childList: true, subtree: true } );
+				window.addEventListener( 'orientationchange', this.onFontScaleChange );
+			}
+		},
+
 		setToolbarOpen: function( open ) {
 			this.cache.$toolbar.toggleClass( 'kesso-toolbar-open', open );
 			this.cache.$toolbarLinks.attr( 'tabindex', open ? '0' : '-1' );
@@ -169,6 +259,7 @@
 
 				this.activeActions[ 'resize-minus' ] = false;
 				this.activeActions[ 'resize-plus' ] = isPlusActive;
+				this.applyFontScale();
 				this.cache.$window.trigger( 'resize' );
 			},
 			schema: function( action, deactivate ) {
@@ -279,70 +370,11 @@
 			}
 		},
 
-		/**
-		 * Smart positioning: detect other floating widgets in the same corner
-		 * as the accessibility toolbar and offset it to avoid visual collisions.
-		 * Best-effort — capped at 100px offset so we don't fly off-screen.
-		 */
-		smartPositioning: function() {
-			var toolbar = this.cache.$toolbar && this.cache.$toolbar[0];
-			if ( ! toolbar ) return;
-			var tRect = toolbar.getBoundingClientRect();
-			if ( tRect.width === 0 ) return;
-
-			// Determine which corner we're in (based on where the toggle sits).
-			var vw = window.innerWidth || document.documentElement.clientWidth;
-			var vh = window.innerHeight || document.documentElement.clientHeight;
-			var isBottom = ( tRect.top > vh / 2 );
-			var isLeft   = ( tRect.left < vw / 2 );
-			if ( ! isBottom ) return; // Only auto-adjust the bottom corners.
-
-			// Cheap query: only candidates likely to be floating widgets.
-			var selectors = [
-				'a[class*="lang"], a[class*="switcher"]',
-				'.wp-toolbar-lang, .lang-widget, .langswitch',
-				'[id*="chat"], [class*="chat-widget"], [class*="Intercom"], [class*="livechat"]',
-				'[id*="scroll-top"], [class*="scroll-top"], [class*="back-to-top"]',
-				'[id*="whatsapp"], [class*="whatsapp"]',
-				'a[href*="wa.me"], a[href*="whatsapp"]'
-			];
-			var candidates = document.querySelectorAll( selectors.join(',') );
-			var maxOffset = 0;
-			for ( var i = 0; i < candidates.length; i++ ) {
-				var el = candidates[ i ];
-				if ( el === toolbar || toolbar.contains( el ) ) continue;
-				if ( el.closest && el.closest( '#kesso-toolbar' ) ) continue;
-				if ( el.closest && el.closest( '#kesso-cookies-banner' ) ) continue;
-				var cs = getComputedStyle( el );
-				if ( cs.position !== 'fixed' && cs.position !== 'sticky' ) continue;
-				if ( cs.visibility === 'hidden' || cs.display === 'none' ) continue;
-				var r = el.getBoundingClientRect();
-				if ( r.width === 0 || r.height === 0 ) continue;
-				// Corner filter: candidate must be in the same bottom corner.
-				var candLeft = isLeft ? ( r.left < 200 ) : ( vw - r.right < 200 );
-				var candBottom = ( vh - r.bottom < 200 );
-				if ( ! candLeft || ! candBottom ) continue;
-				// If it vertically overlaps our toolbar zone, note the offset needed.
-				var overlaps = ! ( r.bottom < tRect.top || r.top > tRect.bottom );
-				var nearVertical = Math.abs( r.top - tRect.top ) < ( tRect.height + 20 );
-				if ( overlaps || nearVertical ) {
-					var offset = Math.ceil( r.height + 12 );
-					if ( offset > maxOffset ) maxOffset = offset;
-				}
-			}
-			if ( maxOffset > 0 && maxOffset < 100 ) {
-				var currentBottom = parseInt( getComputedStyle( toolbar ).bottom, 10 ) || 20;
-				toolbar.style.bottom = ( currentBottom + maxOffset ) + 'px';
-			}
-		},
-
 		init: function() {
 			this.cacheElements();
 			this.buildElements();
 			this.bindEvents();
 			this.handleGlobalOptions();
-			// Smart-positioning intentionally NOT called — jumps around too
-			// unpredictably. The widget stays at the admin-configured corner.
 		}
 	};
 

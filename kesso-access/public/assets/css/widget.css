@@ -1,23 +1,15 @@
-/*! Accessibility Widget CSS
- * BUILD-SIGNATURE: KESSO-ACCESS-CSS-1-1-5-PREMIUM
- */
+/*! Accessibility Widget CSS */
 
 /* =========================================================================
-   Design tokens — kept in sync with kesso-cookies for a unified look.
-   Override these to reskin the widget.
+   Design tokens. The admin colour settings override these via inline CSS.
    ========================================================================= */
 :root {
-  --kesso-access-primary: #137fec;
   --kesso-access-primary-focus: rgba(19, 127, 236, 0.18);
   --kesso-access-bg: #ffffff;
   --kesso-access-text: #0d141b;
   --kesso-access-text-muted: #4c739a;
   --kesso-access-border: rgba(15, 23, 42, 0.08);
-  --kesso-access-radius-sm: 8px;
   --kesso-access-radius-lg: 16px;
-  --kesso-access-shadow-toggle:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 4px 12px rgba(15, 23, 42, 0.06);
   --kesso-access-shadow-panel:
     0 1px 2px rgba(15, 23, 42, 0.04),
     0 8px 24px rgba(15, 23, 42, 0.06),
@@ -26,112 +18,11 @@
   --kesso-access-transition-spring: 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* NOTE: Automatic dark-mode intentionally not applied — the widget stays
-   crisp white regardless of OS theme so text and icons are always visible. */
-
-/* Lock our font/color independently of the site's theme so the accessibility
-   widget always renders professionally. Site CSS can't override these. */
+/* Lock the font so the site's theme can't change the widget's typography. */
 #kesso-toolbar,
 #kesso-toolbar * {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
       "Helvetica Neue", Arial, sans-serif !important;
-  color: var(--kesso-access-text) !important;
-}
-#kesso-toolbar .kesso-toolbar-overlay,
-#kesso-toolbar .kesso-toolbar-overlay * {
-  background-color: transparent;
-}
-#kesso-toolbar .kesso-toolbar-overlay {
-  background-color: var(--kesso-access-bg) !important;
-}
-#kesso-toolbar .kesso-toolbar-toggle button {
-  background-color: var(--kesso-access-bg) !important;
-}
-
-@keyframes kesso-access-scale-in {
-  from { opacity: 0; transform: scale(0.96) translateY(4px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  #kesso-toolbar .kesso-toolbar-overlay,
-  #kesso-toolbar.kesso-toolbar-open .kesso-toolbar-overlay {
-    animation: none !important;
-  }
-}
-
-/* Toggle button — matches kesso-cookies visual weight */
-#kesso-toolbar .kesso-toolbar-toggle button {
-  background: var(--kesso-access-bg);
-  border: 1px solid var(--kesso-access-border) !important;
-  color: var(--kesso-access-text);
-  box-shadow: var(--kesso-access-shadow-toggle) !important;
-  transition:
-    box-shadow var(--kesso-access-transition),
-    transform var(--kesso-access-transition);
-}
-#kesso-toolbar .kesso-toolbar-toggle button:hover {
-  transform: translateY(-2px);
-}
-#kesso-toolbar .kesso-toolbar-toggle button:focus-visible {
-  outline: none;
-  box-shadow:
-    var(--kesso-access-shadow-toggle),
-    0 0 0 3px var(--kesso-access-primary-focus) !important;
-}
-
-/* Open panel — softer shadow + entrance animation + rounded to match toggle */
-#kesso-toolbar.kesso-toolbar-open .kesso-toolbar-overlay {
-  box-shadow: var(--kesso-access-shadow-panel) !important;
-  border: 1px solid var(--kesso-access-border) !important;
-  border-radius: var(--kesso-access-radius-lg) !important;
-  overflow: hidden;
-  animation: kesso-access-scale-in var(--kesso-access-transition-spring) both;
-}
-
-/* Panel background + text — force so it can't inherit dark from site theme */
-#kesso-toolbar .kesso-toolbar-overlay {
-  background: var(--kesso-access-bg) !important;
-  color: var(--kesso-access-text) !important;
-  border-radius: var(--kesso-access-radius-lg);
-}
-
-/* Icons inside items — always use accessible text color */
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link,
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg,
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link .kesso-toolbar-text,
-#kesso-toolbar .kesso-toolbar-overlay p.kesso-toolbar-title {
-  color: var(--kesso-access-text) !important;
-}
-#kesso-toolbar .kesso-toolbar-overlay p.kesso-toolbar-title {
-  color: var(--kesso-access-text);
-}
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
-  color: var(--kesso-access-text);
-  transition: background-color var(--kesso-access-transition), color var(--kesso-access-transition);
-}
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:hover,
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
-  background: rgba(15, 23, 42, 0.04);
-  text-decoration: none;
-  outline: none;
-}
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--kesso-access-primary-focus);
-}
-@media (prefers-color-scheme: dark) {
-  #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:hover,
-  #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
-    background: rgba(255, 255, 255, 0.06);
-  }
-}
-#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items.kesso-links {
-  border-top-color: var(--kesso-access-border);
-}
-
-/* Toolbar credit (footer of open panel) */
-#kesso-toolbar .kesso-toolbar-credit {
-  border-top-color: var(--kesso-access-border);
-  color: var(--kesso-access-text-muted);
 }
 
 /* Button reset — toolbar uses <button> for action items */
@@ -143,6 +34,100 @@
   color: inherit;
   text-align: start; /* logical: left in LTR, right in RTL */
   width: 100%;
+}
+
+@keyframes kesso-access-scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #kesso-toolbar.kesso-toolbar-open .kesso-toolbar-overlay {
+    animation: none;
+  }
+}
+
+/* Toggle button */
+#kesso-toolbar .kesso-toolbar-toggle button {
+  background-color: var(--kesso-access-bg);
+  border: 1px solid var(--kesso-access-border);
+  color: var(--kesso-access-text);
+  transition:
+    box-shadow var(--kesso-access-transition),
+    transform var(--kesso-access-transition);
+}
+#kesso-toolbar .kesso-toolbar-toggle button:hover {
+  transform: translateY(-2px);
+}
+#kesso-toolbar .kesso-toolbar-toggle button:focus-visible {
+  outline: 2px solid var(--kesso-access-text);
+  outline-offset: 2px;
+}
+
+/* Open panel */
+#kesso-toolbar .kesso-toolbar-overlay {
+  background-color: var(--kesso-access-bg);
+  color: var(--kesso-access-text);
+  border-radius: var(--kesso-access-radius-lg);
+  box-shadow: var(--kesso-access-shadow-panel);
+}
+#kesso-toolbar.kesso-toolbar-open .kesso-toolbar-overlay {
+  animation: kesso-access-scale-in var(--kesso-access-transition-spring) backwards;
+}
+#kesso-toolbar .kesso-toolbar-overlay p.kesso-toolbar-title {
+  color: var(--kesso-access-text);
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
+  color: var(--kesso-access-text);
+  transition: background-color var(--kesso-access-transition), color var(--kesso-access-transition);
+}
+/* Feature icons are stroke-based: they take their colour from the link text. */
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {
+  fill: none;
+  stroke: currentColor;
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:hover,
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
+  background: rgba(15, 23, 42, 0.04);
+  text-decoration: none;
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link:focus-visible {
+  outline: 2px solid var(--kesso-access-text);
+  outline-offset: -2px;
+}
+#kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items.kesso-links {
+  border-top-color: var(--kesso-access-border);
+}
+
+/* Toolbar credit (footer of open panel) */
+#kesso-toolbar .kesso-toolbar-credit {
+  border-top-color: var(--kesso-access-border);
+  color: var(--kesso-access-text-muted);
+}
+
+/* The colour modes below restyle the whole page with !important. The toolbar
+   must stay readable in every mode or visitors can't reach Reset. The doubled
+   id outranks the Light Background rule, which itself uses :not(#kesso-toolbar). */
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-toggle button,
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-overlay {
+  background-color: var(--kesso-access-bg) !important;
+  border-color: var(--kesso-access-border) !important;
+}
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-toggle,
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-toggle button *,
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-overlay * {
+  background-color: transparent !important;
+  border-color: var(--kesso-access-border) !important;
+  color: var(--kesso-access-text) !important;
+}
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-toggle svg {
+  fill: var(--kesso-access-text) !important;
+}
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-overlay .kesso-toolbar-link {
+  border: none !important;
+}
+:is(body.kesso-high-contrast, body.kesso-negative-contrast, body.kesso-light-background) #kesso-toolbar#kesso-toolbar .kesso-toolbar-overlay .kesso-toolbar-link svg {
+  fill: none !important;
+  stroke: var(--kesso-access-text) !important;
 }
 
 /* Pause animations */
@@ -279,19 +264,22 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
   border-top: 1px solid;
 }
 #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 15px;
-  font-size: 80%;
-  line-height: 1;
+  font-size: 14px;
+  line-height: 1.2;
   text-decoration: none; /* Remove underline by default */
 }
 #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link.active {
   font-weight: bold;
 }
 #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {
-  padding-right: 6px;
-  display: inline-block;
-  width: 1.5em;
+  display: block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
   font-style: normal;
   font-weight: normal;
   font-size: inherit;
@@ -307,10 +295,6 @@ body.rtl #kesso-toolbar.kesso-toolbar-position-bottom-right {
 #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link .kesso-toolbar-text {
   vertical-align: middle;
 }
-body.rtl #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link svg {
-  padding-left: 6px;
-  padding-right: 0;
-}
 @media (max-width: 767px) {
   #kesso-toolbar .kesso-toolbar-overlay p.kesso-toolbar-title {
     padding: 7px 12px 0;
@@ -319,21 +303,20 @@ body.rtl #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-t
     padding: 7px 0;
   }
   #kesso-toolbar .kesso-toolbar-overlay ul.kesso-toolbar-items li.kesso-toolbar-item .kesso-toolbar-link {
-    display: block;
     padding: 7px 12px;
   }
 }
-body.kesso-grayscale {
+/* Filter <html>, not <body>: a filter on <body> becomes the containing block for
+   fixed elements and throws the toolbar off screen. The root element is exempt. */
+html:has(body.kesso-grayscale) {
   filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
-  -webkit-filter: grayscale(1);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: gray;
 }
 body.kesso-high-contrast {
   /* This stylesheet based on 0WonB.css generated by Accessibility CSS Generator, (c) Silas S. Brown 2006-2015.  Version 0.9844 */
+}
+html:has(body.kesso-high-contrast),
+body.kesso-high-contrast {
+  background: #000 !important;
 }
 body.kesso-high-contrast .placebo {
   line-height: normal;
@@ -1218,276 +1201,6 @@ body.kesso-light-background *:not(#kesso-toolbar):not(.kesso-toolbar-link) {
 body.kesso-light-background div#gmap,
 body.kesso-light-background div#gmap * {
   background: initial !important;
-}
-body.kesso-resize-font-200,
-body.kesso-resize-font-200 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-200 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-200 label,
-body.kesso-resize-font-200 input,
-body.kesso-resize-font-200 select,
-body.kesso-resize-font-200 textarea,
-body.kesso-resize-font-200 legend,
-body.kesso-resize-font-200 code,
-body.kesso-resize-font-200 pre,
-body.kesso-resize-font-200 dd,
-body.kesso-resize-font-200 dt,
-body.kesso-resize-font-200 span,
-body.kesso-resize-font-200 blockquote {
-  font-size: 200% !important;
-}
-body.kesso-resize-font-200 h1,
-body.kesso-resize-font-200 h2,
-body.kesso-resize-font-200 h3,
-body.kesso-resize-font-200 h4,
-body.kesso-resize-font-200 h5,
-body.kesso-resize-font-200 h6,
-body.kesso-resize-font-200 h1 span,
-body.kesso-resize-font-200 h2 span,
-body.kesso-resize-font-200 h3 span,
-body.kesso-resize-font-200 h4 span,
-body.kesso-resize-font-200 h5 span,
-body.kesso-resize-font-200 h6 span {
-  font-size: 266% !important;
-}
-body.kesso-resize-font-190,
-body.kesso-resize-font-190 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-190 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-190 label,
-body.kesso-resize-font-190 input,
-body.kesso-resize-font-190 select,
-body.kesso-resize-font-190 textarea,
-body.kesso-resize-font-190 legend,
-body.kesso-resize-font-190 code,
-body.kesso-resize-font-190 pre,
-body.kesso-resize-font-190 dd,
-body.kesso-resize-font-190 dt,
-body.kesso-resize-font-190 span,
-body.kesso-resize-font-190 blockquote {
-  font-size: 190% !important;
-}
-body.kesso-resize-font-190 h1,
-body.kesso-resize-font-190 h2,
-body.kesso-resize-font-190 h3,
-body.kesso-resize-font-190 h4,
-body.kesso-resize-font-190 h5,
-body.kesso-resize-font-190 h6,
-body.kesso-resize-font-190 h1 span,
-body.kesso-resize-font-190 h2 span,
-body.kesso-resize-font-190 h3 span,
-body.kesso-resize-font-190 h4 span,
-body.kesso-resize-font-190 h5 span,
-body.kesso-resize-font-190 h6 span {
-  font-size: 252.70000000000002% !important;
-}
-body.kesso-resize-font-180,
-body.kesso-resize-font-180 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-180 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-180 label,
-body.kesso-resize-font-180 input,
-body.kesso-resize-font-180 select,
-body.kesso-resize-font-180 textarea,
-body.kesso-resize-font-180 legend,
-body.kesso-resize-font-180 code,
-body.kesso-resize-font-180 pre,
-body.kesso-resize-font-180 dd,
-body.kesso-resize-font-180 dt,
-body.kesso-resize-font-180 span,
-body.kesso-resize-font-180 blockquote {
-  font-size: 180% !important;
-}
-body.kesso-resize-font-180 h1,
-body.kesso-resize-font-180 h2,
-body.kesso-resize-font-180 h3,
-body.kesso-resize-font-180 h4,
-body.kesso-resize-font-180 h5,
-body.kesso-resize-font-180 h6,
-body.kesso-resize-font-180 h1 span,
-body.kesso-resize-font-180 h2 span,
-body.kesso-resize-font-180 h3 span,
-body.kesso-resize-font-180 h4 span,
-body.kesso-resize-font-180 h5 span,
-body.kesso-resize-font-180 h6 span {
-  font-size: 239.4% !important;
-}
-body.kesso-resize-font-170,
-body.kesso-resize-font-170 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-170 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-170 label,
-body.kesso-resize-font-170 input,
-body.kesso-resize-font-170 select,
-body.kesso-resize-font-170 textarea,
-body.kesso-resize-font-170 legend,
-body.kesso-resize-font-170 code,
-body.kesso-resize-font-170 pre,
-body.kesso-resize-font-170 dd,
-body.kesso-resize-font-170 dt,
-body.kesso-resize-font-170 span,
-body.kesso-resize-font-170 blockquote {
-  font-size: 170% !important;
-}
-body.kesso-resize-font-170 h1,
-body.kesso-resize-font-170 h2,
-body.kesso-resize-font-170 h3,
-body.kesso-resize-font-170 h4,
-body.kesso-resize-font-170 h5,
-body.kesso-resize-font-170 h6,
-body.kesso-resize-font-170 h1 span,
-body.kesso-resize-font-170 h2 span,
-body.kesso-resize-font-170 h3 span,
-body.kesso-resize-font-170 h4 span,
-body.kesso-resize-font-170 h5 span,
-body.kesso-resize-font-170 h6 span {
-  font-size: 226.10000000000002% !important;
-}
-body.kesso-resize-font-160,
-body.kesso-resize-font-160 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-160 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-160 label,
-body.kesso-resize-font-160 input,
-body.kesso-resize-font-160 select,
-body.kesso-resize-font-160 textarea,
-body.kesso-resize-font-160 legend,
-body.kesso-resize-font-160 code,
-body.kesso-resize-font-160 pre,
-body.kesso-resize-font-160 dd,
-body.kesso-resize-font-160 dt,
-body.kesso-resize-font-160 span,
-body.kesso-resize-font-160 blockquote {
-  font-size: 160% !important;
-}
-body.kesso-resize-font-160 h1,
-body.kesso-resize-font-160 h2,
-body.kesso-resize-font-160 h3,
-body.kesso-resize-font-160 h4,
-body.kesso-resize-font-160 h5,
-body.kesso-resize-font-160 h6,
-body.kesso-resize-font-160 h1 span,
-body.kesso-resize-font-160 h2 span,
-body.kesso-resize-font-160 h3 span,
-body.kesso-resize-font-160 h4 span,
-body.kesso-resize-font-160 h5 span,
-body.kesso-resize-font-160 h6 span {
-  font-size: 212.8% !important;
-}
-body.kesso-resize-font-150,
-body.kesso-resize-font-150 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-150 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-150 label,
-body.kesso-resize-font-150 input,
-body.kesso-resize-font-150 select,
-body.kesso-resize-font-150 textarea,
-body.kesso-resize-font-150 legend,
-body.kesso-resize-font-150 code,
-body.kesso-resize-font-150 pre,
-body.kesso-resize-font-150 dd,
-body.kesso-resize-font-150 dt,
-body.kesso-resize-font-150 span,
-body.kesso-resize-font-150 blockquote {
-  font-size: 150% !important;
-}
-body.kesso-resize-font-150 h1,
-body.kesso-resize-font-150 h2,
-body.kesso-resize-font-150 h3,
-body.kesso-resize-font-150 h4,
-body.kesso-resize-font-150 h5,
-body.kesso-resize-font-150 h6,
-body.kesso-resize-font-150 h1 span,
-body.kesso-resize-font-150 h2 span,
-body.kesso-resize-font-150 h3 span,
-body.kesso-resize-font-150 h4 span,
-body.kesso-resize-font-150 h5 span,
-body.kesso-resize-font-150 h6 span {
-  font-size: 199.5% !important;
-}
-body.kesso-resize-font-140,
-body.kesso-resize-font-140 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-140 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-140 label,
-body.kesso-resize-font-140 input,
-body.kesso-resize-font-140 select,
-body.kesso-resize-font-140 textarea,
-body.kesso-resize-font-140 legend,
-body.kesso-resize-font-140 code,
-body.kesso-resize-font-140 pre,
-body.kesso-resize-font-140 dd,
-body.kesso-resize-font-140 dt,
-body.kesso-resize-font-140 span,
-body.kesso-resize-font-140 blockquote {
-  font-size: 140% !important;
-}
-body.kesso-resize-font-140 h1,
-body.kesso-resize-font-140 h2,
-body.kesso-resize-font-140 h3,
-body.kesso-resize-font-140 h4,
-body.kesso-resize-font-140 h5,
-body.kesso-resize-font-140 h6,
-body.kesso-resize-font-140 h1 span,
-body.kesso-resize-font-140 h2 span,
-body.kesso-resize-font-140 h3 span,
-body.kesso-resize-font-140 h4 span,
-body.kesso-resize-font-140 h5 span,
-body.kesso-resize-font-140 h6 span {
-  font-size: 186.20000000000002% !important;
-}
-body.kesso-resize-font-130,
-body.kesso-resize-font-130 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-130 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-130 label,
-body.kesso-resize-font-130 input,
-body.kesso-resize-font-130 select,
-body.kesso-resize-font-130 textarea,
-body.kesso-resize-font-130 legend,
-body.kesso-resize-font-130 code,
-body.kesso-resize-font-130 pre,
-body.kesso-resize-font-130 dd,
-body.kesso-resize-font-130 dt,
-body.kesso-resize-font-130 span,
-body.kesso-resize-font-130 blockquote {
-  font-size: 130% !important;
-}
-body.kesso-resize-font-130 h1,
-body.kesso-resize-font-130 h2,
-body.kesso-resize-font-130 h3,
-body.kesso-resize-font-130 h4,
-body.kesso-resize-font-130 h5,
-body.kesso-resize-font-130 h6,
-body.kesso-resize-font-130 h1 span,
-body.kesso-resize-font-130 h2 span,
-body.kesso-resize-font-130 h3 span,
-body.kesso-resize-font-130 h4 span,
-body.kesso-resize-font-130 h5 span,
-body.kesso-resize-font-130 h6 span {
-  font-size: 172.9% !important;
-}
-body.kesso-resize-font-120,
-body.kesso-resize-font-120 p:not(.kesso-toolbar-title),
-body.kesso-resize-font-120 li:not(.kesso-toolbar-item),
-body.kesso-resize-font-120 label,
-body.kesso-resize-font-120 input,
-body.kesso-resize-font-120 select,
-body.kesso-resize-font-120 textarea,
-body.kesso-resize-font-120 legend,
-body.kesso-resize-font-120 code,
-body.kesso-resize-font-120 pre,
-body.kesso-resize-font-120 dd,
-body.kesso-resize-font-120 dt,
-body.kesso-resize-font-120 span,
-body.kesso-resize-font-120 blockquote {
-  font-size: 120% !important;
-}
-body.kesso-resize-font-120 h1,
-body.kesso-resize-font-120 h2,
-body.kesso-resize-font-120 h3,
-body.kesso-resize-font-120 h4,
-body.kesso-resize-font-120 h5,
-body.kesso-resize-font-120 h6,
-body.kesso-resize-font-120 h1 span,
-body.kesso-resize-font-120 h2 span,
-body.kesso-resize-font-120 h3 span,
-body.kesso-resize-font-120 h4 span,
-body.kesso-resize-font-120 h5 span,
-body.kesso-resize-font-120 h6 span {
-  font-size: 159.60000000000002% !important;
 }
 body.kesso-links-underline {
   /* Temporarily checking selectors
